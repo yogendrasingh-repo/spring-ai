@@ -2,43 +2,61 @@ package org.springframework.ai.core.chain;
 
 import org.springframework.ai.core.memory.Memory;
 
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractChain implements Chain {
 
-	private Memory memory;
+	private Optional<Memory> memory = Optional.empty();
 
-	private boolean returnOnlyOutputs;
-
-	private List<String> inputKeys;
-
-	private List<String> outputKeys;
-
-	/**
-	 * @return A string that uniquely identifies the type of chain
-	 */
-	protected abstract String getType();
-
-	protected abstract Memory getMemory();
-
-	public void setReturnOnlyOutputs(boolean returnOnlyOutputs) {
-		this.returnOnlyOutputs = returnOnlyOutputs;
-	}
-
-	public boolean isReturnOnlyOutputs() {
-		return this.returnOnlyOutputs;
+	protected Optional<Memory> getMemory() {
+		return this.memory;
 	}
 
 	@Override
-	public List<String> getInputKeys() {
-		return this.inputKeys;
-	}
+	public abstract List<String> getInputKeys();
 
 	@Override
-	public List<String> getOutputKeys() {
-		return this.outputKeys;
-	}
+	public abstract List<String> getOutputKeys();
 
 	// TODO validation of input/outputs
+
+	@Override
+	public Map<String, Object> apply(Map<String, Object> inputMap) {
+		Map<String, Object> inputMapToUse = processBeforeApply(inputMap);
+		Map<String, Object> outputMap = doApply(inputMapToUse);
+		Map<String, Object> outputMapToUse = processAfterApply(inputMapToUse, outputMap);
+		return outputMapToUse;
+	}
+
+	protected Map<String, Object> processBeforeApply(Map<String, Object> inputMap) {
+		validateInputs(inputMap);
+		return inputMap;
+	}
+
+	protected abstract Map<String, Object> doApply(Map<String, Object> inputMap);
+
+	private Map<String, Object> processAfterApply(Map<String, Object> inputMap, Map<String, Object> outputMap) {
+		validateOutputs(outputMap);
+		Map<String, Object> combindedMap = new HashMap<>();
+		combindedMap.putAll(inputMap);
+		combindedMap.putAll(outputMap);
+		return combindedMap;
+	}
+
+	protected void validateOutputs(Map<String, Object> outputMap) {
+		Set<String> missingKeys = new HashSet<>(getOutputKeys());
+		missingKeys.removeAll(outputMap.keySet());
+		if (!missingKeys.isEmpty()) {
+			throw new IllegalArgumentException("Missing some output keys: " + missingKeys);
+		}
+	}
+
+	protected void validateInputs(Map<String, Object> inputMap) {
+		Set<String> missingKeys = new HashSet<>(getInputKeys());
+		missingKeys.removeAll(inputMap.keySet());
+		if (!missingKeys.isEmpty()) {
+			throw new IllegalArgumentException("Missing some input keys: " + missingKeys);
+		}
+	}
 
 }
