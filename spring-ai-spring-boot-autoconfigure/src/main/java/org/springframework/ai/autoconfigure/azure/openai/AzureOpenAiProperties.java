@@ -16,6 +16,8 @@
 
 package org.springframework.ai.autoconfigure.azure.openai;
 
+import java.net.URI;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(AzureOpenAiProperties.CONFIG_PREFIX)

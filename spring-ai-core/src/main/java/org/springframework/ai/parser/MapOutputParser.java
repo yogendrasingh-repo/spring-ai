@@ -1,5 +1,6 @@
 package org.springframework.ai.parser;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.support.MessageBuilder;

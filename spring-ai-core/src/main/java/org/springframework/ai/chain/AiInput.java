@@ -1,5 +1,6 @@
 package org.springframework.ai.chain;
 
+import java.util.List;
 import java.util.Map;
 
 public class AiInput {
