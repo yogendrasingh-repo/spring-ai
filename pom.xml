@@ -15,6 +15,7 @@
 		<module>spring-ai-core</module>
 		<module>spring-ai-openai</module>
 		<module>spring-ai-azure-openai</module>
+		<module>spring-ai-huggingface</module>
 		<module>spring-ai-spring-boot-autoconfigure</module>
 		<module>spring-ai-spring-boot-starters/spring-ai-starter-openai</module>
 		<module>spring-ai-spring-boot-starters/spring-ai-starter-azure-openai</module>
@@ -62,7 +63,7 @@
 
 
 		<!-- prodution dependencies -->
-		<spring-boot.version>3.1.2</spring-boot.version>
+		<spring-boot.version>3.1.3</spring-boot.version>
 		<stringtemplate.version>4.0.2</stringtemplate.version>
 		<open-ai-client.version>0.12.0</open-ai-client.version>
 		<azure-open-ai-client.version>1.0.0-beta.3</azure-open-ai-client.version>
