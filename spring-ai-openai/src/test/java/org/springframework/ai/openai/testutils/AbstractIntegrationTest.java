@@ -18,7 +18,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-public class AbstractIntegrationTest {
+public abstract class AbstractIntegrationTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractIntegrationTest.class);
 

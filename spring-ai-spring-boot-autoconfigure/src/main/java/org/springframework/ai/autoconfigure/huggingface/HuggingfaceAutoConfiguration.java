@@ -20,16 +20,22 @@ import org.springframework.ai.huggingface.client.HuggingfaceAiClient;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
 @AutoConfiguration
 @ConditionalOnClass(HuggingfaceAiClient.class)
 @EnableConfigurationProperties(HuggingfaceProperties.class)
-public class HugguingfaceAutoConfiguration {
+public class HuggingfaceAutoConfiguration {
 
 	private final HuggingfaceProperties huggingfaceProperties;
 
 	public HuggingfaceAutoConfiguration(HuggingfaceProperties huggingfaceProperties) {
 		this.huggingfaceProperties = huggingfaceProperties;
+	}
+
+	@Bean
+	public HuggingfaceAiClient huggingfaceAiClient(HuggingfaceProperties huggingfaceProperties) {
+		return new HuggingfaceAiClient(huggingfaceProperties.getApiKey(), huggingfaceProperties.getUrl());
 	}
 
 }

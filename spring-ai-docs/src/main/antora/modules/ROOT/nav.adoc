@@ -12,5 +12,6 @@
 ** xref:api/embeddings.adoc[]
 ** xref:api/vectordbs.adoc[]
 ** xref:api/evaluators.adoc[]
+** xref:providers/huggingface/index.adoc
 * Appendices
 ** xref:glossary.adoc[]
