@@ -1,7 +1,5 @@
 package org.springframework.ai.huggingface.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.client.AiClient;
@@ -9,7 +7,6 @@ import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.client.Generation;
 import org.springframework.ai.huggingface.api.TextGenerationInferenceApi;
 import org.springframework.ai.huggingface.invoker.ApiClient;
-import org.springframework.ai.huggingface.invoker.auth.ApiKeyAuth;
 import org.springframework.ai.huggingface.model.GenerateParameters;
 import org.springframework.ai.huggingface.model.GenerateRequest;
 import org.springframework.ai.huggingface.model.GenerateResponse;
@@ -18,9 +15,7 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Implementation of {@link AiClient} backed by HuggingFace
@@ -49,7 +44,7 @@ public class HuggingfaceAiClient implements AiClient {
 		GenerateRequest generateRequest = new GenerateRequest();
 		generateRequest.setInputs(prompt.getContents());
 		generateRequest.setParameters(new GenerateParameters());
-		GenerateResponse generateResponse = textGenApi.generate(generateRequest);
+		GenerateResponse generateResponse = this.textGenApi.generate(generateRequest);
 		String generatedText = generateResponse.getGeneratedText();
 		List<Generation> generations = new ArrayList<>();
 		Generation generation = new Generation(generatedText);
