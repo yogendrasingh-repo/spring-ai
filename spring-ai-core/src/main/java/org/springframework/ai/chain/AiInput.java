@@ -10,7 +10,7 @@ public class AiInput {
 		this.inputData = inputData;
 	}
 
-	Map<String, Object> getInputData() {
+	public Map<String, Object> getInputData() {
 		return inputData;
 	}
 

@@ -21,6 +21,7 @@ import org.springframework.ai.prompt.messages.UserMessage;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Prompt {
 
@@ -55,4 +56,16 @@ public class Prompt {
 		return "Prompt{" + "messages=" + messages + '}';
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Prompt prompt = (Prompt) o;
+		return Objects.equals(messages, prompt.messages);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(messages);
+	}
 }
