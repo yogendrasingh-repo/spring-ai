@@ -8,7 +8,8 @@ import java.util.function.Function;
 
 public interface AiProcessor extends Function<AiInput, AiOutput> {
 
-    List<String> getInputKeys();
+	List<String> getInputKeys();
 
-    List<String> getOutputKeys();
+	List<String> getOutputKeys();
+
 }

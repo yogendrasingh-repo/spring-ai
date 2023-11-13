@@ -58,8 +58,10 @@ public class Prompt {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		Prompt prompt = (Prompt) o;
 		return Objects.equals(messages, prompt.messages);
 	}
@@ -68,4 +70,5 @@ public class Prompt {
 	public int hashCode() {
 		return Objects.hash(messages);
 	}
+
 }
