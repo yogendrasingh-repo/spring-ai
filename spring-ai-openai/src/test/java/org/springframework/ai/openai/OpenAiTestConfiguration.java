@@ -1,6 +1,8 @@
 package org.springframework.ai.openai;
 
 import com.theokanning.openai.service.OpenAiService;
+import org.springframework.ai.client.AiClient;
+import org.springframework.ai.core.AiTemplate;
 import org.springframework.ai.embedding.EmbeddingClient;
 import org.springframework.ai.openai.client.OpenAiClient;
 import org.springframework.ai.openai.embedding.OpenAiEmbeddingClient;
@@ -34,6 +36,11 @@ public class OpenAiTestConfiguration {
 	@Bean
 	public EmbeddingClient openAiEmbeddingClient(OpenAiService theoOpenAiService) {
 		return new OpenAiEmbeddingClient(theoOpenAiService);
+	}
+
+	@Bean
+	public AiTemplate aiTemplate(AiClient aiClient) {
+		return new AiTemplate(aiClient);
 	}
 
 }

@@ -18,6 +18,7 @@ package org.springframework.ai.client;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 public class Generation {
 
@@ -46,6 +47,21 @@ public class Generation {
 	@Override
 	public String toString() {
 		return "Generation{" + "text='" + text + '\'' + ", info=" + info + '}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Generation that = (Generation) o;
+		return Objects.equals(text, that.text) && Objects.equals(info, that.info);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(text, info);
 	}
 
 }
