@@ -33,7 +33,7 @@
 		<module>embedding-clients/transformers-embedding</module>
 		<module>vector-stores/spring-ai-pinecone</module>
 		<module>vector-stores/spring-ai-chroma</module>
-		<module>vector-stores/spring-ai-cognative-search-store</module>
+		<module>vector-stores/spring-ai-azure</module>
 
 	</modules>
 

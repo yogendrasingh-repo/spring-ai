@@ -8,7 +8,7 @@
 		<version>0.7.1-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>spring-ai-cognitive-search-store</artifactId>
+	<artifactId>spring-ai-azure-vector-store</artifactId>
 	<packaging>jar</packaging>
 	<name>Spring AI Cognitive Search Vector Store</name>
 	<description>Spring AI Cognitive Search Vector Store</description>
