@@ -8,18 +8,18 @@ and retrieval.
 
 ## Prerequisites
 
-1. Azure Subscription: You will need an [Azure subscription](https://azure.microsoft.com/en-us/free/) to use any Azure service. 
+1. Azure Subscription: You will need an [Azure subscription](https://azure.microsoft.com/en-us/free/) to use any Azure service.
 2. Azure OpenAI Service: Create an an Azure [OpenAI service](https://portal.azure.com/#create/Microsoft.CognitiveServicesOpenAI).  **NOTE:** You may have
-to fill out a separate form to gain access to Azure Open AI services.  Once the service is created, obtain the endpoint and apiKey from the 
+to fill out a separate form to gain access to Azure Open AI services.  Once the service is created, obtain the endpoint and apiKey from the
 `Keys and Endpoint` section under `Resource Management`
-3. Azure Cognitive Search Service: Create an an Cognitive [Search service](https://portal.azure.com/#create/Microsoft.Search).  Once the service is created, 
+3. Azure Cognitive Search Service: Create an an Cognitive [Search service](https://portal.azure.com/#create/Microsoft.Search).  Once the service is created,
 obtain the admin apiKey from the `Keys` section under `Settings` and retrieve the endpoint from the `Url` field under the `Overview` section.
 
 ## Configuration
 
 
 You will need to generate a new index within your Cognitive Search service instance.  The easiest way to do this is to create one from a JSON document.  This can be
-done by clicking on the `Indexes` link under the `Search management` section.  From the Indexes page, click `+ Add index` and select `Add index (JSON)`.  In the 
+done by clicking on the `Indexes` link under the `Search management` section.  From the Indexes page, click `+ Add index` and select `Add index (JSON)`.  In the
 `Add index (JSON)` window of the right side of your screen, enter the following JSON replacing `<INDEX NAME>` with the name you would like to give your index and click
 `save`.
 
@@ -144,13 +144,13 @@ spring:
       openai:
         api-key: <My Azure AI API Key>
         endpoint: <My Azure AI Endpoint>
-      cognitive-search: 
+      cognitive-search:
         endpoint: <My Cognitive Search Endpoint>
         api-key: <My Cognitive Search API Key>
-        index: <My Cognitive Search Index> 
+        index: <My Cognitive Search Index>
 ```
 
-You could also provide these as OS environment variables.  
+You could also provide these as OS environment variables.
 
 ```bash
 export 'SPRING_AI_AZURE_OPENAI_API_KEY=<My Azure AI API Key>'
@@ -172,32 +172,32 @@ Add these dependencies to your project:
 **Open AI implementation**
 
 ```xml
-    <dependency>
-        <groupId>org.springframework.experimental.ai</groupId>
-        <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
-        <version>0.7.0-SNAPSHOT</version>
-    </dependency>
+<dependency>
+    <groupId>org.springframework.experimental.ai</groupId>
+    <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+    <version>0.7.1-SNAPSHOT</version>
+</dependency>
 ```
 
 **Azure AI implementation**
 
 ```xml
-	<dependency>
-		<groupId>org.springframework.experimental.ai</groupId>
-		<artifactId>spring-ai-azure-openai-spring-boot-starter</artifactId>
-		<version>${parent.version}</version>
-		<scope>test</scope>
-	</dependency>
+<dependency>
+   <groupId>org.springframework.experimental.ai</groupId>
+   <artifactId>spring-ai-azure-openai-spring-boot-starter</artifactId>
+   <version>${parent.version}</version>
+   <scope>test</scope>
+</dependency>
 ```
 
 2. Cognitive Search Vector Store
 
 ```xml
-    <dependency>
-        <groupId>org.springframework.experimental.ai</groupId>
-        <artifactId>spring-ai-cognitive-search-store</artifactId>
-        <version>0.7.0-SNAPSHOT</version>
-    </dependency>
+<dependency>
+    <groupId>org.springframework.experimental.ai</groupId>
+    <artifactId>spring-ai-cognitive-search-store</artifactId>
+    <version>0.7.1-SNAPSHOT</version>
+</dependency>
 ```
 
 ## Sample Code
@@ -253,7 +253,7 @@ If all goes well, you should retrieve the document containing the text "Spring A
 
 ## Integration With Azure OpenAI Studio Data Ingestion
 
-Azure Open AI services provides a convienint method to upload documents into an Index as described in this Microsoft 
+Azure Open AI services provides a convienint method to upload documents into an Index as described in this Microsoft
 [learning document](https://learn.microsoft.com/en-us/azure/ai-services/openai/use-your-data-quickstart?tabs=command-line&pivots=programming-language-csharp).  The
 `AzureCognitiveSearchVectorStore` implementation is compatible with indexes that use this methodology facilitating an *easier* way to integrate with your existing documents
 for the purpose of searching and integrating with the AI system.

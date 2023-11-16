@@ -18,14 +18,17 @@ package org.springframework.ai.vectorstore;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import com.azure.core.credential.AzureKeyCredential;
+import com.azure.search.documents.indexes.SearchIndexClient;
+import com.azure.search.documents.indexes.SearchIndexClientBuilder;
 import org.awaitility.Awaitility;
-import org.awaitility.Duration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -33,7 +36,6 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingClient;
 import org.springframework.ai.embedding.TransformersEmbeddingClient;
-import org.springframework.ai.vectorstore.PineconeVectorStore.PineconeVectorStoreConfig;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -47,19 +49,9 @@ import static org.hamcrest.Matchers.hasSize;
 /**
  * @author Christian Tzolov
  */
-@EnabledIfEnvironmentVariable(named = "PINECONE_API_KEY", matches = ".+")
-public class PineconeVectorStoreIT {
-
-	// Replace the PINECONE_ENVIRONMENT, PINECONE_PROJECT_ID, PINECONE_INDEX_NAME and
-	// PINECONE_API_KEY with your pinecone credentials.
-	private static final String PINECONE_ENVIRONMENT = "gcp-starter";
-
-	private static final String PINECONE_PROJECT_ID = "814621f";
-
-	private static final String PINECONE_INDEX_NAME = "spring-ai-test-index";
-
-	// NOTE: Leave it empty as for free tier as later doesn't support namespaces.
-	private static final String PINECONE_NAMESPACE = "";
+@EnabledIfEnvironmentVariable(named = "SPRING_AI_AZURE_COGNITIVE_SEARCH_API_KEY", matches = ".+")
+@EnabledIfEnvironmentVariable(named = "SPRING_AI_AZURE_COGNITIVE_SEARCH_ENDPOINT", matches = ".+")
+public class AzureVectorStoreIT {
 
 	List<Document> documents = List.of(
 			new Document("1", getText("classpath:/test/data/spring.ai.txt"), Map.of("meta1", "meta1")),
@@ -77,13 +69,13 @@ public class PineconeVectorStoreIT {
 	}
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withUserConfiguration(TestApplication.class);
+		.withUserConfiguration(TestApplication2.class);
 
 	@BeforeAll
 	public static void beforeAll() {
 		Awaitility.setDefaultPollInterval(2, TimeUnit.SECONDS);
 		Awaitility.setDefaultPollDelay(Duration.ZERO);
-		Awaitility.setDefaultTimeout(Duration.ONE_MINUTE);
+		Awaitility.setDefaultTimeout(Duration.ofMinutes(1));
 	}
 
 	@Test
@@ -119,56 +111,8 @@ public class PineconeVectorStoreIT {
 	}
 
 	@Test
-	public void addAndSearchWithFilters() {
-
-		// Pinecone metadata filtering syntax:
-		// https://docs.pinecone.io/docs/metadata-filtering
-
-		contextRunner.run(context -> {
-
-			VectorStore vectorStore = context.getBean(VectorStore.class);
-
-			var bgDocument = new Document("The World is Big and Salvation Lurks Around the Corner",
-					Map.of("country", "Bulgaria"));
-			var nlDocument = new Document("The World is Big and Salvation Lurks Around the Corner",
-					Map.of("country", "Netherland"));
-
-			vectorStore.add(List.of(bgDocument, nlDocument));
-
-			SearchRequest searchRequest = SearchRequest.query("The World");
-
-			Awaitility.await().until(() -> {
-				return vectorStore.similaritySearch(searchRequest.withTopK(1));
-			}, hasSize(1));
-
-			List<Document> results = vectorStore.similaritySearch(searchRequest.withTopK(5));
-			assertThat(results).hasSize(2);
-
-			results = vectorStore.similaritySearch(searchRequest.withTopK(5)
-				.withSimilarityThresholdAll()
-				.withFilterExpression("country == 'Bulgaria'"));
-			assertThat(results).hasSize(1);
-			assertThat(results.get(0).getId()).isEqualTo(bgDocument.getId());
-
-			results = vectorStore.similaritySearch(searchRequest.withTopK(5)
-				.withSimilarityThresholdAll()
-				.withFilterExpression("country == 'Netherland'"));
-			assertThat(results).hasSize(1);
-			assertThat(results.get(0).getId()).isEqualTo(nlDocument.getId());
-
-			// Remove all documents from the store
-			vectorStore.delete(List.of(bgDocument, nlDocument).stream().map(doc -> doc.getId()).toList());
-
-			Awaitility.await().until(() -> {
-				return vectorStore.similaritySearch(searchRequest.withTopK(1));
-			}, hasSize(0));
-		});
-	}
-
-	@Test
 	public void documentUpdateTest() {
 
-		// Note ,using OpenAI to calculate embeddings
 		contextRunner.run(context -> {
 
 			VectorStore vectorStore = context.getBean(VectorStore.class);
@@ -266,23 +210,19 @@ public class PineconeVectorStoreIT {
 
 	@SpringBootConfiguration
 	@EnableAutoConfiguration
-	public static class TestApplication {
+	public static class TestApplication2 {
 
 		@Bean
-		public PineconeVectorStoreConfig pineconeVectorStoreConfig() {
+		public SearchIndexClient searchIndexClient() {
 
-			return PineconeVectorStoreConfig.builder()
-				.withApiKey(System.getenv("PINECONE_API_KEY"))
-				.withEnvironment(PINECONE_ENVIRONMENT)
-				.withProjectId(PINECONE_PROJECT_ID)
-				.withIndexName(PINECONE_INDEX_NAME)
-				.withNamespace(PINECONE_NAMESPACE)
-				.build();
+			return new SearchIndexClientBuilder().endpoint(System.getenv("SPRING_AI_AZURE_COGNITIVE_SEARCH_ENDPOINT"))
+				.credential(new AzureKeyCredential(System.getenv("SPRING_AI_AZURE_COGNITIVE_SEARCH_API_KEY")))
+				.buildClient();
 		}
 
 		@Bean
-		public VectorStore vectorStore(PineconeVectorStoreConfig config, EmbeddingClient embeddingClient) {
-			return new PineconeVectorStore(config, embeddingClient);
+		public VectorStore vectorStore(SearchIndexClient searchIndexClient, EmbeddingClient embeddingClient) {
+			return new AzureCognitiveSearchVectorStore(searchIndexClient, embeddingClient);
 		}
 
 		@Bean
