@@ -60,7 +60,7 @@ import org.springframework.util.StringUtils;
  * @author Xiangyang Yu
  * @author Christian Tzolov
  */
-public class AzureCognitiveSearchVectorStore implements VectorStore, InitializingBean {
+public class AzureVectorStore implements VectorStore, InitializingBean {
 
 	private static final String ID_FIELD_NAME = "id";
 
@@ -96,7 +96,7 @@ public class AzureCognitiveSearchVectorStore implements VectorStore, Initializin
 	 * for Azure search indexes and factory for {@link SearchClient}.
 	 * @param embeddingClient The client for embedding operations.
 	 */
-	public AzureCognitiveSearchVectorStore(SearchIndexClient searchIndexClient, EmbeddingClient embeddingClient) {
+	public AzureVectorStore(SearchIndexClient searchIndexClient, EmbeddingClient embeddingClient) {
 		Assert.notNull(embeddingClient, "The embedding client can not be null.");
 		Assert.notNull(searchIndexClient, "The search index client can not be null.");
 		this.searchIndexClient = searchIndexClient;

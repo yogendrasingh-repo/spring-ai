@@ -58,18 +58,8 @@ public class AzureVectorStoreIT {
 			new Document("2", getText("classpath:/test/data/time.shelter.txt"), Map.of()),
 			new Document("3", getText("classpath:/test/data/great.depression.txt"), Map.of("meta2", "meta2")));
 
-	public static String getText(String uri) {
-		var resource = new DefaultResourceLoader().getResource(uri);
-		try {
-			return resource.getContentAsString(StandardCharsets.UTF_8);
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withUserConfiguration(TestApplication2.class);
+		.withUserConfiguration(Config.class);
 
 	@BeforeAll
 	public static void beforeAll() {
@@ -210,7 +200,7 @@ public class AzureVectorStoreIT {
 
 	@SpringBootConfiguration
 	@EnableAutoConfiguration
-	public static class TestApplication2 {
+	public static class Config {
 
 		@Bean
 		public SearchIndexClient searchIndexClient() {
@@ -222,7 +212,7 @@ public class AzureVectorStoreIT {
 
 		@Bean
 		public VectorStore vectorStore(SearchIndexClient searchIndexClient, EmbeddingClient embeddingClient) {
-			return new AzureCognitiveSearchVectorStore(searchIndexClient, embeddingClient);
+			return new AzureVectorStore(searchIndexClient, embeddingClient);
 		}
 
 		@Bean
@@ -230,6 +220,16 @@ public class AzureVectorStoreIT {
 			return new TransformersEmbeddingClient();
 		}
 
+	}
+
+	private static String getText(String uri) {
+		var resource = new DefaultResourceLoader().getResource(uri);
+		try {
+			return resource.getContentAsString(StandardCharsets.UTF_8);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
