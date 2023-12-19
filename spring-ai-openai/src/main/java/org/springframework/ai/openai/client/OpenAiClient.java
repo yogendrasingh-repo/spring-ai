@@ -22,9 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.client.ChatClient;
 import reactor.core.publisher.Flux;
 
-import org.springframework.ai.client.AiClient;
 import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.client.AiStreamClient;
 import org.springframework.ai.client.Generation;
@@ -43,7 +43,7 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.Assert;
 
 /**
- * {@link AiClient} implementation for {@literal OpenAI} backed by {@link OpenAiApi}.
+ * {@link ChatClient} implementation for {@literal OpenAI} backed by {@link OpenAiApi}.
  *
  * @author Mark Pollack
  * @author Christian Tzolov
@@ -51,11 +51,11 @@ import org.springframework.util.Assert;
  * @author John Blum
  * @author Josh Long
  * @author Jemin Huh
- * @see org.springframework.ai.client.AiClient
+ * @see ChatClient
  * @see org.springframework.ai.client.AiStreamClient
  * @see OpenAiApi
  */
-public class OpenAiClient implements AiClient, AiStreamClient {
+public class OpenAiClient implements ChatClient, AiStreamClient {
 
 	private Double temperature = 0.7;
 

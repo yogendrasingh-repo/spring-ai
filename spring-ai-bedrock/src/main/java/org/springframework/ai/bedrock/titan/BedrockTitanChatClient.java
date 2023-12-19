@@ -18,6 +18,7 @@ package org.springframework.ai.bedrock.titan;
 
 import java.util.List;
 
+import org.springframework.ai.client.ChatClient;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.bedrock.MessageToPromptConverter;
@@ -25,7 +26,6 @@ import org.springframework.ai.bedrock.titan.api.TitanChatBedrockApi;
 import org.springframework.ai.bedrock.titan.api.TitanChatBedrockApi.TitanChatRequest;
 import org.springframework.ai.bedrock.titan.api.TitanChatBedrockApi.TitanChatResponse;
 import org.springframework.ai.bedrock.titan.api.TitanChatBedrockApi.TitanChatResponseChunk;
-import org.springframework.ai.client.AiClient;
 import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.client.AiStreamClient;
 import org.springframework.ai.client.Generation;
@@ -37,7 +37,7 @@ import org.springframework.ai.prompt.Prompt;
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public class BedrockTitanChatClient implements AiClient, AiStreamClient {
+public class BedrockTitanChatClient implements ChatClient, AiStreamClient {
 
 	private final TitanChatBedrockApi chatApi;
 

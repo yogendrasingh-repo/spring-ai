@@ -18,13 +18,13 @@ package org.springframework.ai.bedrock.anthropic;
 
 import java.util.List;
 
+import org.springframework.ai.client.ChatClient;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.bedrock.MessageToPromptConverter;
 import org.springframework.ai.bedrock.anthropic.api.AnthropicChatBedrockApi;
 import org.springframework.ai.bedrock.anthropic.api.AnthropicChatBedrockApi.AnthropicChatRequest;
 import org.springframework.ai.bedrock.anthropic.api.AnthropicChatBedrockApi.AnthropicChatResponse;
-import org.springframework.ai.client.AiClient;
 import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.client.AiStreamClient;
 import org.springframework.ai.client.Generation;
@@ -32,12 +32,13 @@ import org.springframework.ai.metadata.ChoiceMetadata;
 import org.springframework.ai.prompt.Prompt;
 
 /**
- * Java {@link AiClient} and {@link AiStreamClient} for the Bedrock Anthropic chat model.
+ * Java {@link ChatClient} and {@link AiStreamClient} for the Bedrock Anthropic chat
+ * model.
  *
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public class BedrockAnthropicChatClient implements AiClient, AiStreamClient {
+public class BedrockAnthropicChatClient implements ChatClient, AiStreamClient {
 
 	private final AnthropicChatBedrockApi anthropicChatApi;
 

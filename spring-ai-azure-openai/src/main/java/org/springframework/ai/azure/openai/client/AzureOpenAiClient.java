@@ -31,7 +31,7 @@ import com.azure.ai.openai.models.PromptFilterResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.azure.openai.metadata.AzureOpenAiGenerationMetadata;
-import org.springframework.ai.client.AiClient;
+import org.springframework.ai.client.ChatClient;
 import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.client.Generation;
 import org.springframework.ai.metadata.ChoiceMetadata;
@@ -42,16 +42,16 @@ import org.springframework.ai.prompt.messages.Message;
 import org.springframework.util.Assert;
 
 /**
- * {@link AiClient} implementation for {@literal Microsoft Azure AI} backed by
+ * {@link ChatClient} implementation for {@literal Microsoft Azure AI} backed by
  * {@link OpenAIClient}.
  *
  * @author Mark Pollack
  * @author Ueibin Kim
  * @author John Blum
- * @see org.springframework.ai.client.AiClient
+ * @see ChatClient
  * @see com.azure.ai.openai.OpenAIClient
  */
-public class AzureOpenAiClient implements AiClient {
+public class AzureOpenAiClient implements ChatClient {
 
 	private Double temperature = 0.7;
 

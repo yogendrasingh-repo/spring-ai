@@ -6,7 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.ai.client.AiClient;
+import org.springframework.ai.client.ChatClient;
 import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.client.AiStreamClient;
 import org.springframework.ai.prompt.Prompt;
@@ -25,7 +25,7 @@ public abstract class AbstractIT {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractIT.class);
 
 	@Autowired
-	protected AiClient openAiClient;
+	protected ChatClient openAiClient;
 
 	@Autowired
 	protected AiStreamClient openAiStreamClient;

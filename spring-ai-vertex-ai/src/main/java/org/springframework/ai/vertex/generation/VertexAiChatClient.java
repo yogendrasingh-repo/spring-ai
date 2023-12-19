@@ -19,7 +19,7 @@ package org.springframework.ai.vertex.generation;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.ai.client.AiClient;
+import org.springframework.ai.client.ChatClient;
 import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.client.Generation;
 import org.springframework.ai.prompt.Prompt;
@@ -34,7 +34,7 @@ import org.springframework.util.CollectionUtils;
 /**
  * @author Christian Tzolov
  */
-public class VertexAiChatClient implements AiClient {
+public class VertexAiChatClient implements ChatClient {
 
 	private final VertexAiApi vertexAiApi;
 

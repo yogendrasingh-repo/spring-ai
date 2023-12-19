@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.client.AiClient;
+import org.springframework.ai.client.ChatClient;
 import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.client.Generation;
 import org.springframework.ai.prompt.Prompt;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  *
  * @author nullptr
  */
-public class OllamaClient implements AiClient {
+public class OllamaClient implements ChatClient {
 
 	/** Logger for logging the events and messages. */
 	private static final Logger log = LoggerFactory.getLogger(OllamaClient.class);

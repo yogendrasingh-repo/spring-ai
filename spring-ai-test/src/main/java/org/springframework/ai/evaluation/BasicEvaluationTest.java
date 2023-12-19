@@ -18,7 +18,7 @@ package org.springframework.ai.evaluation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.client.AiClient;
+import org.springframework.ai.client.ChatClient;
 import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.prompt.Prompt;
 import org.springframework.ai.prompt.PromptTemplate;
@@ -39,7 +39,7 @@ public class BasicEvaluationTest {
 	private static final Logger logger = LoggerFactory.getLogger(BasicEvaluationTest.class);
 
 	@Autowired
-	protected AiClient openAiClient;
+	protected ChatClient openAiClient;
 
 	@Value("classpath:/prompts/spring/test/evaluation/qa-evaluator-accurate-answer.st")
 	protected Resource qaEvaluatorAccurateAnswerResource;

@@ -23,7 +23,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.ai.client.AiClient;
+import org.springframework.ai.client.ChatClient;
 import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.client.Generation;
 import org.springframework.ai.huggingface.api.TextGenerationInferenceApi;
@@ -35,12 +35,12 @@ import org.springframework.ai.huggingface.model.GenerateResponse;
 import org.springframework.ai.prompt.Prompt;
 
 /**
- * An implementation of {@link AiClient} that interfaces with HuggingFace Inference
+ * An implementation of {@link ChatClient} that interfaces with HuggingFace Inference
  * Endpoints for text generation.
  *
  * @author Mark Pollack
  */
-public class HuggingfaceAiClient implements AiClient {
+public class HuggingfaceAiClient implements ChatClient {
 
 	/**
 	 * Token required for authenticating with the HuggingFace Inference API.

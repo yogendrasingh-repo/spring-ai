@@ -20,7 +20,7 @@ import org.springframework.ai.prompt.Prompt;
 import org.springframework.ai.prompt.messages.UserMessage;
 
 @FunctionalInterface
-public interface AiClient {
+public interface ChatClient {
 
 	default String generate(String message) {
 		Prompt prompt = new Prompt(new UserMessage(message));

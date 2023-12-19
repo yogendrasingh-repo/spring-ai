@@ -24,7 +24,7 @@ import org.springframework.ai.bedrock.MessageToPromptConverter;
 import org.springframework.ai.bedrock.llama2.api.Llama2ChatBedrockApi;
 import org.springframework.ai.bedrock.llama2.api.Llama2ChatBedrockApi.Llama2ChatRequest;
 import org.springframework.ai.bedrock.llama2.api.Llama2ChatBedrockApi.Llama2ChatResponse;
-import org.springframework.ai.client.AiClient;
+import org.springframework.ai.client.ChatClient;
 import org.springframework.ai.client.AiResponse;
 import org.springframework.ai.client.AiStreamClient;
 import org.springframework.ai.client.Generation;
@@ -33,12 +33,12 @@ import org.springframework.ai.metadata.Usage;
 import org.springframework.ai.prompt.Prompt;
 
 /**
- * Java {@link AiClient} and {@link AiStreamClient} for the Bedrock Llama2 chat model.
+ * Java {@link ChatClient} and {@link AiStreamClient} for the Bedrock Llama2 chat model.
  *
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public class BedrockLlama2ChatClient implements AiClient, AiStreamClient {
+public class BedrockLlama2ChatClient implements ChatClient, AiStreamClient {
 
 	private final Llama2ChatBedrockApi chatApi;
 
