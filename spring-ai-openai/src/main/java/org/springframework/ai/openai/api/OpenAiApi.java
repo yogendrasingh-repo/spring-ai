@@ -310,6 +310,115 @@ public class OpenAiApi {
 					tools, toolChoice, null);
 		}
 
+		public static class Builder {
+			private List<ChatCompletionMessage> messages;
+			private String model;
+			private Float frequencyPenalty;
+			private Map<String, Object> logitBias;
+			private Integer maxTokens;
+			private Integer n;
+			private Float presencePenalty;
+			private ResponseFormat responseFormat;
+			private Integer seed;
+			private String stop;
+			private Boolean stream;
+			private Float temperature;
+			private Float topP;
+			private List<FunctionTool> tools;
+			private ToolChoice toolChoice;
+			private String user;
+
+			public static Builder builder(List<ChatCompletionMessage> messages, String model) {
+				Builder builder = new Builder();
+				return builder.withMessages(messages).withModel(model);
+			}
+
+			public Builder withMessages(List<ChatCompletionMessage> messages) {
+				this.messages = messages;
+				return this;
+			}
+
+			public Builder withModel(String model) {
+				this.model = model;
+				return this;
+			}
+
+			public Builder withFrequencyPenalty(Float frequencyPenalty) {
+				this.frequencyPenalty = frequencyPenalty;
+				return this;
+			}
+
+			public Builder withLogitBias(Map<String, Object> logitBias) {
+				this.logitBias = logitBias;
+				return this;
+			}
+
+			public Builder withMaxTokens(Integer maxTokens) {
+				this.maxTokens = maxTokens;
+				return this;
+			}
+
+			public Builder withN(Integer n) {
+				this.n = n;
+				return this;
+			}
+
+			public Builder withPresencePenalty(Float presencePenalty) {
+				this.presencePenalty = presencePenalty;
+				return this;
+			}
+
+			public Builder withResponseFormat(ResponseFormat responseFormat) {
+				this.responseFormat = responseFormat;
+				return this;
+			}
+
+			public Builder withSeed(Integer seed) {
+				this.seed = seed;
+				return this;
+			}
+
+			public Builder withStop(String stop) {
+				this.stop = stop;
+				return this;
+			}
+
+			public Builder withStream(Boolean stream) {
+				this.stream = stream;
+				return this;
+			}
+
+			public Builder withTemperature(Float temperature) {
+				this.temperature = temperature;
+				return this;
+			}
+
+			public Builder withTopP(Float topP) {
+				this.topP = topP;
+				return this;
+			}
+
+			public Builder withTools(List<FunctionTool> tools) {
+				this.tools = tools;
+				return this;
+			}
+
+			public Builder withToolChoice(ToolChoice toolChoice) {
+				this.toolChoice = toolChoice;
+				return this;
+			}
+
+			public Builder withUser(String user) {
+				this.user = user;
+				return this;
+			}
+
+			public ChatCompletionRequest build() {
+				return new ChatCompletionRequest(messages, model, frequencyPenalty, logitBias, maxTokens, n,
+						presencePenalty, responseFormat, seed, stop, stream, temperature, topP, tools, toolChoice, user);
+			}
+		}
+
 		/**
 		 * Specifies a tool the model should use. Use to force the model to call a specific function.
 		 *

@@ -27,16 +27,37 @@ public class Prompt {
 
 	private final List<Message> messages;
 
+	private PromptOptions promptOptions;
+
 	public Prompt(String contents) {
 		this(new UserMessage(contents));
+	}
+
+	public Prompt(String contents, PromptOptions options) {
+		this(new UserMessage(contents));
+		this.promptOptions = options;
 	}
 
 	public Prompt(Message message) {
 		this(Collections.singletonList(message));
 	}
 
+	public Prompt(Message message, PromptOptions options) {
+		this(Collections.singletonList(message));
+		this.promptOptions = options;
+	}
+
 	public Prompt(List<Message> messages) {
 		this.messages = messages;
+	}
+
+	public Prompt(List<Message> messages, PromptOptions options) {
+		this.messages = messages;
+		this.promptOptions = options;
+	}
+
+	public PromptOptions getPromptOptions() {
+		return promptOptions;
 	}
 
 	public String getContents() {

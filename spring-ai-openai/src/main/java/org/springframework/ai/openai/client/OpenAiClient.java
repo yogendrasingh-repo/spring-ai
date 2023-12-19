@@ -22,12 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.client.*;
 import reactor.core.publisher.Flux;
 
-import org.springframework.ai.client.AiClient;
-import org.springframework.ai.client.AiResponse;
-import org.springframework.ai.client.AiStreamClient;
-import org.springframework.ai.client.Generation;
 import org.springframework.ai.metadata.ChoiceMetadata;
 import org.springframework.ai.metadata.RateLimit;
 import org.springframework.ai.openai.api.OpenAiApi;
@@ -58,6 +55,10 @@ import org.springframework.util.Assert;
 public class OpenAiClient implements AiClient, AiStreamClient {
 
 	private Double temperature = 0.7;
+
+	private Integer maxTokens;
+
+	private Float presencePenalty = 0.0F;
 
 	private String model = "gpt-3.5-turbo";
 
@@ -92,6 +93,22 @@ public class OpenAiClient implements AiClient, AiStreamClient {
 		this.temperature = temperature;
 	}
 
+	public Integer getMaxTokens() {
+		return maxTokens;
+	}
+
+	public void setMaxTokens(Integer maxTokens) {
+		this.maxTokens = maxTokens;
+	}
+
+	public Float getPresencePenalty() {
+		return presencePenalty;
+	}
+
+	public void setPresencePenalty(Float presencePenalty) {
+		this.presencePenalty = presencePenalty;
+	}
+
 	@Override
 	public AiResponse generate(Prompt prompt) {
 
@@ -103,9 +120,23 @@ public class OpenAiClient implements AiClient, AiStreamClient {
 						ChatCompletionMessage.Role.valueOf(m.getMessageType().getValue())))
 				.toList();
 
+			Float temperatureToUse = prompt.getPromptOptions()
+				.getOrDefault(ChatOptions.TEMPERATURE, this.temperature.floatValue(), Float.class);
+			Integer maxTokensToUse = prompt.getPromptOptions()
+				.getOrDefault(ChatOptions.MAX_TOKENS, this.maxTokens, Integer.class);
+
+			Float presencePenaltyToUse = prompt.getPromptOptions()
+				.getOrDefault(OpenAiChatOptions.PRESENCE_PENALTY, this.presencePenalty.floatValue(), Float.class);
+
+			OpenAiApi.ChatCompletionRequest chatCompletionRequest = OpenAiApi.ChatCompletionRequest.Builder
+				.builder(chatCompletionMessages, this.model)
+				.withTemperature(temperatureToUse)
+				.withMaxTokens(maxTokensToUse)
+				.withPresencePenalty(presencePenaltyToUse)
+				.build();
+
 			ResponseEntity<ChatCompletion> completionEntity = this.openAiApi
-				.chatCompletionEntity(new OpenAiApi.ChatCompletionRequest(chatCompletionMessages, this.model,
-						this.temperature.floatValue()));
+				.chatCompletionEntity(chatCompletionRequest);
 
 			var chatCompletion = completionEntity.getBody();
 			if (chatCompletion == null) {
