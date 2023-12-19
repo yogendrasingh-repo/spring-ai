@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.ai.client;
+package org.springframework.ai.chat;
 
 import org.springframework.ai.prompt.Prompt;
 import org.springframework.ai.prompt.messages.UserMessage;
@@ -27,6 +27,6 @@ public interface ChatClient {
 		return generate(prompt).getGeneration().getContent();
 	}
 
-	AiResponse generate(Prompt prompt);
+	ChatResponse generate(Prompt prompt);
 
 }

@@ -18,16 +18,16 @@ package org.springframework.ai.bedrock.llama2;
 
 import java.util.List;
 
+import org.springframework.ai.chat.ChatResponse;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.bedrock.MessageToPromptConverter;
 import org.springframework.ai.bedrock.llama2.api.Llama2ChatBedrockApi;
 import org.springframework.ai.bedrock.llama2.api.Llama2ChatBedrockApi.Llama2ChatRequest;
 import org.springframework.ai.bedrock.llama2.api.Llama2ChatBedrockApi.Llama2ChatResponse;
-import org.springframework.ai.client.ChatClient;
-import org.springframework.ai.client.AiResponse;
-import org.springframework.ai.client.AiStreamClient;
-import org.springframework.ai.client.Generation;
+import org.springframework.ai.chat.ChatClient;
+import org.springframework.ai.chat.AiStreamClient;
+import org.springframework.ai.chat.Generation;
 import org.springframework.ai.metadata.ChoiceMetadata;
 import org.springframework.ai.metadata.Usage;
 import org.springframework.ai.prompt.Prompt;
@@ -68,7 +68,7 @@ public class BedrockLlama2ChatClient implements ChatClient, AiStreamClient {
 	}
 
 	@Override
-	public AiResponse generate(Prompt prompt) {
+	public ChatResponse generate(Prompt prompt) {
 		final String promptValue = MessageToPromptConverter.create().toPrompt(prompt.getMessages());
 
 		var request = Llama2ChatRequest.builder(promptValue)
@@ -79,12 +79,12 @@ public class BedrockLlama2ChatClient implements ChatClient, AiStreamClient {
 
 		Llama2ChatResponse response = this.chatApi.chatCompletion(request);
 
-		return new AiResponse(List.of(new Generation(response.generation())
+		return new ChatResponse(List.of(new Generation(response.generation())
 			.withChoiceMetadata(ChoiceMetadata.from(response.stopReason().name(), extractUsage(response)))));
 	}
 
 	@Override
-	public Flux<AiResponse> generateStream(Prompt prompt) {
+	public Flux<ChatResponse> generateStream(Prompt prompt) {
 
 		final String promptValue = MessageToPromptConverter.create().toPrompt(prompt.getMessages());
 
@@ -98,7 +98,7 @@ public class BedrockLlama2ChatClient implements ChatClient, AiStreamClient {
 
 		return fluxResponse.map(response -> {
 			String stopReason = response.stopReason() != null ? response.stopReason().name() : null;
-			return new AiResponse(List.of(new Generation(response.generation())
+			return new ChatResponse(List.of(new Generation(response.generation())
 				.withChoiceMetadata(ChoiceMetadata.from(stopReason, extractUsage(response)))));
 		});
 	}

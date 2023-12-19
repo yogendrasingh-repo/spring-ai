@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.ai.client;
+package org.springframework.ai.chat;
 
 import reactor.core.publisher.Flux;
 
@@ -23,6 +23,6 @@ import org.springframework.ai.prompt.Prompt;
 @FunctionalInterface
 public interface AiStreamClient {
 
-	public Flux<AiResponse> generateStream(Prompt prompt);
+	public Flux<ChatResponse> generateStream(Prompt prompt);
 
 }

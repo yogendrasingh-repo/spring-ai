@@ -6,9 +6,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.ai.client.ChatClient;
-import org.springframework.ai.client.AiResponse;
-import org.springframework.ai.client.AiStreamClient;
+import org.springframework.ai.chat.ChatClient;
+import org.springframework.ai.chat.ChatResponse;
+import org.springframework.ai.chat.AiStreamClient;
 import org.springframework.ai.prompt.Prompt;
 import org.springframework.ai.prompt.PromptTemplate;
 import org.springframework.ai.prompt.messages.Message;
@@ -42,7 +42,7 @@ public abstract class AbstractIT {
 	@Value("classpath:/prompts/eval/user-evaluator-message.st")
 	protected Resource userEvaluatorResource;
 
-	protected void evaluateQuestionAndAnswer(String question, AiResponse response, boolean factBased) {
+	protected void evaluateQuestionAndAnswer(String question, ChatResponse response, boolean factBased) {
 		assertThat(response).isNotNull();
 		String answer = response.getGeneration().getContent();
 		logger.info("Question: " + question);

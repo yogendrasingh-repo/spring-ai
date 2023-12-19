@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.ai.client;
+package org.springframework.ai.chat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +33,7 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
+import org.mockito.Mockito;
 import org.springframework.ai.prompt.Prompt;
 
 /**
@@ -49,9 +50,9 @@ class AiClientTests {
 		String userMessage = "Zero Wing";
 		String responseMessage = "All your bases are belong to us";
 
-		ChatClient mockClient = mock(ChatClient.class);
+		ChatClient mockClient = Mockito.mock(ChatClient.class);
 		Generation generation = spy(new Generation(responseMessage));
-		AiResponse response = spy(new AiResponse(Collections.singletonList(generation)));
+		ChatResponse response = spy(new ChatResponse(Collections.singletonList(generation)));
 
 		doCallRealMethod().when(mockClient).generate(anyString());
 
