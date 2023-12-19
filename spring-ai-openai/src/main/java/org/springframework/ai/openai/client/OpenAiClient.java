@@ -26,7 +26,7 @@ import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
 import reactor.core.publisher.Flux;
 
-import org.springframework.ai.chat.AiStreamClient;
+import org.springframework.ai.chat.StreamingChatClient;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.metadata.ChoiceMetadata;
 import org.springframework.ai.metadata.RateLimit;
@@ -52,10 +52,10 @@ import org.springframework.util.Assert;
  * @author Josh Long
  * @author Jemin Huh
  * @see ChatClient
- * @see AiStreamClient
+ * @see StreamingChatClient
  * @see OpenAiApi
  */
-public class OpenAiClient implements ChatClient, AiStreamClient {
+public class OpenAiClient implements ChatClient, StreamingChatClient {
 
 	private Double temperature = 0.7;
 

@@ -21,7 +21,7 @@ import reactor.core.publisher.Flux;
 import org.springframework.ai.prompt.Prompt;
 
 @FunctionalInterface
-public interface AiStreamClient {
+public interface StreamingChatClient {
 
 	public Flux<ChatResponse> generateStream(Prompt prompt);
 

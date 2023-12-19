@@ -30,7 +30,7 @@ import org.springframework.ai.bedrock.cohere.api.CohereChatBedrockApi.CohereChat
 import org.springframework.ai.bedrock.cohere.api.CohereChatBedrockApi.CohereChatRequest.ReturnLikelihoods;
 import org.springframework.ai.bedrock.cohere.api.CohereChatBedrockApi.CohereChatRequest.Truncate;
 import org.springframework.ai.chat.ChatClient;
-import org.springframework.ai.chat.AiStreamClient;
+import org.springframework.ai.chat.StreamingChatClient;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.metadata.ChoiceMetadata;
 import org.springframework.ai.metadata.Usage;
@@ -40,7 +40,7 @@ import org.springframework.ai.prompt.Prompt;
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public class BedrockCohereChatClient implements ChatClient, AiStreamClient {
+public class BedrockCohereChatClient implements ChatClient, StreamingChatClient {
 
 	private final CohereChatBedrockApi chatApi;
 

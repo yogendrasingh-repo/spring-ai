@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.chat.AiStreamClient;
+import org.springframework.ai.chat.StreamingChatClient;
 import org.springframework.ai.prompt.Prompt;
 import org.springframework.ai.prompt.PromptTemplate;
 import org.springframework.ai.prompt.messages.Message;
@@ -28,7 +28,7 @@ public abstract class AbstractIT {
 	protected ChatClient openAiClient;
 
 	@Autowired
-	protected AiStreamClient openAiStreamClient;
+	protected StreamingChatClient openStreamingChatClient;
 
 	@Value("classpath:/prompts/eval/qa-evaluator-accurate-answer.st")
 	protected Resource qaEvaluatorAccurateAnswerResource;

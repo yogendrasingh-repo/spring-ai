@@ -27,7 +27,7 @@ import org.springframework.ai.bedrock.titan.api.TitanChatBedrockApi.TitanChatReq
 import org.springframework.ai.bedrock.titan.api.TitanChatBedrockApi.TitanChatResponse;
 import org.springframework.ai.bedrock.titan.api.TitanChatBedrockApi.TitanChatResponseChunk;
 import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.chat.AiStreamClient;
+import org.springframework.ai.chat.StreamingChatClient;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.metadata.ChoiceMetadata;
 import org.springframework.ai.metadata.Usage;
@@ -37,7 +37,7 @@ import org.springframework.ai.prompt.Prompt;
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public class BedrockTitanChatClient implements ChatClient, AiStreamClient {
+public class BedrockTitanChatClient implements ChatClient, StreamingChatClient {
 
 	private final TitanChatBedrockApi chatApi;
 

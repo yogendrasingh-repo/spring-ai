@@ -26,19 +26,20 @@ import org.springframework.ai.bedrock.llama2.api.Llama2ChatBedrockApi;
 import org.springframework.ai.bedrock.llama2.api.Llama2ChatBedrockApi.Llama2ChatRequest;
 import org.springframework.ai.bedrock.llama2.api.Llama2ChatBedrockApi.Llama2ChatResponse;
 import org.springframework.ai.chat.ChatClient;
-import org.springframework.ai.chat.AiStreamClient;
+import org.springframework.ai.chat.StreamingChatClient;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.metadata.ChoiceMetadata;
 import org.springframework.ai.metadata.Usage;
 import org.springframework.ai.prompt.Prompt;
 
 /**
- * Java {@link ChatClient} and {@link AiStreamClient} for the Bedrock Llama2 chat model.
+ * Java {@link ChatClient} and {@link StreamingChatClient} for the Bedrock Llama2 chat
+ * model.
  *
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public class BedrockLlama2ChatClient implements ChatClient, AiStreamClient {
+public class BedrockLlama2ChatClient implements ChatClient, StreamingChatClient {
 
 	private final Llama2ChatBedrockApi chatApi;
 
