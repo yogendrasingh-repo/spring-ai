@@ -42,7 +42,7 @@ class MyService {
 
         Prompt prompt = createPrompt(request);
 
-        AiResponse response = aiClient.generate(prompt)
+        ChatResponse response = chatClient.generate(prompt);
 
         // Process the AI response
 
