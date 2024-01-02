@@ -23,7 +23,9 @@ public enum MessageType {
 
 	SYSTEM("system"),
 
-	FUNCTION("function");
+	FUNCTION("function"),
+
+	TOOL("tool");
 
 	private final String value;
 
