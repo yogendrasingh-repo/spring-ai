@@ -52,7 +52,7 @@ public class OpenAiChatClientToolFunction4IT {
 
 			List<Message> messages = new ArrayList<>(List.of(userMessage));
 
-			ChatResponse response = chatClient.generateWithTools(new Prompt(messages).withToolCallback(
+			ChatResponse response = chatClient.generate(new Prompt(messages).withToolCallback(
 					new AbstractToolFunctionCallback<FakeWeatherService.Request, FakeWeatherService.Response>(
 							"getCurrentWeather", "Get the weather in location", FakeWeatherService.Request.class) {
 

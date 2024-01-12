@@ -110,13 +110,23 @@ public class OpenAiChatClient implements ChatClient, StreamingChatClient {
 
 		return this.retryTemplate.execute(ctx -> {
 
-			OpenAiApi.ChatCompletionRequest request2 = createRequest(prompt, false);
+			List<ChatCompletionMessage> promptChatCompletionMessages = prompt.getMessages().stream().map(m -> {
+				String content = m.getContent();
+				var role = ChatCompletionMessage.Role.valueOf(m.getMessageType().getValue());
+				String toolCallId = null;
+				List<ToolCall> toolCalls = null;
+				return new ChatCompletionMessage(content, role, null, toolCallId, toolCalls);
+			}).toList();
 
-			ResponseEntity<ChatCompletion> completionEntity = this.openAiApi.chatCompletionEntity(request2);
+			ChatCompletionRequest promptOptions = (prompt.getOptions() != null
+					&& prompt.getOptions() instanceof ChatCompletionRequest options) ? options : null;
+
+			ResponseEntity<ChatCompletion> completionEntity = this.chatCompletionWithTools(promptChatCompletionMessages,
+					promptOptions, prompt.getToolCallbacks());
 
 			var chatCompletion = completionEntity.getBody();
 			if (chatCompletion == null) {
-				logger.warn("No chat completion returned for request: {}", request2);
+				logger.warn("No chat completion returned for prompt: {}", prompt);
 				return new ChatResponse(List.of());
 			}
 
@@ -297,7 +307,7 @@ public class OpenAiChatClient implements ChatClient, StreamingChatClient {
 			promptToolCallbacks.stream().forEach(toolCallback -> this.withFunctionCallback(toolCallback));
 		}
 
-		OpenAiApi.ChatCompletionRequest request = createChatCompletionRequest(promptChatCompletionMessages,
+		OpenAiApi.ChatCompletionRequest request = this.createChatCompletionRequest(promptChatCompletionMessages,
 				promptOptions, false);
 
 		List<ChatCompletionMessage> conversationMessages = new ArrayList<>(request.messages());
@@ -309,9 +319,10 @@ public class OpenAiChatClient implements ChatClient, StreamingChatClient {
 			return chatCompletion;
 		}
 
+		// TODO: handle multiple choices response
 		ChatCompletionMessage responseMessage = chatCompletion.getBody().choices().get(0).message();
 
-		// extend conversation with assistant's reply.
+		// Add the assistant response to the message conversation history.
 		conversationMessages.add(responseMessage);
 
 		// Send the info for each function call and function response to the model.
@@ -326,6 +337,8 @@ public class OpenAiChatClient implements ChatClient, StreamingChatClient {
 			conversationMessages.add(new ChatCompletionMessage(functionResponse, Role.TOOL, null, toolCall.id(), null));
 		}
 
+		// Recursively call chatCompletionWithTools until the model doesn't call a
+		// functions anymore.
 		return chatCompletionWithTools(conversationMessages, promptOptions, promptToolCallbacks);
 	}
 

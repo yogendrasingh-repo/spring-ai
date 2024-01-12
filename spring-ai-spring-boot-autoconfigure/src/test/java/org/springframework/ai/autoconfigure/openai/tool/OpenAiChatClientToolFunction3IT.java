@@ -57,7 +57,7 @@ public class OpenAiChatClientToolFunction3IT {
 
 			List<Message> messages = new ArrayList<>(List.of(userMessage));
 
-			ChatResponse response = chatClient.generateWithTools(new Prompt(messages));
+			ChatResponse response = chatClient.generate(new Prompt(messages));
 
 			System.out.println(response.getGeneration().getContent());
 
