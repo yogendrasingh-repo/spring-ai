@@ -26,7 +26,7 @@ import org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration;
 import org.springframework.ai.autoconfigure.openai.tool.FakeWeatherService.Response;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.model.AbstractToolFunctionCallback;
-import org.springframework.ai.openai.client.OpenAiChatClient;
+import org.springframework.ai.openai.OpenAiChatClient;
 import org.springframework.ai.prompt.Prompt;
 import org.springframework.ai.prompt.messages.Message;
 import org.springframework.ai.prompt.messages.UserMessage;
