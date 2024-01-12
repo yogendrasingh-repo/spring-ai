@@ -76,7 +76,9 @@ public abstract class AbstractToolFunctionCallback<I, O> implements ToolFunction
 
 	abstract public O doCall(I request);
 
-	abstract public String doResponseToString(O response);
+	public String doResponseToString(O response) {
+		return response.toString();
+	}
 
 	private <T> T fromJson(String json, Class<T> targetClass) {
 		try {

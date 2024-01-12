@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.StreamingChatClient;
 import org.springframework.ai.metadata.ChoiceMetadata;
 import org.springframework.ai.metadata.RateLimit;
+import org.springframework.ai.model.AbstractToolFunctionCallback;
 import org.springframework.ai.model.ModelOptionsUtils;
 import org.springframework.ai.model.ToolFunctionCallback;
 import org.springframework.ai.openai.api.ChatCompletionRequestBuilder;
@@ -295,7 +297,19 @@ public class OpenAiChatClient implements ChatClient, StreamingChatClient {
 		return new ChatResponse(generations,
 				OpenAiGenerationMetadata.from(completionEntity.getBody()).withRateLimit(rateLimits))
 			.withRawResponse(chatCompletion);
+	}
 
+	public <T> OpenAiChatClient withFunctionCallback(String functionName, String description, Class<T> inputType,
+			Function<T, String> functionToCall) {
+
+		var toolCallBack = new AbstractToolFunctionCallback<T, String>(functionName, description, inputType) {
+			@Override
+			public String doCall(T request) {
+				return functionToCall.apply(request);
+			}
+		};
+
+		return this.withFunctionCallback(toolCallBack);
 	}
 
 	private ResponseEntity<ChatCompletion> chatCompletionWithTools(
