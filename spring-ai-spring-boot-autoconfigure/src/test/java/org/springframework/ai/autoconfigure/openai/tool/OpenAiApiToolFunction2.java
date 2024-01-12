@@ -18,23 +18,19 @@ package org.springframework.ai.autoconfigure.openai.tool;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.GroupedFlux;
 
-import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.chat.Generation;
-import org.springframework.ai.metadata.ChoiceMetadata;
 import org.springframework.ai.model.ModelOptionsUtils;
 import org.springframework.ai.openai.api.ChatCompletionRequestBuilder;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionChunk;
-import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionChunk.ChunkChoice;
+import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage;
+import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage.ChatCompletionFunction;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage.Role;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage.ToolCall;
 import org.springframework.ai.openai.api.OpenAiApi.FunctionTool.Type;
@@ -47,6 +43,27 @@ import org.springframework.http.ResponseEntity;
  * @author Christian Tzolov
  */
 public class OpenAiApiToolFunction2 {
+
+	public static class Pair2 {
+
+		private final String key;
+
+		private final ChatCompletionMessage value;
+
+		public Pair2(String key, ChatCompletionMessage value) {
+			this.key = key;
+			this.value = value;
+		}
+
+		public String key() {
+			return key;
+		}
+
+		public ChatCompletionMessage value() {
+			return value;
+		}
+
+	}
 
 	public static void main(String[] args) {
 
@@ -96,57 +113,70 @@ public class OpenAiApiToolFunction2 {
 
 		Flux<ChatCompletionChunk> completionChunks = completionApi.chatCompletionStream(chatCompletionRequest);
 
-		Flux<GroupedFlux<String, ChatCompletionChunk>> groupBy = completionChunks
-			.groupBy(new Function<ChatCompletionChunk, String>() {
-				@Override
-				public String apply(ChatCompletionChunk chunk) {
-					String keySuffix = chunk.choices()
-						.stream()
-						.map(choice -> (choice.finishReason() != null) ? choice.finishReason().toString() : "NULL")
-						.collect(Collectors.joining(":"));
+		///
+		final AtomicReference<String> keyHolder = new AtomicReference<>();
 
-					return chunk.id() + "-" + keySuffix;
+		Flux<List<Pair2>> b1 = completionChunks.map(chunk -> {
+			ChunkChoice choice = chunk.choices().iterator().next();
+
+			String key = "" + choice.index();
+
+			if (choice.delta().toolCalls() != null) {
+				ToolCall toolCall = choice.delta().toolCalls().iterator().next();
+				if (toolCall.id() != null) {
+					keyHolder.set(toolCall.id());
 				}
-			});
-
-		Flux<List<ChatCompletionChunk>> groupBy2 = groupBy.flatMap((g) -> g.collectList());
-
-		List<List<ChatCompletionChunk>> b = groupBy2.collectList().block();
-
-		AtomicBoolean toolCallFlag = new AtomicBoolean(false);
-		Flux<List<ChatCompletionChunk>> bla = completionChunks.map(chunk -> {
-			if (chunk.choices().stream().anyMatch(choice -> choice.delta().toolCalls() != null)) {
-				System.out.println(">>>>>> TRUE toolCalls() != null");
-				toolCallFlag.set(true);
 			}
-			else if (chunk.choices().stream().anyMatch(choice -> choice.finishReason() != null)) {
-				System.out.println(">>>>>> FALSE choice.finishReason() != null");
-				toolCallFlag.set(false);
+
+			if (keyHolder.get() != null) {
+				key = keyHolder.get();
 			}
-			else {
-				System.out.println(">>>>>> BLA");
+
+			return new Pair2(key, choice.delta());
+		}).groupBy(new Function<Pair2, String>() {
+			@Override
+			public String apply(Pair2 pair) {
+				return pair.key();
 			}
-			return chunk;
-		})
-			.bufferUntil(chunk -> !toolCallFlag.get()
-					&& chunk.choices().stream().anyMatch(choice -> choice.finishReason() != null));
+		}).flatMap(g -> g.collectList());
 
-		bla.map(cs -> {
-			System.out.println(">>>>>> " + cs + "\n\n");
-			return cs;
-		}).collectList().block();
+		Flux<ChatCompletionMessage> b11 = b1.map(pairs -> {
+			if (pairs.size() == 1) {
+				Pair2 pair = pairs.get(0);
+				ChatCompletionMessage message1 = pair.value();
+				return message1;
+			}
+			else if (pairs.size() > 1) {
+				String functionName = "";
+				String toolId = "";
+				String arguments = "";
+				for (Pair2 pair : pairs) {
+					ChatCompletionMessage message1 = pair.value();
+					if (message1.toolCalls() != null) {
+						for (ToolCall toolCall : message1.toolCalls()) {
 
-		List<List<ChunkChoice>> choices2 = completionChunks.map(chunk -> {
-			String chunkId = chunk.id();
-			System.out.println(chunk);
-			List<ChunkChoice> choices = chunk.choices().stream().map(choice -> {
+							if (toolCall.function().name() != null) {
+								functionName = toolCall.function().name();
+							}
+							if (toolCall.id() != null) {
+								toolId = toolCall.id();
+							}
+							if (toolCall.function().arguments() != null) {
+								arguments = arguments + toolCall.function().arguments();
+							}
+						}
+					}
+				}
+				ChatCompletionFunction function = new ChatCompletionFunction(functionName, arguments);
 
-				// System.out.println(choice.delta());
-				return choice;
+				return new ChatCompletionMessage(null, Role.assistant, null, null,
+						List.of(new ToolCall(toolId, "function", function)));
+			}
 
-			}).toList();
-			return choices;
-		}).collectList().block();
+			return new ChatCompletionMessage(null, Role.assistant, null, null, null);
+		});
+
+		List<ChatCompletionMessage> b2 = b11.collectList().block();
 
 		completionChunks.map(chunk -> {
 			String chunkId = chunk.id();

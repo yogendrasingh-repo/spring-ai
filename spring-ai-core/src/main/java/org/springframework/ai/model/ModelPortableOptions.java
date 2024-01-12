@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2023 the original author or authors.
+ * Copyright 2024-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,20 @@
 
 package org.springframework.ai.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
- * Marker interface for prompt options.
+ * All models should implement the portable options interface.
  *
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public interface ModelOptions {
+public interface ModelPortableOptions extends ModelOptions {
+
+	@JsonIgnore
+	public String getPortableModel();
+
+	@JsonIgnore
+	public Double getPortableTemperature();
 
 }

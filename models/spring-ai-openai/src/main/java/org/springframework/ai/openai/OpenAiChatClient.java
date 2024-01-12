@@ -232,8 +232,8 @@ public class OpenAiChatClient implements ChatClient, StreamingChatClient {
 		// If the te
 		var temperature = request.temperature();
 		if (temperature == null) {
-			if (request.getPortableOptions().getTemperature() != null) {
-				temperature = request.getPortableOptions().getTemperature().floatValue();
+			if (request.getPortableTemperature() != null) {
+				temperature = request.getPortableTemperature().floatValue();
 			}
 		}
 
@@ -385,8 +385,8 @@ public class OpenAiChatClient implements ChatClient, StreamingChatClient {
 		// If the te
 		var temperature = request.temperature();
 		if (temperature == null) {
-			if (request.getPortableOptions().getTemperature() != null) {
-				temperature = request.getPortableOptions().getTemperature().floatValue();
+			if (request.getPortableTemperature() != null) {
+				temperature = request.getPortableTemperature().floatValue();
 			}
 		}
 

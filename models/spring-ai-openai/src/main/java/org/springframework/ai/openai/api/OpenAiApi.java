@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.ai.model.ModelOptions;
+import org.springframework.ai.model.ModelPortableOptions;
 import org.springframework.ai.model.RawResponse;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.core.ParameterizedTypeReference;
@@ -291,20 +291,15 @@ public class OpenAiApi {
 			@JsonProperty("top_p") Float topP,
 			@JsonProperty("tools") List<FunctionTool> tools,
 			@JsonProperty("tool_choice") ToolChoice toolChoice,
-			@JsonProperty("user") String user) implements ModelOptions, ModelOptions.PortableOptions {
+			@JsonProperty("user") String user) implements ModelPortableOptions {
 
 			@Override
-			public PortableOptions getPortableOptions() {
-				return this;
-			}
-
-			@Override
-			public Double getTemperature() {
+			public Double getPortableTemperature() {
 				return (this.temperature() != null ? this.temperature().doubleValue() : null);
 			}
 
 			@Override
-			public String getModel() {
+			public String getPortableModel() {
 				return this.model();
 			}
 	}
