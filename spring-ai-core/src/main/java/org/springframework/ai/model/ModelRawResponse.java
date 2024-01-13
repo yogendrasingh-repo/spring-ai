@@ -22,6 +22,6 @@ package org.springframework.ai.model;
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public interface RawResponse {
+public interface ModelRawResponse {
 
 }

@@ -32,7 +32,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.ai.model.ModelPortableOptions;
-import org.springframework.ai.model.RawResponse;
+import org.springframework.ai.model.ModelRawResponse;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -294,12 +294,12 @@ public class OpenAiApi {
 			@JsonProperty("user") String user) implements ModelPortableOptions {
 
 			@Override
-			public Double getPortableTemperature() {
+			public Double getTemperature() {
 				return (this.temperature() != null ? this.temperature().doubleValue() : null);
 			}
 
 			@Override
-			public String getPortableModel() {
+			public String getModel() {
 				return this.model();
 			}
 	}
@@ -469,7 +469,7 @@ public class OpenAiApi {
 			@JsonProperty("model") String model,
 			@JsonProperty("system_fingerprint") String systemFingerprint,
 			@JsonProperty("object") String object,
-			@JsonProperty("usage") Usage usage) implements RawResponse {
+			@JsonProperty("usage") Usage usage) implements ModelRawResponse {
 
 		/**
 		 * Chat completion choice.
@@ -570,7 +570,7 @@ public class OpenAiApi {
 			@JsonProperty("created") Long created,
 			@JsonProperty("model") String model,
 			@JsonProperty("system_fingerprint") String systemFingerprint,
-			@JsonProperty("object") String object) implements RawResponse {
+			@JsonProperty("object") String object) implements ModelRawResponse {
 
 		/**
 		 * Chat completion choice.

@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.springframework.ai.metadata.GenerationMetadata;
 import org.springframework.ai.metadata.PromptMetadata;
-import org.springframework.ai.model.RawResponse;
+import org.springframework.ai.model.ModelRawResponse;
 import org.springframework.lang.Nullable;
 
 /**
@@ -41,7 +41,7 @@ public class ChatResponse {
 	 * Raw response content. Depends on the AI provider this could be null. If not null
 	 * you would have to cast it to the provider's specific response type.
 	 */
-	private RawResponse rawResponse;
+	private ModelRawResponse rawResponse;
 
 	/**
 	 * Common AI provider metadata returned in an AI response.
@@ -117,12 +117,12 @@ public class ChatResponse {
 		return this;
 	}
 
-	public ChatResponse withRawResponse(RawResponse rawResponse) {
+	public ChatResponse withRawResponse(ModelRawResponse rawResponse) {
 		this.rawResponse = rawResponse;
 		return this;
 	}
 
-	public RawResponse getRawResponse() {
+	public ModelRawResponse getRawResponse() {
 		return rawResponse;
 	}
 

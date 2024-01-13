@@ -27,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public interface ModelPortableOptions extends ModelOptions {
 
 	@JsonIgnore
-	public String getPortableModel();
+	public String getModel();
 
 	@JsonIgnore
-	public Double getPortableTemperature();
+	public Double getTemperature();
 
 }
