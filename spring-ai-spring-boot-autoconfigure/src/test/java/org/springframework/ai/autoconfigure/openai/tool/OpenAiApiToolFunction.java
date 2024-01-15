@@ -45,9 +45,9 @@ public class OpenAiApiToolFunction {
 
 		// Step 1: send the conversation and available functions to the model
 		var message = new ChatCompletionMessage("What's the weather like in San Francisco, Tokyo, and Paris?",
-				Role.user);
+				Role.USER);
 
-		var functionTool = new OpenAiApi.FunctionTool(Type.function, new OpenAiApi.FunctionTool.Function(
+		var functionTool = new OpenAiApi.FunctionTool(Type.FUNCTION, new OpenAiApi.FunctionTool.Function(
 				"Get the weather in location", "getCurrentWeather", OpenAiApi.parseJson("""
 						{
 							"type": "object",
@@ -103,7 +103,7 @@ public class OpenAiApiToolFunction {
 
 					// extend conversation with function response.
 					messages.add(new ChatCompletionMessage("" + weatherResponse.temp() + weatherRequest.unit(),
-							Role.tool, null, toolCall.id(), null));
+							Role.TOOL, null, toolCall.id(), null));
 				}
 			}
 

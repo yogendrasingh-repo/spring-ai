@@ -34,9 +34,9 @@ public class OpenAiChatProperties extends OpenAiParentProperties {
 	private String model = DEFAULT_CHAT_MODEL;
 
 	private ChatCompletionRequest options = ChatCompletionRequestBuilder.builder()
-			.withModel(DEFAULT_CHAT_MODEL)
-			.withTemperature(DEFAULT_TEMPERATURE)
-			.build();
+		.withModel(DEFAULT_CHAT_MODEL)
+		.withTemperature(DEFAULT_TEMPERATURE)
+		.build();
 
 	public String getModel() {
 		return model;
@@ -57,6 +57,10 @@ public class OpenAiChatProperties extends OpenAiParentProperties {
 
 	public ChatCompletionRequest getOptions() {
 		return options;
+	}
+
+	public void setOptions(ChatCompletionRequest options) {
+		this.options = options;
 	}
 
 }

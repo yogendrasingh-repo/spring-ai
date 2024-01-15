@@ -47,20 +47,20 @@ public class OpenAiPropertiesTests {
 				"spring.ai.openai.chat.model=MODEL_XYZ",
 				"spring.ai.openai.chat.temperature=0.55")
 				// @formatter:on
-				.withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
-				.run(context -> {
-					var chatProperties = context.getBean(OpenAiChatProperties.class);
-					var connectionProperties = context.getBean(OpenAiConnectionProperties.class);
+			.withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
+			.run(context -> {
+				var chatProperties = context.getBean(OpenAiChatProperties.class);
+				var connectionProperties = context.getBean(OpenAiConnectionProperties.class);
 
-					assertThat(connectionProperties.getApiKey()).isEqualTo("abc123");
-					assertThat(connectionProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL");
+				assertThat(connectionProperties.getApiKey()).isEqualTo("abc123");
+				assertThat(connectionProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL");
 
-					assertThat(chatProperties.getApiKey()).isNull();
-					assertThat(chatProperties.getBaseUrl()).isNull();
+				assertThat(chatProperties.getApiKey()).isNull();
+				assertThat(chatProperties.getBaseUrl()).isNull();
 
-					assertThat(chatProperties.getModel()).isEqualTo("MODEL_XYZ");
-					assertThat(chatProperties.getTemperature()).isEqualTo(0.55);
-				});
+				assertThat(chatProperties.getModel()).isEqualTo("MODEL_XYZ");
+				assertThat(chatProperties.getTemperature()).isEqualTo(0.55);
+			});
 	}
 
 	@Test
@@ -75,20 +75,20 @@ public class OpenAiPropertiesTests {
 				"spring.ai.openai.chat.model=MODEL_XYZ",
 				"spring.ai.openai.chat.temperature=0.55")
 				// @formatter:on
-				.withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
-				.run(context -> {
-					var chatProperties = context.getBean(OpenAiChatProperties.class);
-					var connectionProperties = context.getBean(OpenAiConnectionProperties.class);
+			.withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
+			.run(context -> {
+				var chatProperties = context.getBean(OpenAiChatProperties.class);
+				var connectionProperties = context.getBean(OpenAiConnectionProperties.class);
 
-					assertThat(connectionProperties.getApiKey()).isEqualTo("abc123");
-					assertThat(connectionProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL");
+				assertThat(connectionProperties.getApiKey()).isEqualTo("abc123");
+				assertThat(connectionProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL");
 
-					assertThat(chatProperties.getApiKey()).isEqualTo("456");
-					assertThat(chatProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL2");
+				assertThat(chatProperties.getApiKey()).isEqualTo("456");
+				assertThat(chatProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL2");
 
-					assertThat(chatProperties.getModel()).isEqualTo("MODEL_XYZ");
-					assertThat(chatProperties.getTemperature()).isEqualTo(0.55);
-				});
+				assertThat(chatProperties.getModel()).isEqualTo("MODEL_XYZ");
+				assertThat(chatProperties.getTemperature()).isEqualTo(0.55);
+			});
 	}
 
 	@Test
@@ -100,19 +100,19 @@ public class OpenAiPropertiesTests {
 				"spring.ai.openai.api-key=abc123",
 				"spring.ai.openai.embedding.model=MODEL_XYZ")
 				// @formatter:on
-				.withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
-				.run(context -> {
-					var embeddingProperties = context.getBean(OpenAiEmbeddingProperties.class);
-					var connectionProperties = context.getBean(OpenAiConnectionProperties.class);
+			.withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
+			.run(context -> {
+				var embeddingProperties = context.getBean(OpenAiEmbeddingProperties.class);
+				var connectionProperties = context.getBean(OpenAiConnectionProperties.class);
 
-					assertThat(connectionProperties.getApiKey()).isEqualTo("abc123");
-					assertThat(connectionProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL");
+				assertThat(connectionProperties.getApiKey()).isEqualTo("abc123");
+				assertThat(connectionProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL");
 
-					assertThat(embeddingProperties.getApiKey()).isNull();
-					assertThat(embeddingProperties.getBaseUrl()).isNull();
+				assertThat(embeddingProperties.getApiKey()).isNull();
+				assertThat(embeddingProperties.getBaseUrl()).isNull();
 
-					assertThat(embeddingProperties.getModel()).isEqualTo("MODEL_XYZ");
-				});
+				assertThat(embeddingProperties.getModel()).isEqualTo("MODEL_XYZ");
+			});
 	}
 
 	@Test
@@ -126,20 +126,20 @@ public class OpenAiPropertiesTests {
 				"spring.ai.openai.embedding.api-key=456",
 				"spring.ai.openai.embedding.model=MODEL_XYZ")
 				// @formatter:on
-				.withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
-				.run(context -> {
-					var embeddingProperties = context.getBean(OpenAiEmbeddingProperties.class);
-					var connectionProperties = context.getBean(OpenAiConnectionProperties.class);
+			.withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
+			.run(context -> {
+				var embeddingProperties = context.getBean(OpenAiEmbeddingProperties.class);
+				var connectionProperties = context.getBean(OpenAiConnectionProperties.class);
 
-					assertThat(connectionProperties.getApiKey()).isEqualTo("abc123");
-					assertThat(connectionProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL");
+				assertThat(connectionProperties.getApiKey()).isEqualTo("abc123");
+				assertThat(connectionProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL");
 
-					assertThat(embeddingProperties.getApiKey()).isEqualTo("456");
-					assertThat(embeddingProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL2");
+				assertThat(embeddingProperties.getApiKey()).isEqualTo("456");
+				assertThat(embeddingProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL2");
 
-					assertThat(embeddingProperties.getModel()).isEqualTo("MODEL_XYZ");
+				assertThat(embeddingProperties.getModel()).isEqualTo("MODEL_XYZ");
 
-				});
+			});
 	}
 
 	@Test
@@ -192,43 +192,44 @@ public class OpenAiPropertiesTests {
 					"spring.ai.openai.chat.options.user=userXYZ"
 				)
 			// @formatter:on
-				.withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
-				.run(context -> {
-					var chatProperties = context.getBean(OpenAiChatProperties.class);
-					var connectionProperties = context.getBean(OpenAiConnectionProperties.class);
-					var embeddingProperties = context.getBean(OpenAiEmbeddingProperties.class);
+			.withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
+			.run(context -> {
+				var chatProperties = context.getBean(OpenAiChatProperties.class);
+				var connectionProperties = context.getBean(OpenAiConnectionProperties.class);
+				var embeddingProperties = context.getBean(OpenAiEmbeddingProperties.class);
 
-					assertThat(connectionProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL");
-					assertThat(connectionProperties.getApiKey()).isEqualTo("API_KEY");
+				assertThat(connectionProperties.getBaseUrl()).isEqualTo("TEST_BASE_URL");
+				assertThat(connectionProperties.getApiKey()).isEqualTo("API_KEY");
 
-					assertThat(embeddingProperties.getModel()).isEqualTo("text-embedding-ada-002");
+				assertThat(embeddingProperties.getModel()).isEqualTo("text-embedding-ada-002");
 
-					assertThat(chatProperties.getOptions().model()).isEqualTo("MODEL_XYZ");
-					assertThat(chatProperties.getOptions().frequencyPenalty()).isEqualTo(-1.5f);
-					assertThat(chatProperties.getOptions().logitBias()).containsKey("myTokenId");
-					assertThat(chatProperties.getOptions().logitBias().get("myTokenId")).isEqualTo(-5);
-					assertThat(chatProperties.getOptions().maxTokens()).isEqualTo(123);
-					assertThat(chatProperties.getOptions().n()).isEqualTo(10);
-					assertThat(chatProperties.getOptions().presencePenalty()).isEqualTo(0);
-					assertThat(chatProperties.getOptions().responseFormat()).isEqualTo(new ResponseFormat("json"));
-					assertThat(chatProperties.getOptions().seed()).isEqualTo(66);
-					assertThat(chatProperties.getOptions().stop()).contains("boza", "koza");
-					assertThat(chatProperties.getOptions().stream()).isTrue();
-					assertThat(chatProperties.getOptions().temperature()).isEqualTo(0.55f);
-					assertThat(chatProperties.getOptions().topP()).isEqualTo(0.56f);
+				assertThat(chatProperties.getOptions().model()).isEqualTo("MODEL_XYZ");
+				assertThat(chatProperties.getOptions().frequencyPenalty()).isEqualTo(-1.5f);
+				assertThat(chatProperties.getOptions().logitBias()).containsKey("myTokenId");
+				assertThat(chatProperties.getOptions().logitBias().get("myTokenId")).isEqualTo(-5);
+				assertThat(chatProperties.getOptions().maxTokens()).isEqualTo(123);
+				assertThat(chatProperties.getOptions().n()).isEqualTo(10);
+				assertThat(chatProperties.getOptions().presencePenalty()).isEqualTo(0);
+				assertThat(chatProperties.getOptions().responseFormat()).isEqualTo(new ResponseFormat("json"));
+				assertThat(chatProperties.getOptions().seed()).isEqualTo(66);
+				assertThat(chatProperties.getOptions().stop()).contains("boza", "koza");
+				assertThat(chatProperties.getOptions().stream()).isTrue();
+				assertThat(chatProperties.getOptions().temperature()).isEqualTo(0.55f);
+				assertThat(chatProperties.getOptions().topP()).isEqualTo(0.56f);
 
-					assertThat(chatProperties.getOptions().toolChoice())
-							.isEqualTo(new ToolChoice("function", Map.of("name", "toolChoiceFunctionName")));
-					assertThat(chatProperties.getOptions().user()).isEqualTo("userXYZ");
+				assertThat(chatProperties.getOptions().toolChoice())
+					.isEqualTo(new ToolChoice("function", Map.of("name", "toolChoiceFunctionName")));
+				assertThat(chatProperties.getOptions().user()).isEqualTo("userXYZ");
 
-					assertThat(chatProperties.getOptions().tools()).hasSize(1);
-					var tool = chatProperties.getOptions().tools().get(0);
-					assertThat(tool.type()).isEqualTo(Type.FUNCTION);
-					var function = tool.function();
-					assertThat(function.name()).isEqualTo("myFunction1");
-					assertThat(function.description()).isEqualTo("function description");
-					assertThat(function.parameters()).isNotEmpty();
+				assertThat(chatProperties.getOptions().tools()).hasSize(1);
+				var tool = chatProperties.getOptions().tools().get(0);
+				assertThat(tool.type()).isEqualTo(Type.FUNCTION);
+				var function = tool.function();
+				assertThat(function.name()).isEqualTo("myFunction1");
+				assertThat(function.description()).isEqualTo("function description");
+				assertThat(function.parameters()).isNotEmpty();
 
-				});
+			});
 	}
+
 }

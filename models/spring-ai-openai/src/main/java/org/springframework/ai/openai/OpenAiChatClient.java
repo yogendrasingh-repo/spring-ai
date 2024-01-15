@@ -114,7 +114,7 @@ public class OpenAiChatClient implements ChatClient, StreamingChatClient {
 
 			List<ChatCompletionMessage> promptChatCompletionMessages = prompt.getMessages().stream().map(m -> {
 				String content = m.getContent();
-				var role = ChatCompletionMessage.Role.valueOf(m.getMessageType().getValue());
+				var role = ChatCompletionMessage.Role.valueOf(m.getMessageType().name());
 				String toolCallId = null;
 				List<ToolCall> toolCalls = null;
 				return new ChatCompletionMessage(content, role, null, toolCallId, toolCalls);
