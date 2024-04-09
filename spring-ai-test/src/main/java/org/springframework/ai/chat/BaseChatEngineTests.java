@@ -23,9 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 
-import org.springframework.ai.chat.engine.ChatEngine;
-import org.springframework.ai.chat.engine.EngineRequest;
-import org.springframework.ai.chat.engine.EngineResponse;
+import org.springframework.ai.chat.engine1.ChatEngine;
+import org.springframework.ai.chat.engine1.EngineRequest;
+import org.springframework.ai.chat.engine1.EngineResponse;
 import org.springframework.ai.chat.history.ChatHistory;
 import org.springframework.ai.chat.history.ChatHistoryRetriever;
 import org.springframework.ai.chat.history.InMemoryChatHistory;

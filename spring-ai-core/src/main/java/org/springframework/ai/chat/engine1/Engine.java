@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.ai.chat.engine;
+package org.springframework.ai.chat.engine1;
 
 /**
  * @author Christian Tzolov
