@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.ai.chat.engine;
+package org.springframework.ai.chat.engine1;
 
 import org.springframework.ai.chat.prompt.Prompt;
 
@@ -25,6 +25,9 @@ public class EngineRequest {
 
 	private final String conversationId;
 
+	// List<RetrieverRequests> retrieverRequests
+	// RetrieverRequest
+	// String requestType
 	private final Prompt prompt;
 
 	public EngineRequest(String conversationId, Prompt prompt) {
