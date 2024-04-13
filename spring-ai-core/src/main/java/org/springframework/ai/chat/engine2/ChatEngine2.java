@@ -14,7 +14,7 @@ public class ChatEngine2 implements Engine2 {
 
 	private Generator generator;
 
-	private EngineListener engineListener;
+	private EngineListener engineListener;  //TODO
 
 	public ChatEngine2(List<Retriever> retrievers, List<Augmentor> augmentors, Generator generator,
 			EngineListener engineListener) {
@@ -83,7 +83,7 @@ public class ChatEngine2 implements Engine2 {
 		return lastResponse;
 	}
 
-	private GenerateResponse doGeneration(GenerateRequest generateRequest) {
+	protected GenerateResponse doGeneration(GenerateRequest generateRequest) {
 		return this.generator.generate(generateRequest);
 	}
 
