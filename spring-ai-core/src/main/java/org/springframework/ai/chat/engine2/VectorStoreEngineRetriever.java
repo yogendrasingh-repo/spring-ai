@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class VectorStoreRetriever implements Retriever {
+public class VectorStoreEngineRetriever implements EngineRetriever {
 
 	private final VectorStore vectorStore;
 
 	private final SearchRequest searchRequest;
 
-	public VectorStoreRetriever(VectorStore vectorStore, SearchRequest searchRequest) {
+	public VectorStoreEngineRetriever(VectorStore vectorStore, SearchRequest searchRequest) {
 		this.vectorStore = vectorStore;
 		this.searchRequest = searchRequest;
 	}
