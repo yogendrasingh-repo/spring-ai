@@ -108,7 +108,7 @@ public abstract class AbstractMessage implements Message {
 	}
 
 	@Override
-	public Map<String, Object> getProperties() {
+	public Map<String, Object> getMetadata() {
 		return this.properties;
 	}
 

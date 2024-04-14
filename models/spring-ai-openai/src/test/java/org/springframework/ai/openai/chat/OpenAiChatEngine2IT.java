@@ -6,7 +6,6 @@ import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.engine2.*;
 import org.springframework.ai.chat.history.ChatHistory;
 import org.springframework.ai.chat.history.InMemoryChatHistory;
-import org.springframework.ai.chat.history.TokenWindowChatHistoryRetriever;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -26,7 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest(classes = OpenAiChatEngine2IT.Config.class)
@@ -37,7 +35,7 @@ public class OpenAiChatEngine2IT {
 
 	private final VectorStore vectorStore;
 
-	private final List<Retriever> retrievers;
+	private final List<EngineRetriever> engineRetrievers;
 
 	private final List<Augmentor> augmentors;
 
@@ -49,11 +47,12 @@ public class OpenAiChatEngine2IT {
 	private Resource bikesResource;
 
 	@Autowired
-	OpenAiChatEngine2IT(OpenAiChatClient openAiChatClient, VectorStore vectorStore, List<Retriever> retrievers,
-			List<Augmentor> augmentors, Generator generator, EngineListener engineListener) {
+	OpenAiChatEngine2IT(OpenAiChatClient openAiChatClient, VectorStore vectorStore,
+			List<EngineRetriever> engineRetrievers, List<Augmentor> augmentors, Generator generator,
+			EngineListener engineListener) {
 		this.chatClient = openAiChatClient;
 		this.vectorStore = vectorStore;
-		this.retrievers = retrievers;
+		this.engineRetrievers = engineRetrievers;
 		this.augmentors = augmentors;
 		this.generator = generator;
 		this.engineListener = engineListener;
@@ -65,7 +64,7 @@ public class OpenAiChatEngine2IT {
 		var textSplitter = new TokenTextSplitter();
 		vectorStore.accept(textSplitter.apply(jsonReader.get()));
 
-		ChatEngine2 chatEngine2 = new ChatEngine2(retrievers, augmentors, generator, engineListener);
+		ChatEngine2 chatEngine2 = new ChatEngine2(engineRetrievers, augmentors, generator, engineListener);
 
 		String systemMessageText = """
 				You're assisting with questions about products in a bicycle catalog.
@@ -113,12 +112,14 @@ public class OpenAiChatEngine2IT {
 		}
 
 		@Bean
-		public List<Retriever> retrievers(VectorStore vectorStore, ChatHistory chatHistory) {
-			VectorStoreRetriever vectorStoreRetriever = new VectorStoreRetriever(vectorStore, SearchRequest.defaults());
+		public List<EngineRetriever> retrievers(VectorStore vectorStore, ChatHistory chatHistory) {
+			VectorStoreEngineRetriever vectorStoreEngineRetriever = new VectorStoreEngineRetriever(vectorStore,
+					SearchRequest.defaults());
 			TokenWindowChatExchangeRetriever tokenWindowChatExchangeRetriever = new TokenWindowChatExchangeRetriever(
 					chatHistory, 100);
-			List<Retriever> retrievers = List.of(vectorStoreRetriever, tokenWindowChatExchangeRetriever);
-			return retrievers;
+			List<EngineRetriever> engineRetrievers = List.of(vectorStoreEngineRetriever,
+					tokenWindowChatExchangeRetriever);
+			return engineRetrievers;
 		}
 
 		@Bean

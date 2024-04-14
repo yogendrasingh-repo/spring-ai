@@ -8,17 +8,17 @@ import org.springframework.ai.chat.prompt.Prompt;
 
 public class ChatEngine2 implements Engine2 {
 
-	private List<Retriever> retrievers;
+	private List<EngineRetriever> engineRetrievers;
 
 	private List<Augmentor> augmentors;
 
 	private Generator generator;
 
-	private EngineListener engineListener;  //TODO
+	private EngineListener engineListener; // TODO
 
-	public ChatEngine2(List<Retriever> retrievers, List<Augmentor> augmentors, Generator generator,
+	public ChatEngine2(List<EngineRetriever> engineRetrievers, List<Augmentor> augmentors, Generator generator,
 			EngineListener engineListener) {
-		this.retrievers = retrievers;
+		this.engineRetrievers = engineRetrievers;
 		this.augmentors = augmentors;
 		this.generator = generator;
 		this.engineListener = engineListener;
@@ -42,8 +42,8 @@ public class ChatEngine2 implements Engine2 {
 	protected RetrievalResponse doRetrieval(EngineRequest2 engineRequest2) {
 		RetrievalRequest retrievalRequest = new RetrievalRequest(engineRequest2);
 		List<RetrievalResponse> retrievalResponses = new ArrayList<>();
-		for (Retriever retriever : retrievers) {
-			RetrievalResponse retrievalResponse = retriever.retrieve(retrievalRequest);
+		for (EngineRetriever engineRetriever : engineRetrievers) {
+			RetrievalResponse retrievalResponse = engineRetriever.retrieve(retrievalRequest);
 			retrievalResponses.add(retrievalResponse);
 		}
 		RetrievalResponse retrievalResponse = retrievalResponses.stream()

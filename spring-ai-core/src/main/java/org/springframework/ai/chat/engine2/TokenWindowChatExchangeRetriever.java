@@ -2,7 +2,6 @@ package org.springframework.ai.chat.engine2;
 
 import org.springframework.ai.chat.history.ChatExchange;
 import org.springframework.ai.chat.history.ChatHistory;
-import org.springframework.ai.chat.history.RetrieverRequest;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.tokenizer.JTokkitTokenCountEstimator;
@@ -12,7 +11,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TokenWindowChatExchangeRetriever implements Retriever {
+public class TokenWindowChatExchangeRetriever implements EngineRetriever {
 
 	private final ChatHistory chatHistory;
 

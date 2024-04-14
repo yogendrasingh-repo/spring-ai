@@ -1,6 +1,6 @@
 package org.springframework.ai.chat.engine2;
 
-public interface Retriever {
+public interface EngineRetriever {
 
 	RetrievalResponse retrieve(RetrievalRequest retrievalRequest);
 

@@ -55,8 +55,8 @@ public class MessageAggregator {
 				if (chatResponse.getResult().getOutput().getContent() != null) {
 					stringBufferRef.get().append(chatResponse.getResult().getOutput().getContent());
 				}
-				if (chatResponse.getResult().getOutput().getProperties() != null) {
-					mapRef.get().putAll(chatResponse.getResult().getOutput().getProperties());
+				if (chatResponse.getResult().getOutput().getMetadata() != null) {
+					mapRef.get().putAll(chatResponse.getResult().getOutput().getMetadata());
 				}
 			}
 		}).doOnComplete(() -> {
