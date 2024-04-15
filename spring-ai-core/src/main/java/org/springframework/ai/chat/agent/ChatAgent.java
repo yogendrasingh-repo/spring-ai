@@ -7,16 +7,18 @@ import org.springframework.ai.chat.agent.transformer.PromptTransformer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class ChatAgent implements Agent {
 
 	private ChatClient chatClient;
 
-	private List<Retriever> retrievers;
+	private List<Retriever> retrievers = new ArrayList<>();
 
 	private List<PromptTransformer> transformers = new ArrayList<>();
 
 	private ChatAgent(ChatClient chatClient, List<Retriever> retrievers, List<PromptTransformer> promptTransformers) {
+		Objects.requireNonNull(chatClient, "chatClient must not be null");
 		this.chatClient = chatClient;
 		this.retrievers = retrievers;
 		this.transformers = promptTransformers;
