@@ -89,12 +89,12 @@ ChatCall chatCall = new ChatCall.Builder().
                                     .withChatOptions(chatOptions)  // only likely to change during development
                                     .build()
 
-String result = chatCall.call(Map.of)  //User map
-String result = chatCall.call(Map.of, Map.of)  //User and System map
-String result = chatCall.call("user message", Map.of);
-String result = chatCall.call("user message", Map.of, "system message", Map.of);
-<T> T result  = chatCall.call("user message", Map.of, Class<T> returnType)
-<T> T result  = chatCall.call("user message", Map.of, Class<T> returnType, "system message", Map.of)
+String result = chatCall.execute(Map.of)  //User map
+String result = chatCall.execute(Map.of, Map.of)  //User and System map
+String result = chatCall.execute("user message", Map.of);
+String result = chatCall.execute("user message", Map.of, "system message", Map.of);
+<T> T result  = chatCall.execute("user message", Map.of, Class<T> returnType)
+<T> T result  = chatCall.execute("user message", Map.of, Class<T> returnType, "system message", Map.of)
 
 ChatResponse chatResponse = chatOperation.call()
 ```
