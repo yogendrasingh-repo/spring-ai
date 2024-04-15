@@ -14,19 +14,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.function.Function;
 
 @SpringBootTest(classes = OpenAiChatCallIT.Config.class)
 @EnabledIfEnvironmentVariable(named = "OPENAI_API_KEY", matches = ".+")
 public class OpenAiChatCallIT {
 
-	private final ChatClient chatClient;
+	private ChatClient chatClient;
+
+	private ChatCall chatCall;
 
 	@Autowired
-	public OpenAiChatCallIT(ChatClient chatClient) {
+	public OpenAiChatCallIT(ChatClient chatClient, ChatCall chatCall) {
 		this.chatClient = chatClient;
+		this.chatCall = chatCall;
 	}
 
 	@Test
@@ -76,6 +79,50 @@ public class OpenAiChatCallIT {
 		System.out.println(answer);
 	}
 
+	@Test
+	void objectMapping() {
+		String userString = """
+				Generate the filmography for the actor {actor}
+				""";
+
+		ChatCall chatCall = ChatCall.builder(chatClient).withUserString(userString).build();
+
+		ActorsFilms actorsFilms = chatCall.execute(Map.of("actor", "Tom Hanks"), ActorsFilms.class);
+		System.out.println(actorsFilms);
+	}
+
+	public record ActorsFilms(String actor, List<String> movies) {
+
+	}
+
+	@Test
+	void simpleChain() {
+		Function<String, String> composedFunction = generateSynopsis.andThen(generateReview);
+		String result = composedFunction.apply("Tragedy at sunset on the beach");
+		System.out.println(result);
+	}
+
+	private Function<String, String> generateSynopsis = title -> {
+		String synopsisInput = """
+				You are a playwright. Given the title of play, it is your job to write a synopsis for that title.
+
+				Title: {title}
+				Playwright: This is a synopsis for the above play:
+				""";
+		return this.chatCall.execute(synopsisInput, Map.of("title", title));
+	};
+
+	private Function<String, String> generateReview = synopsis -> {
+		String synopsisInput = """
+				You are a play critic from the New York Times. Given the synopsis of play, it is your job to write a review for that play.
+
+				Play Synopsis:
+				{synopsis}
+				Review from a New York Times play critic of the above play:""";
+
+		return this.chatCall.execute(synopsisInput, Map.of("synopsis", synopsis));
+	};
+
 	@SpringBootConfiguration
 	static class Config {
 
@@ -87,6 +134,11 @@ public class OpenAiChatCallIT {
 		@Bean
 		public ChatClient openAiClient(OpenAiApi openAiApi) {
 			return new OpenAiChatClient(openAiApi);
+		}
+
+		@Bean
+		public ChatCall chatCall(ChatClient chatClient) {
+			return ChatCall.builder(chatClient).build();
 		}
 
 	}

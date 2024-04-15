@@ -9,7 +9,8 @@ import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
-import org.springframework.ai.parser.OutputParser;
+import org.springframework.ai.parser.BeanOutputParser;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -22,19 +23,16 @@ public class ChatCall implements ChatCallOperations {
 
 	private final Optional<String> systemString;
 
-	private Map<String, Object> systemMap = new HashMap<>();
+	private final Map<String, Object> systemMap;
 
 	private final Optional<String> userString;
 
-	private Map<String, Object> userMap = new HashMap<>();
+	private final Map<String, Object> userMap;
 
 	private final Optional<ChatOptions> chatOptions;
 
-	private final Optional<OutputParser> outputParser;
-
 	public ChatCall(ChatClient chatClient, Optional<String> systemString, Map<String, Object> systemMap,
-			Optional<String> userString, Map<String, Object> userMap, Optional<ChatOptions> chatOptions,
-			Optional<OutputParser> outputParser) {
+			Optional<String> userString, Map<String, Object> userMap, Optional<ChatOptions> chatOptions) {
 		Objects.requireNonNull(chatClient, "ChatClient cannot be null.");
 		this.chatClient = chatClient;
 		this.systemString = systemString;
@@ -44,7 +42,6 @@ public class ChatCall implements ChatCallOperations {
 		this.userMap = userMap != null ? Collections.unmodifiableMap(new HashMap<>(userMap))
 				: Collections.unmodifiableMap(new HashMap<>());
 		this.chatOptions = chatOptions;
-		this.outputParser = outputParser;
 	}
 
 	public static ChatCallBuilder builder(ChatClient chatClient) {
@@ -56,34 +53,19 @@ public class ChatCall implements ChatCallOperations {
 		return execute(userMap, new HashMap<>());
 	}
 
+	public <T> T execute(Map<String, Object> userMap, Class<T> returnType) {
+		String userTextToUse = userString.get() + System.lineSeparator() + "{format}";
+		var parser = new BeanOutputParser<>(returnType);
+		var userMapToUse = new HashMap<>(userMap);
+		userMapToUse.put("format", parser.getFormat());
+		String stringResponse = execute(userTextToUse, userMapToUse, "", Collections.emptyMap());
+		T parsedResponse = parser.parse(stringResponse);
+		return parsedResponse;
+	}
+
 	@Override
 	public String execute(Map<String, Object> runtimeUserMap, Map<String, Object> runtimeSystemMap) {
 		return execute("", runtimeUserMap, "", runtimeSystemMap);
-		// List<Message> messageList = new ArrayList<>();
-		// if (this.systemString.isPresent()) {
-		// SystemPromptTemplate systemPromptTemplate = new
-		// SystemPromptTemplate(this.systemString.get());
-		// Map systemMapToUse = new HashMap(this.systemMap);
-		// systemMapToUse.putAll(runtimeSystemMap);
-		// messageList.add(systemPromptTemplate.createMessage(systemMapToUse));
-		// }
-		// if (this.userString.isPresent()) {
-		// PromptTemplate userPromptTemplate = new PromptTemplate(this.userString.get());
-		// Map userMapToUse = new HashMap(this.userMap);
-		// userMapToUse.putAll(runtimeUserMap);
-		// messageList.add(userPromptTemplate.createMessage(userMapToUse));
-		// } else {
-		// logger.warn("No user message set.");
-		// }
-		// Prompt prompt;
-		// if (this.chatOptions.isPresent()) {
-		// prompt = new Prompt(messageList, this.chatOptions.get());
-		// } else {
-		// prompt = new Prompt(messageList);
-		// }
-		// logger.debug("Created Prompt: {}", prompt);
-		// ChatResponse chatResponse = this.chatClient.call(prompt);
-		// return chatResponse.getResult().getOutput().getContent();
 	}
 
 	@Override
@@ -177,8 +159,6 @@ public class ChatCall implements ChatCallOperations {
 
 		private Optional<ChatOptions> chatOptions = Optional.empty();
 
-		private Optional<OutputParser> outputParser = Optional.empty();
-
 		private ChatCallBuilder(ChatClient chatClient) {
 			Objects.requireNonNull(chatClient, "ChatClient cannot be null.");
 			this.chatClient = chatClient;
@@ -209,13 +189,8 @@ public class ChatCall implements ChatCallOperations {
 			return this;
 		}
 
-		public ChatCallBuilder withOutputParser(OutputParser outputParser) {
-			this.outputParser = Optional.ofNullable(outputParser);
-			return this;
-		}
-
 		public ChatCall build() {
-			return new ChatCall(chatClient, systemString, systemMap, userString, userMap, chatOptions, outputParser);
+			return new ChatCall(chatClient, systemString, systemMap, userString, userMap, chatOptions);
 		}
 
 	}
