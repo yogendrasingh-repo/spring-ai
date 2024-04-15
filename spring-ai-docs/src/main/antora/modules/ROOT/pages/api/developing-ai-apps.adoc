@@ -1,0 +1,102 @@
+[[developing]]
+= Developing AI Applications
+
+Spring AI provides several levels of abstraction in creating AI applications.
+// Similar to JDBC, one can create database applications using the low level JDBC API, but there are higher level approaches such as using Spring's JdbcTemplate or SqlOperation helper classes.  Moving one level higher in abstraction you can use JPA which provides object relational mapping features. Spring Data JPA in turn builds upon JPA to further streamline common JPA usage patterns.
+
+This section describes the different API levels that Spring AI provides, focusing on chat based applications.
+There are three main levels
+
+1. Using `ChatClient`.  This involves creating a `Prompt`, often via a `PromptTemplate` to create one or more `Message`.  These message objects are then used to create a `Prompt`.
+2. Using `ChatCall`.  This approach encapsulates the steps of using `ChatClient` into an object named `ChatCall`.  The `ChatCall` is created using a fluent-api, often registered as a Spring `@Bean` and then calling an `execute` method with some runtime parametes, such as the variables to substitute into the prompt.
+3. Using `ChatAgent`.  In many use cases you need to bring your data to the model, commonly using a technique known as Retrieval Augmented Generation.  the `ChatAgent` encapsulates the steps of retrieving data and inserting that data into the prompt. It can also manage the history of interactions with the Model, giving it a memory of what was said previously.
+
+
+
+
+== Using `ChatClient`
+
+Interfaces such as `ModelClient` in the package `org.springframework.ai.model` provide an abstract API to invoke AI Models.
+
+The package `org.springframework.ai.chat` provides the interface `ChatClient` extending `ModelClient` for portable chat based interactions across AI models.
+
+The package `org.springframework.ai.chat.prompt` provides the `Prompt` class which defines the input sent to an AI Model and the class `ChatResponse` defines the output of an AI Model.
+
+To use `ChatClient`, you create an instance of a `Prompt` by creating one or more `Message` objects and setting `ChatOptions` properties.
+
+`Prompt` instances are often created using a `PromptTemplate` so that placeholder values in the `Message` text sent as part of the request can be substituted.  You can think of this as being similar to using placeholders when creating a web application with a template engine, the value of a `Model` object, such as a `java.util.Map` are substituted into the `View`.
+
+Furthermore, there are several types of `Message` objects.
+There is the `UserMessage` that represents the input a user sends to the AI Model and the `SystemMessage` that instructs the AI model how to define.
+
+An example of a `SystemMessage` is
+
+```text
+You are a helpful AI assistant.
+You are an AI assistant that helps people find information.
+Your name is {name}
+You should reply to the user's request with your name and also in the style of a {voice}.
+```
+
+An example of a `UserMessage` is
+
+```text
+Tell me about three famous {occupation} and what they did.  Write at least a sentence for each person.
+```
+
+To call an AI model with these Messages, and subtitute values for each placeholder, you code will look like the following.
+
+```java
+String userText = """
+   Tell me about three famous {occupation} and what they did.
+   Write at least a sentence for each person.
+   """;
+
+String systemText = """
+  You are a helpful AI assistant.
+  You are an AI assistant that helps people find information.
+  Your name is {name}
+  You should reply to the user's request with your name and also in the style of a {voice}.
+ """;
+
+PromptTemplate promptTemplate = new PromptTemplate(userText);
+SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemResource);
+
+Message userMessage = promptTemplate.createMessage(Map.of("occupation", "physicists"));
+Message systemMessage = systemPromptTemplate.createMessage(Map.of("name", "Bob", "voice", "Robert DeNiro"));
+
+Prompt prompt = new Prompt(List.of(userMessage, systemMessage));
+ChatResponse chatResponse = chatClient.call(prompt);
+
+```
+
+This gets the job done, but it is somewhat verbose.  In the next section, we introduce `ChatCall` that encapsulates these steps into an object for easy configuration and one-liner execution.
+
+== Using `ChatCall`
+
+Similar to Spring's `RdbmsOperation` interface, which models RDBMS operations as objects with the `SqlCall` implementation handling SQL-based calls like stored procedures or functions, and akin to `JdbcClient` offering a fluent API for JDBC operations, we introduce a helper class named `ChatCall`.
+This class aims to streamline the process of gathering all necessary parameters for making calls to an AI model. It provides an easily shareable object encapsulating various options for calling an AI model and also helping to more easily chaining multiple calls to the model.
+
+
+```java
+ChatCall chatCall = new ChatCall.Builder().
+                                    .withChatClient(chatClient)
+                                    .withSystemMessage("you are a helpful assistant") // not likely to change
+                                    .withSystemMap(Map.of)  // likely to change at runtime
+                                    .withUserMessage("tell me a joke")  // not likely to change
+                                    .withUserMap(Map.of)  // likely to change at runtime
+)                                   .withChatResponseMapper(chatResponseMapper) // not likely to change
+                                    .withChatOptions(chatOptions)  // only likely to change during development
+                                    .build()
+
+String result = chatCall.call(Map.of)  //User map
+String result = chatCall.call(Map.of, Map.of)  //User and System map
+String result = chatCall.call("user message", Map.of);
+String result = chatCall.call("user message", Map.of, "system message", Map.of);
+<T> T result  = chatCall.call("user message", Map.of, Class<T> returnType)
+<T> T result  = chatCall.call("user message", Map.of, Class<T> returnType, "system message", Map.of)
+
+ChatResponse chatResponse = chatOperation.call()
+```
+
+class to simplify is several lines long and it would be nice to have a more fluent builder style API that can more easily create the Prompt and invoke the Chat operation.
