@@ -12,4 +12,6 @@ public interface ChatCallOperations {
 
 	String execute(String userText, Map<String, Object> userMap, String systemText, Map<String, Object> systemMap);
 
+	<T> T execute(Map<String, Object> userMap, Class<T> returnType);
+
 }

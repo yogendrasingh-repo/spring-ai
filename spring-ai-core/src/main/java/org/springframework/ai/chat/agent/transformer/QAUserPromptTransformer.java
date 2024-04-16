@@ -1,12 +1,11 @@
 package org.springframework.ai.chat.agent.transformer;
 
-import org.springframework.ai.chat.agent.AgentContext;
+import org.springframework.ai.chat.agent.PromptContext;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.node.Node;
 
 import java.util.List;
@@ -28,13 +27,13 @@ public class QAUserPromptTransformer implements PromptTransformer {
 			""";
 
 	@Override
-	public AgentContext transform(AgentContext agentContext) {
-		String context = doCreateContext(agentContext.getDataList());
-		Map<String, Object> contextMap = doCreateContextMap(agentContext.getPrompt(), context);
-		Prompt prompt = doCreatePrompt(agentContext.getPrompt(), contextMap);
-		agentContext.setPrompt(prompt);
+	public PromptContext transform(PromptContext promptContext) {
+		String context = doCreateContext(promptContext.getDataList());
+		Map<String, Object> contextMap = doCreateContextMap(promptContext.getPrompt(), context);
+		Prompt prompt = doCreatePrompt(promptContext.getPrompt(), contextMap);
+		promptContext.setPrompt(prompt);
 		// Add old prompt to 'provenance' or history...
-		return agentContext;
+		return promptContext;
 	}
 
 	protected String doCreateContext(List<Node<?>> data) {
@@ -57,12 +56,12 @@ public class QAUserPromptTransformer implements PromptTransformer {
 
 	protected Prompt doCreatePrompt(Prompt originalPrompt, Map<String, Object> contextMap) {
 		PromptTemplate promptTemplate = new PromptTemplate(DEFAULT_USER_PROMPT_TEXT);
-		Message systemMessageToAppend = promptTemplate.createMessage(contextMap);
+		Message userMessageToAppend = promptTemplate.createMessage(contextMap);
 		List<Message> messageList = originalPrompt.getInstructions()
 			.stream()
 			.filter(m -> m.getMessageType() != MessageType.USER)
 			.collect(Collectors.toList());
-		messageList.add(systemMessageToAppend);
+		messageList.add(userMessageToAppend);
 		return new Prompt(messageList, (ChatOptions) originalPrompt.getOptions());
 	}
 

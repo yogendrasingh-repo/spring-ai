@@ -1,6 +1,6 @@
 package org.springframework.ai.chat.agent.retriever;
 
-import org.springframework.ai.chat.agent.AgentContext;
+import org.springframework.ai.chat.agent.PromptContext;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.document.Document;
@@ -30,17 +30,17 @@ public class VectorStoreRetriever implements Retriever {
 	}
 
 	@Override
-	public AgentContext retrieve(AgentContext agentContext) {
-		List<Message> instructions = agentContext.getPrompt().getInstructions();
+	public PromptContext retrieve(PromptContext promptContext) {
+		List<Message> instructions = promptContext.getPrompt().getInstructions();
 		String userMessage = instructions.stream()
 			.filter(m -> m.getMessageType() == MessageType.USER)
 			.map(m -> m.getContent())
 			.collect(Collectors.joining(System.lineSeparator()));
 		List<Document> documents = vectorStore.similaritySearch(searchRequest.withQuery(userMessage));
 		for (Document document : documents) {
-			agentContext.addData(document);
+			promptContext.addData(document);
 		}
-		return agentContext;
+		return promptContext;
 	}
 
 }

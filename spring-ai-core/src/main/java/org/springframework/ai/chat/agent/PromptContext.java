@@ -5,20 +5,33 @@ import org.springframework.ai.node.Node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-public class AgentContext {
+public class PromptContext {
 
 	private Prompt prompt; // The most up-to-date prompt to use
 
 	List<Node<?>> dataList; // The most up-to-date data to use for transforming the prompt
 
-	public AgentContext(Prompt prompt) {
+	private Prompt originalPrompt;
+
+	private String conversationId;
+
+	private Map<String, Object> processContext;
+
+	public PromptContext(Prompt prompt) {
 		this(prompt, new ArrayList<>());
 	}
 
-	public AgentContext(Prompt prompt, List<Node<?>> dataList) {
+	public PromptContext(Prompt prompt, String conversationId) {
+		this(prompt, new ArrayList<>());
+		this.conversationId = conversationId;
+	}
+
+	public PromptContext(Prompt prompt, List<Node<?>> dataList) {
 		this.prompt = prompt;
+		this.originalPrompt = prompt;
 		this.dataList = dataList;
 	}
 
@@ -34,6 +47,18 @@ public class AgentContext {
 		this.prompt = prompt;
 	}
 
+	public Prompt getOriginalPrompt() {
+		return originalPrompt;
+	}
+
+	public String getConversationId() {
+		return conversationId;
+	}
+
+	public Map<String, Object> getProcessContext() {
+		return processContext;
+	}
+
 	public List<Node<?>> getDataList() {
 		return dataList;
 	}
@@ -44,14 +69,14 @@ public class AgentContext {
 
 	@Override
 	public String toString() {
-		return "AgentContext{" + "prompt=" + prompt + ", dataList=" + dataList + '}';
+		return "PromptContext{" + "prompt=" + prompt + ", dataList=" + dataList + '}';
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
-		if (!(o instanceof AgentContext that))
+		if (!(o instanceof PromptContext that))
 			return false;
 		return Objects.equals(prompt, that.prompt) && Objects.equals(dataList, that.dataList);
 	}

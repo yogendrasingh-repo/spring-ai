@@ -8,7 +8,7 @@ This section describes the different API levels that Spring AI provides, focusin
 There are three main levels
 
 1. Using `ChatClient`.  This involves creating a `Prompt`, often via a `PromptTemplate` to create one or more `Message`.  These message objects are then used to create a `Prompt`.
-2. Using `ChatCall`.  This approach encapsulates the steps of using `ChatClient` into an object named `ChatCall`.  The `ChatCall` is created using a fluent-api, often registered as a Spring `@Bean` and then calling an `execute` method with some runtime parametes, such as the variables to substitute into the prompt.
+2. Using `ChatCall`.  This approach encapsulates the steps of using `ChatClient` into an object named `ChatCall`.  The `ChatCall` is created using a fluent-api, often registered as a Spring `@Bean` and then calling an `execute` method with some runtime parameters, such as the variables to substitute into the prompt.
 3. Using `ChatAgent`.  In many use cases you need to bring your data to the model, commonly using a technique known as Retrieval Augmented Generation.  the `ChatAgent` encapsulates the steps of retrieving data and inserting that data into the prompt. It can also manage the history of interactions with the Model, giving it a memory of what was said previously.
 
 
