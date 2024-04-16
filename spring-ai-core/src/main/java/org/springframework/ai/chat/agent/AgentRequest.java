@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class AgentRequest {
 
-	private final String conversationId;
+	private final String conversationId; // TODO needs to also move into the PromptContext
 
 	private final Prompt prompt;
 

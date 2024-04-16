@@ -26,7 +26,7 @@ public class ChatAgent implements Agent {
 
 	@Override
 	public AgentResponse call(AgentRequest agentRequest) {
-		var agentContext = new AgentContext(agentRequest.getPrompt());
+		var agentContext = new PromptContext(agentRequest.getPrompt(), agentRequest.getConversationId());
 
 		for (Retriever retriever : retrievers) {
 			agentContext = retriever.retrieve(agentContext);

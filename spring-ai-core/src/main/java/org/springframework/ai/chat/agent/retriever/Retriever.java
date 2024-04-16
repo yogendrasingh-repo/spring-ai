@@ -1,10 +1,10 @@
 package org.springframework.ai.chat.agent.retriever;
 
-import org.springframework.ai.chat.agent.AgentContext;
+import org.springframework.ai.chat.agent.PromptContext;
 
 @FunctionalInterface
 public interface Retriever {
 
-	AgentContext retrieve(AgentContext agentContext);
+	PromptContext retrieve(PromptContext promptContext);
 
 }

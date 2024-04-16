@@ -8,13 +8,13 @@ public class AgentResponse {
 
 	private AgentRequest agentRequest;
 
-	private AgentContext agentContext;
+	private PromptContext promptContext;
 
 	private ChatResponse chatResponse;
 
-	public AgentResponse(AgentRequest agentRequest, AgentContext agentContext, ChatResponse chatResponse) {
+	public AgentResponse(AgentRequest agentRequest, PromptContext promptContext, ChatResponse chatResponse) {
 		this.agentRequest = agentRequest;
-		this.agentContext = agentContext;
+		this.promptContext = promptContext;
 		this.chatResponse = chatResponse;
 	}
 
@@ -22,8 +22,8 @@ public class AgentResponse {
 		return agentRequest;
 	}
 
-	public AgentContext getAgentContext() {
-		return agentContext;
+	public PromptContext getPromptContext() {
+		return promptContext;
 	}
 
 	public ChatResponse getChatResponse() {
@@ -32,8 +32,8 @@ public class AgentResponse {
 
 	@Override
 	public String toString() {
-		return "AgentResponse{" + "agentRequest=" + agentRequest + ", agentContext=" + agentContext + ", chatResponse="
-				+ chatResponse + '}';
+		return "AgentResponse{" + "agentRequest=" + agentRequest + ", promptContext=" + promptContext
+				+ ", chatResponse=" + chatResponse + '}';
 	}
 
 	@Override
@@ -42,13 +42,13 @@ public class AgentResponse {
 			return true;
 		if (!(o instanceof AgentResponse that))
 			return false;
-		return Objects.equals(agentRequest, that.agentRequest) && Objects.equals(agentContext, that.agentContext)
+		return Objects.equals(agentRequest, that.agentRequest) && Objects.equals(promptContext, that.promptContext)
 				&& Objects.equals(chatResponse, that.chatResponse);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(agentRequest, agentContext, chatResponse);
+		return Objects.hash(agentRequest, promptContext, chatResponse);
 	}
 
 }

@@ -7,6 +7,9 @@ import org.springframework.ai.chat.agent.AgentRequest;
 import org.springframework.ai.chat.agent.ChatAgent;
 import org.springframework.ai.chat.agent.retriever.VectorStoreRetriever;
 import org.springframework.ai.chat.agent.transformer.QAUserPromptTransformer;
+import org.springframework.ai.chat.evaluation.EvaluationRequest;
+import org.springframework.ai.chat.evaluation.EvaluationResponse;
+import org.springframework.ai.chat.evaluation.RelevancyEvaluator;
 import org.springframework.ai.embedding.EmbeddingClient;
 import org.springframework.ai.openai.OpenAiChatClient;
 import org.springframework.ai.openai.OpenAiEmbeddingClient;
@@ -51,6 +54,15 @@ public class OpenAiChatAgentIT {
 		var agentRequest = new AgentRequest("What bike is good for city commuting?");
 		var agentResponse = chatAgent.call(agentRequest);
 		System.out.println(agentResponse);
+
+		RelevancyEvaluator relevancyEvaluator = new RelevancyEvaluator(this.chatClient);
+		EvaluationRequest evaluationRequest = new EvaluationRequest(
+				agentResponse.getPromptContext().getOriginalPrompt(), agentResponse.getPromptContext().getDataList(),
+				agentResponse.getChatResponse());
+
+		EvaluationResponse evaluationResponse = relevancyEvaluator.evaluate(evaluationRequest);
+		System.out.println(evaluationResponse);
+
 	}
 
 	void loadData() {

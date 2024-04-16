@@ -10,7 +10,6 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.parser.BeanOutputParser;
-import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -53,6 +52,7 @@ public class ChatCall implements ChatCallOperations {
 		return execute(userMap, new HashMap<>());
 	}
 
+	@Override
 	public <T> T execute(Map<String, Object> userMap, Class<T> returnType) {
 		String userTextToUse = userString.get() + System.lineSeparator() + "{format}";
 		var parser = new BeanOutputParser<>(returnType);
@@ -141,8 +141,7 @@ public class ChatCall implements ChatCallOperations {
 	}
 
 	protected static String doCreateStringResponse(ChatResponse chatResponse) {
-		String response = chatResponse.getResult().getOutput().getContent();
-		return response;
+		return chatResponse.getResult().getOutput().getContent();
 	}
 
 	public static class ChatCallBuilder {

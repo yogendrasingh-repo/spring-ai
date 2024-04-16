@@ -34,15 +34,18 @@ public class OpenAiChatCallIT {
 
 	@Test
 	void userMessage() {
+		// @Bean
 		ChatCall chatCall = ChatCall.builder(chatClient)
 			.withUserString("Tell me a {adjective} joke about {topic}")
 			.build();
+
 		String joke = chatCall.execute(Map.of("adjective", "silly", "topic", "cows"));
 		System.out.println(joke);
 	}
 
 	@Test
 	void testUserAndSystemMessage() {
+		// @Bean begin
 		String userString = """
 				Tell me about three famous {occupation} and what they did.
 				Write at least three sentences for each person.
@@ -62,7 +65,6 @@ public class OpenAiChatCallIT {
 
 		Map<String, Object> userMap = new HashMap<>();
 		userMap.put("occupation", "scientists");
-
 		System.out.println("Using default temperature");
 		String answer = chatCall.execute(userMap);
 		System.out.println(answer);
@@ -70,6 +72,8 @@ public class OpenAiChatCallIT {
 		ChatOptions chatOptions = ChatOptionsBuilder.builder().withTemperature(1.0f).build();
 		chatCall = ChatCall.builder(chatClient)
 			.withUserString(userString)
+			// .withMedia(List.of(mediaObject)) TODO
+			// .withFunctionName() TODO
 			.withSystemString(systemString)
 			.withChatOptions(chatOptions)
 			.build();
@@ -81,9 +85,7 @@ public class OpenAiChatCallIT {
 
 	@Test
 	void objectMapping() {
-		String userString = """
-				Generate the filmography for the actor {actor}
-				""";
+		String userString = "Generate the filmography for the actor {actor}";
 
 		ChatCall chatCall = ChatCall.builder(chatClient).withUserString(userString).build();
 
