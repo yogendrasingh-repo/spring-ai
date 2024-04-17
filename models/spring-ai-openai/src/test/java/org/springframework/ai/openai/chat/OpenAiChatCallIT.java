@@ -69,8 +69,6 @@ public class OpenAiChatCallIT {
 		String answer = chatCall.execute(userMap);
 		System.out.println(answer);
 
-		ChatOptionsBuilder chatOptionsBuilder = ChatOptionsBuilder.builder().withTemperature(1.0f);
-
 		ChatOptions chatOptions = ChatOptionsBuilder.builder().withTemperature(1.0f).build();
 		chatCall = ChatCall.builder(chatClient)
 			.withUserString(userString)
@@ -91,7 +89,7 @@ public class OpenAiChatCallIT {
 
 		ChatCall chatCall = ChatCall.builder(chatClient).withUserString(userString).build();
 
-		ActorsFilms actorsFilms = chatCall.execute(Map.of("actor", "Tom Hanks"), ActorsFilms.class);
+		ActorsFilms actorsFilms = chatCall.execute(ActorsFilms.class, Map.of("actor", "Tom Hanks"));
 		System.out.println(actorsFilms);
 	}
 

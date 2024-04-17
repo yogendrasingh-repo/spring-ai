@@ -4,12 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
+import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.parser.BeanOutputParser;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -20,25 +23,28 @@ public class ChatCall implements ChatCallOperations {
 
 	private final ChatClient chatClient;
 
+	private final Optional<String> userString;
+
+	private final List<Media> mediaList;
+
+	private final Map<String, Object> userMap;
+
 	private final Optional<String> systemString;
 
 	private final Map<String, Object> systemMap;
 
-	private final Optional<String> userString;
-
-	private final Map<String, Object> userMap;
-
 	private final Optional<ChatOptions> chatOptions;
 
-	public ChatCall(ChatClient chatClient, Optional<String> systemString, Map<String, Object> systemMap,
-			Optional<String> userString, Map<String, Object> userMap, Optional<ChatOptions> chatOptions) {
+	public ChatCall(ChatClient chatClient, Optional<String> userString, Map<String, Object> userMap, List<Media> media,
+			Optional<String> systemString, Map<String, Object> systemMap, Optional<ChatOptions> chatOptions) {
 		Objects.requireNonNull(chatClient, "ChatClient cannot be null.");
 		this.chatClient = chatClient;
-		this.systemString = systemString;
-		this.systemMap = systemMap != null ? Collections.unmodifiableMap(new HashMap<>(systemMap))
-				: Collections.unmodifiableMap(new HashMap<>());
 		this.userString = userString;
 		this.userMap = userMap != null ? Collections.unmodifiableMap(new HashMap<>(userMap))
+				: Collections.unmodifiableMap(new HashMap<>());
+		this.mediaList = media != null ? media : new ArrayList<>();
+		this.systemString = systemString;
+		this.systemMap = systemMap != null ? Collections.unmodifiableMap(new HashMap<>(systemMap))
 				: Collections.unmodifiableMap(new HashMap<>());
 		this.chatOptions = chatOptions;
 	}
@@ -48,20 +54,36 @@ public class ChatCall implements ChatCallOperations {
 	}
 
 	@Override
-	public String execute(Map<String, Object> userMap) {
-		return execute(userMap, new HashMap<>());
+	public String execute(Map<String, Object>... userMap) {
+		if (userMap.length == 0) {
+			return execute(Collections.emptyMap(), Collections.emptyMap());
+		}
+		else {
+			return execute(userMap[0], new HashMap<>());
+		}
 	}
 
 	@Override
-	public <T> T execute(Map<String, Object> userMap, Class<T> returnType) {
-		String userTextToUse = userString.get() + System.lineSeparator() + "{format}";
-		var parser = new BeanOutputParser<>(returnType);
-		var userMapToUse = new HashMap<>(userMap);
-		userMapToUse.put("format", parser.getFormat());
-		String stringResponse = execute(userTextToUse, userMapToUse, "", Collections.emptyMap());
-		T parsedResponse = parser.parse(stringResponse);
-		return parsedResponse;
+	public String execute(String userText, Map<String, Object>... userMap) {
+		if (userMap.length == 0) {
+			return execute(userText, Collections.emptyMap(), "", Collections.emptyMap());
+		}
+		else {
+			return execute(userText, userMap[0], "", Collections.emptyMap());
+		}
 	}
+
+	@Override
+	public String execute(UserMessage userMessage, Map<String, Object>... userMap) {
+		if (userMap.length == 0) {
+			return execute(userMessage, Collections.emptyMap(), "", Collections.emptyMap());
+		}
+		else {
+			return execute(userMessage, userMap[0], "", Collections.emptyMap());
+		}
+	}
+
+	// Execute Methods for user and system messages
 
 	@Override
 	public String execute(Map<String, Object> runtimeUserMap, Map<String, Object> runtimeSystemMap) {
@@ -69,15 +91,10 @@ public class ChatCall implements ChatCallOperations {
 	}
 
 	@Override
-	public String execute(String userText, Map<String, Object> userMap) {
-		return execute(userText, userMap, "", Collections.emptyMap());
-	}
-
-	@Override
 	public String execute(String userText, Map<String, Object> runtimeUserMap, String systemText,
 			Map<String, Object> runtimeSystemMap) {
 		List<Message> messageList = new ArrayList<>();
-		doCreateUserMessage(userText, runtimeUserMap, messageList);
+		doCreateUserMessage(userText, this.mediaList, runtimeUserMap, messageList);
 		doCreateSystemMessage(systemText, runtimeSystemMap, messageList);
 		Prompt prompt = doCreatePrompt(messageList);
 		ChatResponse chatResponse = doExecute(prompt);
@@ -85,7 +102,86 @@ public class ChatCall implements ChatCallOperations {
 		return response;
 	}
 
-	protected void doCreateUserMessage(String userText, Map<String, Object> runtimeUserMap, List<Message> messageList) {
+	@Override
+	public String execute(UserMessage userMessage, Map<String, Object> runtimeUserMap, String systemText,
+			Map<String, Object> runtimeSystemMap) {
+		List<Message> messageList = new ArrayList<>();
+
+		doCreateUserMessage(userMessage.getContent(), userMessage.getMedia(), runtimeUserMap, messageList);
+		doCreateSystemMessage(systemText, runtimeSystemMap, messageList);
+		Prompt prompt = doCreatePrompt(messageList);
+		ChatResponse chatResponse = doExecute(prompt);
+		String response = doCreateStringResponse(chatResponse);
+		return response;
+	}
+
+	// Execute Methods for user message that return a POJO
+
+	@Override
+	public <T> T execute(Class<T> returnType, Map<String, Object>... runtimeUserMap) {
+		var userMessage = new UserMessage(this.userString.get());
+		if (runtimeUserMap.length == 0) {
+			return execute(returnType, userMessage, Collections.emptyMap(), "", Collections.emptyMap());
+		}
+		else {
+			return execute(returnType, userMessage, runtimeUserMap[0], "", Collections.emptyMap());
+		}
+	}
+
+	@Override
+	public <T> T execute(Class<T> returnType, String userText, Map<String, Object>... runtimeUserMap) {
+		var userMessage = new UserMessage(userText);
+		if (runtimeUserMap.length == 0) {
+			return execute(returnType, userMessage, Collections.emptyMap(), "", Collections.emptyMap());
+		}
+		else {
+			return execute(returnType, userMessage, runtimeUserMap[0], "", Collections.emptyMap());
+		}
+	}
+
+	@Override
+	public <T> T execute(Class<T> returnType, UserMessage userMessage, Map<String, Object>... runtimeUserMap) {
+		if (runtimeUserMap.length == 0) {
+			return execute(returnType, userMessage, Collections.emptyMap(), "", Collections.emptyMap());
+		}
+		else {
+			return execute(returnType, userMessage, runtimeUserMap[0], "", Collections.emptyMap());
+		}
+	}
+
+	// Execute Methods for user and system message that return a POJO
+
+	@Override
+	public <T> T execute(Class<T> returnType, Map<String, Object> runtimeUserMap,
+			Map<String, Object> runtimeSystemMap) {
+		return execute(returnType, new UserMessage(this.userString.get()), runtimeUserMap, "", runtimeSystemMap);
+	}
+
+	@Override
+	public <T> T execute(Class<T> returnType, String userText, Map<String, Object> runtimeUserMap, String systemText,
+			Map<String, Object> runtimeSystemMap) {
+		return execute(returnType, new UserMessage(this.userString.get()), runtimeUserMap, "", runtimeSystemMap);
+	}
+
+	@Override
+	public <T> T execute(Class<T> returnType, UserMessage userMessage, Map<String, Object> runtimeUserMap,
+			String systemText, Map<String, Object> runtimeSystemMap) {
+		List<Message> messageList = new ArrayList<>();
+		String userTextToUse = userMessage.getContent() + System.lineSeparator() + "{format}";
+		var parser = new BeanOutputParser<>(returnType);
+		runtimeUserMap.put("format", parser.getFormat());
+		doCreateUserMessage(userTextToUse, userMessage.getMedia(), runtimeUserMap, messageList);
+		doCreateSystemMessage(systemText, runtimeSystemMap, messageList);
+
+		Prompt prompt = doCreatePrompt(messageList);
+		ChatResponse chatResponse = doExecute(prompt);
+		String stringResponse = doCreateStringResponse(chatResponse);
+		T parsedResponse = parser.parse(stringResponse);
+		return parsedResponse;
+	}
+
+	protected void doCreateUserMessage(String userText, List<Media> runtimeMedia, Map<String, Object> runtimeUserMap,
+			List<Message> messageList) {
 		PromptTemplate userPromptTemplate = null;
 
 		if (StringUtils.hasText(userText)) {
@@ -94,10 +190,18 @@ public class ChatCall implements ChatCallOperations {
 		else if (this.userString.isPresent()) {
 			userPromptTemplate = new PromptTemplate(this.userString.get());
 		}
+
+		List<Media> mediaListToUse;
+		if (CollectionUtils.isEmpty(runtimeMedia)) {
+			mediaListToUse = this.mediaList;
+		}
+		else {
+			mediaListToUse = runtimeMedia;
+		}
+
 		if (userPromptTemplate != null) {
 			Map userMapToUse = new HashMap(this.userMap);
-			userMapToUse.putAll(runtimeUserMap); // Merge the maps
-			messageList.add(userPromptTemplate.createMessage(userMapToUse));
+			messageList.add(userPromptTemplate.createMessage(userMapToUse, mediaListToUse));
 		}
 		else {
 			logger.warn("No user message set.");
@@ -148,13 +252,15 @@ public class ChatCall implements ChatCallOperations {
 
 		private final ChatClient chatClient;
 
-		private Optional<String> systemString = Optional.empty();
-
-		private Map<String, Object> systemMap = new HashMap<>();
-
 		private Optional<String> userString = Optional.empty();
 
-		private Map<String, Object> userMap = new HashMap<>();
+		private Map<String, Object> userMap = Collections.emptyMap();
+
+		private List<Media> mediaList = Collections.emptyList();
+
+		private Optional<String> systemString = Optional.empty();
+
+		private Map<String, Object> systemMap = Collections.emptyMap();
 
 		private Optional<ChatOptions> chatOptions = Optional.empty();
 
@@ -183,13 +289,19 @@ public class ChatCall implements ChatCallOperations {
 			return this;
 		}
 
+		public ChatCallBuilder withMedia(List<Media> media) {
+			this.mediaList = media;
+			return this;
+		}
+
 		public ChatCallBuilder withChatOptions(ChatOptions chatOptions) {
 			this.chatOptions = Optional.ofNullable(chatOptions);
 			return this;
 		}
 
 		public ChatCall build() {
-			return new ChatCall(chatClient, systemString, systemMap, userString, userMap, chatOptions);
+			return new ChatCall(this.chatClient, this.userString, this.userMap, this.mediaList, this.systemString,
+					this.systemMap, this.chatOptions);
 		}
 
 	}
