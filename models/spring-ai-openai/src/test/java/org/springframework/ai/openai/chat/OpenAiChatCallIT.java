@@ -69,6 +69,8 @@ public class OpenAiChatCallIT {
 		String answer = chatCall.execute(userMap);
 		System.out.println(answer);
 
+		ChatOptionsBuilder chatOptionsBuilder = ChatOptionsBuilder.builder().withTemperature(1.0f);
+
 		ChatOptions chatOptions = ChatOptionsBuilder.builder().withTemperature(1.0f).build();
 		chatCall = ChatCall.builder(chatClient)
 			.withUserString(userString)
