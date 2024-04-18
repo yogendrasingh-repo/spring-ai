@@ -14,7 +14,7 @@ public class PromptContext {
 
 	List<Node<?>> dataList; // The most up-to-date data to use for transforming the prompt
 
-	private Prompt originalPrompt;
+	private Prompt originalPrompt; // List<Prompt> promptHistory...
 
 	private String conversationId;
 

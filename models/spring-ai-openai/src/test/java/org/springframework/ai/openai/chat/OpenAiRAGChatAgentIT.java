@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.agent.AgentRequest;
-import org.springframework.ai.chat.agent.ChatAgent;
+import org.springframework.ai.chat.agent.DefaultChatAgent;
 import org.springframework.ai.chat.agent.retriever.VectorStoreRetriever;
 import org.springframework.ai.chat.agent.transformer.QAUserPromptTransformer;
 import org.springframework.ai.chat.evaluation.EvaluationRequest;
@@ -26,9 +26,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 
-@SpringBootTest(classes = OpenAiChatAgentIT.Config.class)
+@SpringBootTest(classes = OpenAiRAGChatAgentIT.Config.class)
 @EnabledIfEnvironmentVariable(named = "OPENAI_API_KEY", matches = ".+")
-public class OpenAiChatAgentIT {
+public class OpenAiRAGChatAgentIT {
 
 	private final ChatClient chatClient;
 
@@ -38,7 +38,7 @@ public class OpenAiChatAgentIT {
 	private Resource bikesResource;
 
 	@Autowired
-	public OpenAiChatAgentIT(ChatClient chatClient, VectorStore vectorStore) {
+	public OpenAiRAGChatAgentIT(ChatClient chatClient, VectorStore vectorStore) {
 		this.chatClient = chatClient;
 		this.vectorStore = vectorStore;
 	}
@@ -46,7 +46,7 @@ public class OpenAiChatAgentIT {
 	@Test
 	void simpleChat() {
 		loadData();
-		var chatAgent = new ChatAgent.Builder().withChatClient(chatClient)
+		var chatAgent = new DefaultChatAgent.Builder().withChatClient(chatClient)
 			.withDataRetriever(new VectorStoreRetriever(vectorStore, SearchRequest.defaults()))
 			.withPromptTransformer(new QAUserPromptTransformer())
 			.build();
