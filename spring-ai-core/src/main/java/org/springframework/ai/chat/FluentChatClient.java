@@ -11,11 +11,11 @@ import java.util.function.Consumer;
 /**
  * @author Josh Long
  */
-public class FluentChatClientLambda {
+public class FluentChatClient {
 
 	private final ChatClient chatClient;
 
-	public FluentChatClientLambda(ChatClient chatClient) {
+	public FluentChatClient(ChatClient chatClient) {
 		this.chatClient = chatClient;
 	}
 
@@ -23,134 +23,134 @@ public class FluentChatClientLambda {
 
 		private final Map<String, Object> paramsMap = new HashMap<>();
 
-		AbstractSystemMessageBuilder params(Map<String, Object> paramsMap) {
+		public AbstractSystemMessageBuilder params(Map<String, Object> paramsMap) {
 			this.paramsMap.putAll(paramsMap);
 			return this;
 		}
 
 	}
 
-	static class AbstractUserMessageBuilder {
+	public static class AbstractUserMessageBuilder {
 
 		private final List<Media> media = new ArrayList<>();
 
 		private final Map<String, Object> paramsMap = new HashMap<>();
 
-		AbstractUserMessageBuilder params(Map<String, Object> paramsMap) {
+		public AbstractUserMessageBuilder params(Map<String, Object> paramsMap) {
 			this.paramsMap.putAll(paramsMap);
 			return this;
 		}
 
-		AbstractUserMessageBuilder media(Media... media) {
+		public AbstractUserMessageBuilder media(Media... media) {
 			this.media.addAll(Arrays.asList(media));
 			return this;
 		}
 
 	}
 
-	static class TextUserMessageBuilder extends AbstractUserMessageBuilder {
+	public static class TextUserMessageBuilder extends AbstractUserMessageBuilder {
 
 		private final String text;
 
-		TextUserMessageBuilder(String text) {
+		public TextUserMessageBuilder(String text) {
 			this.text = text;
 		}
 
 	}
 
-	static class ResourceUserMessageBuilder extends AbstractUserMessageBuilder {
+	public static class ResourceUserMessageBuilder extends AbstractUserMessageBuilder {
 
 		private final Resource resource;
 
-		ResourceUserMessageBuilder(Resource resource) {
+		public ResourceUserMessageBuilder(Resource resource) {
 			this.resource = resource;
 		}
 
 	}
 
-	static class ResourceSystemMessageBuilder extends AbstractSystemMessageBuilder {
+	public static class ResourceSystemMessageBuilder extends AbstractSystemMessageBuilder {
 
 		private final Resource resource;
 
-		ResourceSystemMessageBuilder(Resource resource) {
+		public ResourceSystemMessageBuilder(Resource resource) {
 			this.resource = resource;
 		}
 
 	}
 
-	static class TextSystemMessageBuilder extends AbstractSystemMessageBuilder {
+	public static class TextSystemMessageBuilder extends AbstractSystemMessageBuilder {
 
 		private final String text;
 
-		TextSystemMessageBuilder(String text) {
+		public TextSystemMessageBuilder(String text) {
 			this.text = text;
 		}
 
 	}
 
-	static class UserMessageBuilderSpec {
+	public static class UserMessageBuilderSpec {
 
-		TextUserMessageBuilder text(String text) {
+		public TextUserMessageBuilder text(String text) {
 			return new TextUserMessageBuilder(text);
 		}
 
-		ResourceUserMessageBuilder resource(Resource resource) {
+		public ResourceUserMessageBuilder resource(Resource resource) {
 			return new ResourceUserMessageBuilder(resource);
 		}
 
 	}
 
-	static class SystemMessageBuilderSpec {
+	public static class SystemMessageBuilderSpec {
 
-		TextSystemMessageBuilder text(String text) {
+		public TextSystemMessageBuilder text(String text) {
 			return new TextSystemMessageBuilder(text);
 		}
 
-		ResourceSystemMessageBuilder resource(Resource resource) {
+		public ResourceSystemMessageBuilder resource(Resource resource) {
 			return new ResourceSystemMessageBuilder(resource);
 		}
 
 	}
 
-	static class FunctionBuilderSpec {
+	public static class FunctionBuilderSpec {
 
-		FunctionBuilderSpec functions(String... functionNames) {
+		public FunctionBuilderSpec functions(String... functionNames) {
 			return this;
 		}
 
-		FunctionBuilderSpec functions(FunctionCallback... functionCallbacks) {
-			return this;
-		}
-
-	}
-
-	static class ChatBuilderSpec {
-
-		ChatBuilderSpec functions(Consumer<FunctionBuilderSpec> functions) {
-			return this;
-		}
-
-		ChatBuilderSpec system(Consumer<SystemMessageBuilderSpec> system) {
-			return this;
-		}
-
-		ChatBuilderSpec user(Consumer<UserMessageBuilderSpec> user) {
+		public FunctionBuilderSpec functions(FunctionCallback... functionCallbacks) {
 			return this;
 		}
 
 	}
 
-	static class LiquidChatCallSpec {
+	public static class ChatBuilderSpec {
 
-		<T> T call(T... ts) {
+		public ChatBuilderSpec functions(Consumer<FunctionBuilderSpec> functions) {
+			return this;
+		}
+
+		public ChatBuilderSpec system(Consumer<SystemMessageBuilderSpec> system) {
+			return this;
+		}
+
+		public ChatBuilderSpec user(Consumer<UserMessageBuilderSpec> user) {
+			return this;
+		}
+
+	}
+
+	public static class LiquidChatCallSpec {
+
+		public <T> T call(T... ts) {
 			return null;
 		}
 
-		<T> T call(Class<T> tClass) {
+		public <T> T call(Class<T> tClass) {
 			return null;
 		}
 
-		ChatResponse call() {
+		public ChatResponse call() {
 			return null;
 		}
 
@@ -163,57 +163,11 @@ public class FluentChatClientLambda {
 		public LiquidChatClient(ChatClient chatClient) {
 			this.chatClient = chatClient;
 		}
+
 		// put this in ChatClient
 		public LiquidChatCallSpec chat(Consumer<ChatBuilderSpec> chatSpec) {
 			return null;
 		}
-
-	}
-
-/*
-	void demo(ApplicationContext applicationContext, ChatClient cc) throws Exception {
-
-		record ActorsFilmsRecord2(String actor, List<String> movies) {
-		}
-
-		var liquidChatClient = new LiquidChatClient(cc);
-		var actors = liquidChatClient
-			.chat(s -> s.system(sys -> sys.text("""
-						You're a non user hostile chatbot from cyberdyne systems.
-						your primary objective is {primaryObjective}
-					""").params(Map.of("primaryObjective", "No PHP")))
-				.functions(fn -> fn.functions((FunctionCallback) null)
-					.functions("createReservation", "cancelReservations"))
-				.user(user -> user.text("tell me a joke about {topic}")
-					.params(Map.of("topic", "PHP"))
-					.media(new Media[0])))
-			.call(ActorsFilmsRecord2.class);
-	}
-*/
-
-	public interface ChatUserSpec {
-
-		ChatParamSpec text(String text, Map<String, Object> params);
-
-		ChatMediaParamSpec media(Consumer<ChatMediaParamSpec> chatMediaParamSpecConsumer);
-
-	}
-
-	public interface ChatMediaParamSpec {
-
-		ChatMediaParamSpec param(List<Media> mediaList);
-
-		ChatMediaParamSpec param(Media media);
-
-		ChatMediaParamSpec param(MimeType mimeType, Object data);
-
-	}
-
-	public interface ChatParamSpec {
-
-		ChatParamSpec param(String name, Object value);
-
-		ChatParamSpec params(Map<String, ?> paramMap);
 
 	}
 
