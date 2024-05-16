@@ -1,10 +1,10 @@
-package org.springframework.ai.chat;
+package org.springframework.ai.chat.dsl;
 
+import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
-import org.springframework.util.MimeType;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -12,13 +12,7 @@ import java.util.function.Consumer;
 /**
  * @author Josh Long
  */
-public class FluentChatClient {
-
-	private final ChatClient chatClient;
-
-	public FluentChatClient(ChatClient chatClient) {
-		this.chatClient = chatClient;
-	}
+public abstract class ChatClientDsl {
 
 	public static class AbstractSystemMessageBuilder {
 
@@ -26,6 +20,11 @@ public class FluentChatClient {
 
 		public AbstractSystemMessageBuilder params(Map<String, Object> paramsMap) {
 			this.paramsMap.putAll(paramsMap);
+			return this;
+		}
+
+		public AbstractSystemMessageBuilder param(String key, Object value) {
+			this.paramsMap.put(key, value);
 			return this;
 		}
 
@@ -141,7 +140,7 @@ public class FluentChatClient {
 
 	}
 
-	public static class LiquidChatCallSpec {
+	public static class ChatCallSpec {
 
 		public <T> T call(Class<T> tClass) {
 			return null;
@@ -152,21 +151,6 @@ public class FluentChatClient {
 		}
 
 		public ChatResponse call() {
-			return null;
-		}
-
-	}
-
-	public static class LiquidChatClient {
-
-		private final ChatClient chatClient;
-
-		public LiquidChatClient(ChatClient chatClient) {
-			this.chatClient = chatClient;
-		}
-
-		// put this in ChatClient
-		public LiquidChatCallSpec chat(Consumer<ChatBuilderSpec> chatSpec) {
 			return null;
 		}
 
