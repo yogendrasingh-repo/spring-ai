@@ -15,15 +15,18 @@
  */
 package org.springframework.ai.chat;
 
+import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.prompt.Prompt;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.model.ModelClient;
+import org.springframework.util.MimeType;
 
-@FunctionalInterface
 public interface ChatClient extends ModelClient<Prompt, ChatResponse> {
 
 	default String call(String message) {
