@@ -28,10 +28,11 @@ public class OpenAiChatClientFluentIT {
 	void simpleTest() {
 		var liquidChatClient = new FluentChatClient.LiquidChatClient(this.chatClient);
 		var actors = liquidChatClient
-			.chat(s -> s.system(sys -> sys.text("""
-						You're a non user hostile chatbot from cyberdyne systems.
-						your primary objective is {primaryObjective}
-					""").params(Map.of("primaryObjective", "No PHP")))
+			.chat(s -> s.system(sys ->
+                            sys.text("""
+						                You're a non user hostile chatbot from cyberdyne systems.
+						                 your primary objective is {primaryObjective}""")
+                                    .params(Map.of("primaryObjective", "No PHP")))
 				.functions(fn -> fn.functions((FunctionCallback) null)
 					.functions("createReservation", "cancelReservations"))
 				.user(user -> user.text("tell me a joke about {topic}")

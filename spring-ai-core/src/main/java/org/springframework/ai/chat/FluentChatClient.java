@@ -2,6 +2,7 @@ package org.springframework.ai.chat;
 
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.model.function.FunctionCallback;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.util.MimeType;
 
@@ -142,11 +143,11 @@ public class FluentChatClient {
 
 	public static class LiquidChatCallSpec {
 
-		public <T> T call(T... ts) {
+		public <T> T call(Class<T> tClass) {
 			return null;
 		}
 
-		public <T> T call(Class<T> tClass) {
+		public <T> T call(ParameterizedTypeReference<T> typeReference) {
 			return null;
 		}
 
