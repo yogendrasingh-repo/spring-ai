@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.FluentChatClient;
+import org.springframework.ai.chat.FluentChatClientLambda;
 import org.springframework.ai.openai.OpenAiTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,12 +41,15 @@ public class OpenAiChatClientSpecIT {
                 .execute();
 
 
-//        ActorsFilmsRecord actorsFilms = new FluentChatClient().chat(
-//                chatSpec -> chatSpec
-//                        .user(userSpec -> userSpec.text("Generate the filmography of 5 movies for {actor}.",
-//                                textSpec -> textSpec.param("actor", "Tom Hanks"))
-//                )
-//                .execute());
+        ActorsFilmsRecord actorsFilms = new FluentChatClientLambda(chatClient).chat(
+                chatSpec -> chatSpec
+                        .user(userSpec -> {
+                            userSpec.text("Generate the filmography of 5 movies for {actor}.",
+                                textSpec -> textSpec.param("actor", "Tom Hanks") );
+                            userSpec.media()
+                        }
+                )
+                .execute());
 
 //        ActorsFilmsRecord actorsFilms = new FluentChatClient().chat(chatSpec ->
 //                chatSpec.user(userSpec ->

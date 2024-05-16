@@ -26,14 +26,15 @@ public class DefaultChatSpecLambda implements FluentChatClientLambda.ChatSpec {
 		this.chatClient = chatClient;
 	}
 
-	@Override
-	public FluentChatClientLambda.ChatUserSpec user() {
-		return new DefaultChatUserSpec(this);
-	}
-
 	public void addUser(String userText, Map<String, Object> textParameters) {
 		this.userText = userText;
 		this.textParameters.putAll(textParameters);
+	}
+
+	@Override
+	public FluentChatClientLambda.ChatUserSpec user(Consumer<FluentChatClientLambda.ChatUserSpec> chatUserSpecConsumer) {
+		// lord help us!
+		return null;
 	}
 
 	public <T> T execute(T... varargsOfT) {
