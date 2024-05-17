@@ -77,10 +77,10 @@ public class VertexAiGeminiChatOptions implements FunctionCallingOptions, ChatOp
 	private @JsonProperty("modelName") String model;
 
 	/**
-	 * Tool Function Callbacks to register with the ChatClient.
+	 * Tool Function Callbacks to register with the ChatConnector.
 	 * For Prompt Options the functionCallbacks are automatically enabled for the duration of the prompt execution.
 	 * For Default Options the functionCallbacks are registered but disabled by default. Use the enableFunctions to set the functions
-	 * from the registry to be used by the ChatClient chat completion requests.
+	 * from the registry to be used by the ChatConnector chat completion requests.
 	 */
 	@NestedConfigurationProperty
 	@JsonIgnore

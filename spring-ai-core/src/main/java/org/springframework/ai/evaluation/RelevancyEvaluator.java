@@ -1,6 +1,6 @@
 package org.springframework.ai.evaluation;
 
-import org.springframework.ai.chat.ChatClient;
+import org.springframework.ai.chat.connector.ChatConnector;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
@@ -31,14 +31,14 @@ public class RelevancyEvaluator implements Evaluator {
 
 	private final ChatOptions chatOptions;
 
-	private ChatClient chatClient;
+	private ChatConnector chatConnector;
 
-	public RelevancyEvaluator(ChatClient chatClient) {
-		this(chatClient, ChatOptionsBuilder.builder().build());
+	public RelevancyEvaluator(ChatConnector chatConnector) {
+		this(chatConnector, ChatOptionsBuilder.builder().build());
 	}
 
-	public RelevancyEvaluator(ChatClient chatClient, ChatOptions chatOptions) {
-		this.chatClient = chatClient;
+	public RelevancyEvaluator(ChatConnector chatConnector, ChatOptions chatOptions) {
+		this.chatConnector = chatConnector;
 		this.chatOptions = chatOptions;
 	}
 
@@ -52,7 +52,7 @@ public class RelevancyEvaluator implements Evaluator {
 		Message message = promptTemplate
 			.createMessage(Map.of("query", query, "response", response, "context", context));
 
-		ChatResponse chatResponse = this.chatClient.call(new Prompt(message, this.chatOptions));
+		ChatResponse chatResponse = this.chatConnector.execute(new Prompt(message, this.chatOptions));
 
 		var evaluationResponse = chatResponse.getResult().getOutput().getContent();
 		boolean passing = false;

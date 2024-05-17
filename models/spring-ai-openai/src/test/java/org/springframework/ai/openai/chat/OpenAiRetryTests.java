@@ -31,7 +31,7 @@ import org.springframework.ai.image.ImageMessage;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.openai.OpenAiAudioTranscriptionClient;
 import org.springframework.ai.openai.OpenAiAudioTranscriptionOptions;
-import org.springframework.ai.openai.OpenAiChatClient;
+import org.springframework.ai.openai.OpenAiChatConnector;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.OpenAiEmbeddingClient;
 import org.springframework.ai.openai.OpenAiEmbeddingOptions;
@@ -107,7 +107,7 @@ public class OpenAiRetryTests {
 
 	private @Mock OpenAiImageApi openAiImageApi;
 
-	private OpenAiChatClient chatClient;
+	private OpenAiChatConnector chatClient;
 
 	private OpenAiEmbeddingClient embeddingClient;
 
@@ -121,7 +121,7 @@ public class OpenAiRetryTests {
 		retryListener = new TestRetryListener();
 		retryTemplate.registerListener(retryListener);
 
-		chatClient = new OpenAiChatClient(openAiApi, OpenAiChatOptions.builder().build(), null, retryTemplate);
+		chatClient = new OpenAiChatConnector(openAiApi, OpenAiChatOptions.builder().build(), null, retryTemplate);
 		embeddingClient = new OpenAiEmbeddingClient(openAiApi, MetadataMode.EMBED,
 				OpenAiEmbeddingOptions.builder().build(), retryTemplate);
 		audioTranscriptionClient = new OpenAiAudioTranscriptionClient(openAiAudioApi,
@@ -146,7 +146,7 @@ public class OpenAiRetryTests {
 			.thenThrow(new TransientAiException("Transient Error 2"))
 			.thenReturn(ResponseEntity.of(Optional.of(expectedChatCompletion)));
 
-		var result = chatClient.call(new Prompt("text"));
+		var result = chatClient.execute(new Prompt("text"));
 
 		assertThat(result).isNotNull();
 		assertThat(result.getResult().getOutput().getContent()).isSameAs("Response");
@@ -158,7 +158,7 @@ public class OpenAiRetryTests {
 	public void openAiChatNonTransientError() {
 		when(openAiApi.chatCompletionEntity(isA(ChatCompletionRequest.class)))
 				.thenThrow(new RuntimeException("Non Transient Error"));
-		assertThrows(RuntimeException.class, () -> chatClient.call(new Prompt("text")));
+		assertThrows(RuntimeException.class, () -> chatClient.execute(new Prompt("text")));
 	}
 
 	@Test

@@ -25,7 +25,7 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.autoconfigure.azure.openai.AzureOpenAiAutoConfiguration;
-import org.springframework.ai.azure.openai.AzureOpenAiChatClient;
+import org.springframework.ai.azure.openai.AzureOpenAiChatConnector;
 import org.springframework.ai.azure.openai.AzureOpenAiEmbeddingClient;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
@@ -77,8 +77,8 @@ public class AzureOpenAiAutoConfigurationIT {
 	@Test
 	public void chatCompletion() {
 		contextRunner.run(context -> {
-			AzureOpenAiChatClient chatClient = context.getBean(AzureOpenAiChatClient.class);
-			ChatResponse response = chatClient.call(new Prompt(List.of(userMessage, systemMessage)));
+			AzureOpenAiChatConnector chatClient = context.getBean(AzureOpenAiChatConnector.class);
+			ChatResponse response = chatClient.execute(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
 	}
@@ -87,7 +87,7 @@ public class AzureOpenAiAutoConfigurationIT {
 	public void chatCompletionStreaming() {
 		contextRunner.run(context -> {
 
-			AzureOpenAiChatClient chatClient = context.getBean(AzureOpenAiChatClient.class);
+			AzureOpenAiChatConnector chatClient = context.getBean(AzureOpenAiChatConnector.class);
 
 			Flux<ChatResponse> response = chatClient.stream(new Prompt(List.of(userMessage, systemMessage)));
 
@@ -127,17 +127,17 @@ public class AzureOpenAiAutoConfigurationIT {
 
 		// Disable the chat auto-configuration.
 		contextRunner.withPropertyValues("spring.ai.azure.openai.chat.enabled=false").run(context -> {
-			assertThat(context.getBeansOfType(AzureOpenAiChatClient.class)).isEmpty();
+			assertThat(context.getBeansOfType(AzureOpenAiChatConnector.class)).isEmpty();
 		});
 
 		// The chat auto-configuration is enabled by default.
 		contextRunner.run(context -> {
-			assertThat(context.getBeansOfType(AzureOpenAiChatClient.class)).isNotEmpty();
+			assertThat(context.getBeansOfType(AzureOpenAiChatConnector.class)).isNotEmpty();
 		});
 
 		// Explicitly enable the chat auto-configuration.
 		contextRunner.withPropertyValues("spring.ai.azure.openai.chat.enabled=true").run(context -> {
-			assertThat(context.getBeansOfType(AzureOpenAiChatClient.class)).isNotEmpty();
+			assertThat(context.getBeansOfType(AzureOpenAiChatConnector.class)).isNotEmpty();
 		});
 	}
 

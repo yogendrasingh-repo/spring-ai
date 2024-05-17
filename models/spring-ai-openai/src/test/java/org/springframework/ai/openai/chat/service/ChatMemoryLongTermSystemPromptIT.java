@@ -23,6 +23,7 @@ import io.qdrant.client.QdrantGrpcClient;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.ai.chat.service.ChatService;
 import org.springframework.ai.chat.service.StreamingChatService;
+import org.springframework.ai.openai.OpenAiChatConnector;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.qdrant.QdrantContainer;
@@ -36,7 +37,6 @@ import org.springframework.ai.chat.memory.SystemPromptChatMemoryAugmentor;
 import org.springframework.ai.embedding.EmbeddingClient;
 import org.springframework.ai.evaluation.BaseMemoryTest;
 import org.springframework.ai.evaluation.RelevancyEvaluator;
-import org.springframework.ai.openai.OpenAiChatClient;
 import org.springframework.ai.openai.OpenAiEmbeddingClient;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.tokenizer.JTokkitTokenCountEstimator;
@@ -75,8 +75,8 @@ public class ChatMemoryLongTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public OpenAiChatClient openAiClient(OpenAiApi openAiApi) {
-			return new OpenAiChatClient(openAiApi);
+		public OpenAiChatConnector openAiClient(OpenAiApi openAiApi) {
+			return new OpenAiChatConnector(openAiApi);
 		}
 
 		@Bean
@@ -98,7 +98,7 @@ public class ChatMemoryLongTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public ChatService memoryChatService(OpenAiChatClient chatClient, VectorStore vectorStore,
+		public ChatService memoryChatService(OpenAiChatConnector chatClient, VectorStore vectorStore,
 				TokenCountEstimator tokenCountEstimator) {
 
 			return PromptTransformingChatService.builder(chatClient)
@@ -110,7 +110,7 @@ public class ChatMemoryLongTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public StreamingChatService memoryStreamingChatService(OpenAiChatClient streamingChatClient,
+		public StreamingChatService memoryStreamingChatService(OpenAiChatConnector streamingChatClient,
 				VectorStore vectorStore, TokenCountEstimator tokenCountEstimator) {
 
 			return StreamingPromptTransformingChatService.builder(streamingChatClient)
@@ -122,7 +122,7 @@ public class ChatMemoryLongTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public RelevancyEvaluator relevancyEvaluator(OpenAiChatClient chatClient) {
+		public RelevancyEvaluator relevancyEvaluator(OpenAiChatConnector chatClient) {
 			return new RelevancyEvaluator(chatClient);
 		}
 

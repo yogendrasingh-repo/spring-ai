@@ -88,7 +88,7 @@ The prefix `spring.ai.azure.openai` is the property prefix to configure the conn
 | spring.ai.azure.openai.endpoint | The endpoint from the Azure AI OpenAI `Keys and Endpoint` section under `Resource Management` | -
 |====
 
-The prefix `spring.ai.azure.openai.chat` is the property prefix that configures the `ChatClient` implementation for Azure OpenAI.
+The prefix `spring.ai.azure.openai.chat` is the property prefix that configures the `ChatConnector` implementation for Azure OpenAI.
 
 [cols="3,5,3"]
 |====
@@ -157,7 +157,7 @@ spring.ai.azure.openai.chat.options.temperature=0.7
 
 TIP: replace the `api-key` and `endpoint` with your Azure OpenAI credentials.
 
-This will create a `AzureOpenAiChatClient` implementation that you can inject into your class.
+This will create a `AzureOpenAiChatConnector` implementation that you can inject into your class.
 Here is an example of a simple `@Controller` class that uses the chat client for text generations.
 
 
@@ -188,7 +188,7 @@ public class ChatController {
 
 == Manual Configuration
 
-The link:https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-azure-openai/src/main/java/org/springframework/ai/azure/openai/AzureOpenAiChatClient.java[AzureOpenAiChatClient] implements the `ChatClient` and `StreamingChatClient` and uses the link:https://learn.microsoft.com/en-us/java/api/overview/azure/ai-openai-readme?view=azure-java-preview[Azure OpenAI Java Client].
+The link:https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-azure-openai/src/main/java/org/springframework/ai/azure/openai/AzureOpenAiChatClient.java[AzureOpenAiChatClient] implements the `ChatConnector` and `StreamingChatClient` and uses the link:https://learn.microsoft.com/en-us/java/api/overview/azure/ai-openai-readme?view=azure-java-preview[Azure OpenAI Java Client].
 
 To enable it, add the `spring-ai-azure-openai` dependency to your project's Maven `pom.xml` file:
 [source, xml]
@@ -210,9 +210,9 @@ dependencies {
 
 TIP: Refer to the xref:getting-started.adoc#dependency-management[Dependency Management] section to add the Spring AI BOM to your build file.
 
-TIP: The `spring-ai-azure-openai` dependency also provide the access to the `AzureOpenAiChatClient`. For more information about the `AzureOpenAiChatClient` refer to the link:../chat/azure-openai-chat.html[Azure OpenAI Chat] section.
+TIP: The `spring-ai-azure-openai` dependency also provide the access to the `AzureOpenAiChatConnector`. For more information about the `AzureOpenAiChatConnector` refer to the link:../chat/azure-openai-chat.html[Azure OpenAI Chat] section.
 
-Next, create an `AzureOpenAiChatClient` instance and use it to generate text responses:
+Next, create an `AzureOpenAiChatConnector` instance and use it to generate text responses:
 
 [source,java]
 ----

@@ -155,7 +155,7 @@ dependencies {
 
 TIP: Refer to the xref:getting-started.adoc#dependency-management[Dependency Management] section to add the Spring AI BOM to your build file.
 
-NOTE: The `spring-ai-azure-openai` dependency also provide the access to the `AzureOpenAiEmbeddingClient`. For more information about the `AzureOpenAiChatClient` refer to the link:../embeddings/azure-openai-embeddings.html[Azure OpenAI Embeddings] section.
+NOTE: The `spring-ai-azure-openai` dependency also provide the access to the `AzureOpenAiEmbeddingClient`. For more information about the `AzureOpenAiChatConnector` refer to the link:../embeddings/azure-openai-embeddings.html[Azure OpenAI Embeddings] section.
 
 Next, create an `AzureOpenAiEmbeddingClient` instance and use it to compute the similarity between two input texts:
 

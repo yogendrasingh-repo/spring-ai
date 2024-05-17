@@ -30,7 +30,7 @@ import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.mistralai.MistralAiChatClient;
+import org.springframework.ai.mistralai.MistralAiChatConnector;
 import org.springframework.ai.mistralai.MistralAiChatOptions;
 import org.springframework.ai.mistralai.api.MistralAiApi;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -60,10 +60,10 @@ class PaymentStatusBeanIT {
 			.withPropertyValues("spring.ai.mistralai.chat.options.model=" + MistralAiApi.ChatModel.LARGE.getValue())
 			.run(context -> {
 
-				MistralAiChatClient chatClient = context.getBean(MistralAiChatClient.class);
+				MistralAiChatConnector chatClient = context.getBean(MistralAiChatConnector.class);
 
 				ChatResponse response = chatClient
-					.call(new Prompt(List.of(new UserMessage("What's the status of my transaction with id T1001?")),
+					.execute(new Prompt(List.of(new UserMessage("What's the status of my transaction with id T1001?")),
 							MistralAiChatOptions.builder()
 								.withFunction("retrievePaymentStatus")
 								.withFunction("retrievePaymentDate")

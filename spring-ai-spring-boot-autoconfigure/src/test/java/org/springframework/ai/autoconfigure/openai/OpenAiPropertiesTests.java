@@ -21,7 +21,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
 import org.springframework.ai.model.ModelOptionsUtils;
-import org.springframework.ai.openai.OpenAiChatClient;
+import org.springframework.ai.openai.OpenAiChatConnector;
 import org.springframework.ai.openai.OpenAiEmbeddingClient;
 import org.springframework.ai.openai.OpenAiImageClient;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.ResponseFormat;
@@ -593,7 +593,7 @@ public class OpenAiPropertiesTests {
 					RestClientAutoConfiguration.class, OpenAiAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(OpenAiChatProperties.class)).isNotEmpty();
-				assertThat(context.getBeansOfType(OpenAiChatClient.class)).isEmpty();
+				assertThat(context.getBeansOfType(OpenAiChatConnector.class)).isEmpty();
 			});
 
 		new ApplicationContextRunner()
@@ -602,7 +602,7 @@ public class OpenAiPropertiesTests {
 					RestClientAutoConfiguration.class, OpenAiAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(OpenAiChatProperties.class)).isNotEmpty();
-				assertThat(context.getBeansOfType(OpenAiChatClient.class)).isNotEmpty();
+				assertThat(context.getBeansOfType(OpenAiChatConnector.class)).isNotEmpty();
 			});
 
 		new ApplicationContextRunner()
@@ -612,7 +612,7 @@ public class OpenAiPropertiesTests {
 					RestClientAutoConfiguration.class, OpenAiAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(OpenAiChatProperties.class)).isNotEmpty();
-				assertThat(context.getBeansOfType(OpenAiChatClient.class)).isNotEmpty();
+				assertThat(context.getBeansOfType(OpenAiChatConnector.class)).isNotEmpty();
 			});
 
 	}

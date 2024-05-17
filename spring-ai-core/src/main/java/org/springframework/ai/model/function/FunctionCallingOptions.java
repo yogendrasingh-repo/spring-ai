@@ -24,33 +24,33 @@ import java.util.Set;
 public interface FunctionCallingOptions {
 
 	/**
-	 * Function Callbacks to be registered with the ChatClient. For Prompt Options the
+	 * Function Callbacks to be registered with the ChatConnector. For Prompt Options the
 	 * functionCallbacks are automatically enabled for the duration of the prompt
 	 * execution. For Default Options the FunctionCallbacks are registered but disabled by
 	 * default. You have to use "functions" property to list the function names from the
-	 * ChatClient registry to be used in the chat completion requests.
-	 * @return Return the Function Callbacks to be registered with the ChatClient.
+	 * ChatConnector registry to be used in the chat completion requests.
+	 * @return Return the Function Callbacks to be registered with the ChatConnector.
 	 */
 	List<FunctionCallback> getFunctionCallbacks();
 
 	/**
-	 * Set the Function Callbacks to be registered with the ChatClient.
+	 * Set the Function Callbacks to be registered with the ChatConnector.
 	 * @param functionCallbacks the Function Callbacks to be registered with the
-	 * ChatClient.
+	 * ChatConnector.
 	 */
 	void setFunctionCallbacks(List<FunctionCallback> functionCallbacks);
 
 	/**
-	 * @return List of function names from the ChatClient registry to be used in the next
-	 * chat completion requests.
+	 * @return List of function names from the ChatConnector registry to be used in the
+	 * next chat completion requests.
 	 */
 	Set<String> getFunctions();
 
 	/**
-	 * Set the list of function names from the ChatClient registry to be used in the next
-	 * chat completion requests.
-	 * @param functions the list of function names from the ChatClient registry to be used
-	 * in the next chat completion requests.
+	 * Set the list of function names from the ChatConnector registry to be used in the
+	 * next chat completion requests.
+	 * @param functions the list of function names from the ChatConnector registry to be
+	 * used in the next chat completion requests.
 	 */
 	void setFunctions(Set<String> functions);
 

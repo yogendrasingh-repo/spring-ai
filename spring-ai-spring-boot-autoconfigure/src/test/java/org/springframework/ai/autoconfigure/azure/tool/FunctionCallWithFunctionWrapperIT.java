@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.ai.autoconfigure.azure.openai.AzureOpenAiAutoConfiguration;
-import org.springframework.ai.azure.openai.AzureOpenAiChatClient;
+import org.springframework.ai.azure.openai.AzureOpenAiChatConnector;
 import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -56,12 +56,12 @@ public class FunctionCallWithFunctionWrapperIT {
 		contextRunner.withPropertyValues("spring.ai.azure.openai.chat.options.deployment-name=gpt-4-0125-preview")
 			.run(context -> {
 
-				AzureOpenAiChatClient chatClient = context.getBean(AzureOpenAiChatClient.class);
+				AzureOpenAiChatConnector chatClient = context.getBean(AzureOpenAiChatConnector.class);
 
 				UserMessage userMessage = new UserMessage(
 						"What's the weather like in San Francisco, Paris and in Tokyo?");
 
-				ChatResponse response = chatClient.call(new Prompt(List.of(userMessage),
+				ChatResponse response = chatClient.execute(new Prompt(List.of(userMessage),
 						AzureOpenAiChatOptions.builder().withFunction("WeatherInfo").build()));
 
 				logger.info("Response: {}", response);

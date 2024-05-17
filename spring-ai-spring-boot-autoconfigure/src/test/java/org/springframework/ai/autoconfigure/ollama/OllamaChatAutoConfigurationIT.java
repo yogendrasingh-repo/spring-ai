@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.ollama.OllamaChatClient;
+import org.springframework.ai.ollama.OllamaChatConnector;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.chat.messages.Message;
@@ -104,8 +104,8 @@ public class OllamaChatAutoConfigurationIT {
 	@Test
 	public void chatCompletion() {
 		contextRunner.run(context -> {
-			OllamaChatClient chatClient = context.getBean(OllamaChatClient.class);
-			ChatResponse response = chatClient.call(new Prompt(List.of(userMessage, systemMessage)));
+			OllamaChatConnector chatClient = context.getBean(OllamaChatConnector.class);
+			ChatResponse response = chatClient.execute(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
 	}
@@ -114,7 +114,7 @@ public class OllamaChatAutoConfigurationIT {
 	public void chatCompletionStreaming() {
 		contextRunner.run(context -> {
 
-			OllamaChatClient chatClient = context.getBean(OllamaChatClient.class);
+			OllamaChatConnector chatClient = context.getBean(OllamaChatConnector.class);
 
 			Flux<ChatResponse> response = chatClient.stream(new Prompt(List.of(userMessage, systemMessage)));
 
@@ -136,17 +136,17 @@ public class OllamaChatAutoConfigurationIT {
 	void chatActivation() {
 		contextRunner.withPropertyValues("spring.ai.ollama.chat.enabled=false").run(context -> {
 			assertThat(context.getBeansOfType(OllamaChatProperties.class)).isNotEmpty();
-			assertThat(context.getBeansOfType(OllamaChatClient.class)).isEmpty();
+			assertThat(context.getBeansOfType(OllamaChatConnector.class)).isEmpty();
 		});
 
 		contextRunner.run(context -> {
 			assertThat(context.getBeansOfType(OllamaChatProperties.class)).isNotEmpty();
-			assertThat(context.getBeansOfType(OllamaChatClient.class)).isNotEmpty();
+			assertThat(context.getBeansOfType(OllamaChatConnector.class)).isNotEmpty();
 		});
 
 		contextRunner.withPropertyValues("spring.ai.ollama.chat.enabled=true").run(context -> {
 			assertThat(context.getBeansOfType(OllamaChatProperties.class)).isNotEmpty();
-			assertThat(context.getBeansOfType(OllamaChatClient.class)).isNotEmpty();
+			assertThat(context.getBeansOfType(OllamaChatConnector.class)).isNotEmpty();
 		});
 	}
 

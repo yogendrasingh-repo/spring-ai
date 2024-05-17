@@ -82,7 +82,7 @@ public class MistralAiRetryTests {
 
 	private @Mock MistralAiApi mistralAiApi;
 
-	private MistralAiChatClient chatClient;
+	private MistralAiChatConnector chatClient;
 
 	private MistralAiEmbeddingClient embeddingClient;
 
@@ -92,7 +92,7 @@ public class MistralAiRetryTests {
 		retryListener = new TestRetryListener();
 		retryTemplate.registerListener(retryListener);
 
-		chatClient = new MistralAiChatClient(mistralAiApi,
+		chatClient = new MistralAiChatConnector(mistralAiApi,
 				MistralAiChatOptions.builder()
 					.withTemperature(0.7f)
 					.withTopP(1f)
@@ -118,7 +118,7 @@ public class MistralAiRetryTests {
 			.thenThrow(new TransientAiException("Transient Error 2"))
 			.thenReturn(ResponseEntity.of(Optional.of(expectedChatCompletion)));
 
-		var result = chatClient.call(new Prompt("text"));
+		var result = chatClient.execute(new Prompt("text"));
 
 		assertThat(result).isNotNull();
 		assertThat(result.getResult().getOutput().getContent()).isSameAs("Response");
@@ -130,7 +130,7 @@ public class MistralAiRetryTests {
 	public void mistralAiChatNonTransientError() {
 		when(mistralAiApi.chatCompletionEntity(isA(ChatCompletionRequest.class)))
 				.thenThrow(new RuntimeException("Non Transient Error"));
-		assertThrows(RuntimeException.class, () -> chatClient.call(new Prompt("text")));
+		assertThrows(RuntimeException.class, () -> chatClient.execute(new Prompt("text")));
 	}
 
 	@Test

@@ -41,8 +41,8 @@ public class MistralAiTestConfiguration {
 	}
 
 	@Bean
-	public MistralAiChatClient mistralAiChatClient(MistralAiApi mistralAiApi) {
-		return new MistralAiChatClient(mistralAiApi,
+	public MistralAiChatConnector mistralAiChatClient(MistralAiApi mistralAiApi) {
+		return new MistralAiChatConnector(mistralAiApi,
 				MistralAiChatOptions.builder().withModel(MistralAiApi.ChatModel.MIXTRAL.getValue()).build());
 	}
 

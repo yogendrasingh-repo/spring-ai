@@ -179,7 +179,7 @@ spring.ai.bedrock.anthropic3.chat.options.top-k=15
 
 TIP: replace the `regions`, `access-key` and `secret-key` with your AWS credentials.
 
-This will create a `BedrockAnthropicChatClient` implementation that you can inject into your class.
+This will create a `BedrockAnthropicChatConnector` implementation that you can inject into your class.
 Here is an example of a simple `@Controller` class that uses the chat client for text generations.
 
 [source,java]
@@ -209,7 +209,7 @@ public class ChatController {
 
 == Manual Configuration
 
-The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-bedrock/src/main/java/org/springframework/ai/bedrock/anthropic3/BedrockAnthropic3ChatClient.java[BedrockAnthropic3ChatClient] implements the `ChatClient` and `StreamingChatClient` and uses the <<low-level-api>> to connect to the Bedrock Anthropic service.
+The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-bedrock/src/main/java/org/springframework/ai/bedrock/anthropic3/BedrockAnthropic3ChatClient.java[BedrockAnthropic3ChatClient] implements the `ChatConnector` and `StreamingChatClient` and uses the <<low-level-api>> to connect to the Bedrock Anthropic service.
 
 Add the `spring-ai-bedrock` dependency to your project's Maven `pom.xml` file:
 

@@ -31,7 +31,7 @@ import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.mistralai.api.MistralAiApi;
-import org.springframework.ai.openai.OpenAiChatClient;
+import org.springframework.ai.openai.OpenAiChatConnector;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Description;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Same test as {@link PaymentStatusBeanIT.java} but using {@link OpenAiChatClient} for
+ * Same test as {@link PaymentStatusBeanIT.java} but using {@link OpenAiChatConnector} for
  * Mistral AI Function Calling implementation.
  *
  * @author Christian Tzolov
@@ -67,10 +67,10 @@ class PaymentStatusBeanOpenAiIT {
 			.withPropertyValues("spring.ai.openai.chat.options.model=" + MistralAiApi.ChatModel.SMALL.getValue())
 			.run(context -> {
 
-				OpenAiChatClient chatClient = context.getBean(OpenAiChatClient.class);
+				OpenAiChatConnector chatClient = context.getBean(OpenAiChatConnector.class);
 
 				ChatResponse response = chatClient
-					.call(new Prompt(List.of(new UserMessage("What's the status of my transaction with id T1001?")),
+					.execute(new Prompt(List.of(new UserMessage("What's the status of my transaction with id T1001?")),
 							OpenAiChatOptions.builder()
 								.withFunction("retrievePaymentStatus")
 								.withFunction("retrievePaymentDate")

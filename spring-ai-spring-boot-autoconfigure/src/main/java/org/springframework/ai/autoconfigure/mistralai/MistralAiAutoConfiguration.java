@@ -18,7 +18,7 @@ package org.springframework.ai.autoconfigure.mistralai;
 import java.util.List;
 
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
-import org.springframework.ai.mistralai.MistralAiChatClient;
+import org.springframework.ai.mistralai.MistralAiChatConnector;
 import org.springframework.ai.mistralai.MistralAiEmbeddingClient;
 import org.springframework.ai.mistralai.api.MistralAiApi;
 import org.springframework.ai.model.function.FunctionCallback;
@@ -69,7 +69,7 @@ public class MistralAiAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = MistralAiChatProperties.CONFIG_PREFIX, name = "enabled", havingValue = "true",
 			matchIfMissing = true)
-	public MistralAiChatClient mistralAiChatClient(MistralAiCommonProperties commonProperties,
+	public MistralAiChatConnector mistralAiChatClient(MistralAiCommonProperties commonProperties,
 			MistralAiChatProperties chatProperties, RestClient.Builder restClientBuilder,
 			List<FunctionCallback> toolFunctionCallbacks, FunctionCallbackContext functionCallbackContext,
 			RetryTemplate retryTemplate, ResponseErrorHandler responseErrorHandler) {
@@ -81,7 +81,7 @@ public class MistralAiAutoConfiguration {
 			chatProperties.getOptions().getFunctionCallbacks().addAll(toolFunctionCallbacks);
 		}
 
-		return new MistralAiChatClient(mistralAiApi, chatProperties.getOptions(), functionCallbackContext,
+		return new MistralAiChatConnector(mistralAiApi, chatProperties.getOptions(), functionCallbackContext,
 				retryTemplate);
 	}
 

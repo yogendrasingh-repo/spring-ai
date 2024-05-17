@@ -50,10 +50,9 @@ import org.springframework.ai.chat.prompt.transformer.VectorStoreRetriever;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.document.DocumentTransformer;
 import org.springframework.ai.embedding.EmbeddingClient;
-import org.springframework.ai.evaluation.EvaluationRequest;
 import org.springframework.ai.evaluation.EvaluationResponse;
 import org.springframework.ai.evaluation.RelevancyEvaluator;
-import org.springframework.ai.openai.OpenAiChatClient;
+import org.springframework.ai.openai.OpenAiChatConnector;
 import org.springframework.ai.openai.OpenAiEmbeddingClient;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.reader.JsonReader;
@@ -164,8 +163,8 @@ public class LongShortTermChatMemoryWithRagIT {
 		}
 
 		@Bean
-		public OpenAiChatClient openAiClient(OpenAiApi openAiApi) {
-			return new OpenAiChatClient(openAiApi);
+		public OpenAiChatConnector openAiClient(OpenAiApi openAiApi) {
+			return new OpenAiChatConnector(openAiApi);
 		}
 
 		@Bean
@@ -187,7 +186,7 @@ public class LongShortTermChatMemoryWithRagIT {
 		}
 
 		@Bean
-		public ChatService memoryChatService(OpenAiChatClient chatClient, VectorStore vectorStore,
+		public ChatService memoryChatService(OpenAiChatConnector chatClient, VectorStore vectorStore,
 				TokenCountEstimator tokenCountEstimator, ChatMemory chatHistory) {
 
 			return PromptTransformingChatService.builder(chatClient)
@@ -224,7 +223,7 @@ public class LongShortTermChatMemoryWithRagIT {
 		}
 
 		// @Bean
-		// public StreamingChatService memoryStreamingChatAgent(OpenAiChatClient
+		// public StreamingChatService memoryStreamingChatAgent(OpenAiChatConnector
 		// streamingChatClient,
 		// VectorStore vectorStore, TokenCountEstimator tokenCountEstimator, ChatHistory
 		// chatHistory) {
@@ -241,7 +240,7 @@ public class LongShortTermChatMemoryWithRagIT {
 		// }
 
 		@Bean
-		public RelevancyEvaluator relevancyEvaluator(OpenAiChatClient chatClient) {
+		public RelevancyEvaluator relevancyEvaluator(OpenAiChatConnector chatClient) {
 			// Use GPT 4 as a better model for determining relevancy. gpt 3.5 makes basic
 			// mistakes
 			OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder()

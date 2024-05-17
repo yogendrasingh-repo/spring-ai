@@ -23,7 +23,7 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.ai.anthropic.AnthropicChatClient;
+import org.springframework.ai.anthropic.AnthropicChatConnector;
 import org.springframework.ai.anthropic.AnthropicChatOptions;
 import org.springframework.ai.anthropic.api.AnthropicApi;
 import org.springframework.ai.autoconfigure.anthropic.AnthropicAutoConfiguration;
@@ -61,19 +61,19 @@ class FunctionCallWithFunctionBeanIT {
 					"spring.ai.anthropic.chat.options.model=" + AnthropicApi.ChatModel.CLAUDE_3_OPUS.getValue())
 			.run(context -> {
 
-				AnthropicChatClient chatClient = context.getBean(AnthropicChatClient.class);
+				AnthropicChatConnector chatClient = context.getBean(AnthropicChatConnector.class);
 
 				var userMessage = new UserMessage(
 						"What's the weather like in San Francisco, in Paris, France and in Tokyo, Japan? Return the temperature in Celsius.");
 
-				ChatResponse response = chatClient.call(new Prompt(List.of(userMessage),
+				ChatResponse response = chatClient.execute(new Prompt(List.of(userMessage),
 						AnthropicChatOptions.builder().withFunction("weatherFunction").build()));
 
 				logger.info("Response: {}", response);
 
 				assertThat(response.getResult().getOutput().getContent()).contains("30", "10", "15");
 
-				response = chatClient.call(new Prompt(List.of(userMessage),
+				response = chatClient.execute(new Prompt(List.of(userMessage),
 						AnthropicChatOptions.builder().withFunction("weatherFunction3").build()));
 
 				logger.info("Response: {}", response);
