@@ -22,6 +22,76 @@ import java.util.function.Consumer;
  *
  */
 
+/*
+
+Here's some sample usage:
+
+package com.example.demo;
+
+import org.springframework.ai.chat.ChatClient;
+import org.springframework.ai.chat.messages.Media;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.openai.OpenAiChatConnector;
+import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import java.util.Map;
+
+@SpringBootApplication
+public class DemoApplication {
+
+
+    @Bean
+    ChatClient chatClient(
+            OpenAiChatConnector connector) {
+
+        var sp = """
+                you're a non-hostile sentient AI from the future, built
+                by Cyberdyne systems.
+
+                Answer all questions in this persona.
+
+                Return all answers as a JSON document with one attribute called "response"
+                whose value contains your response.
+
+                """;
+        return ChatClient
+                .builder(connector)
+                .defaultSystem(sp)
+                .build();
+    }
+
+    @Bean
+    ApplicationRunner demo1(ChatClient client) {
+        return args -> {
+            var response = client
+                    .user(spec -> spec
+                            .param("name", "Christian")
+                            .media(new Media[]{})
+                            .params(Map.of("a", "b"))
+                    )
+                    .options(OpenAiChatOptions.builder().withModel("gpt-3").withFunction("asdf").build())
+                    .functions("asdf")
+                    .messages(new Message[0])
+                    .chat()
+                    .single(Actor.class);
+
+            System.out.println("response: " + response);
+        };
+    }
+
+    record Actor(String name) {
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
+}
+*/
+
 public interface ChatClient {
     static ChatClientBuilder builder(ChatConnector connector) {
         return new ChatClientBuilder(connector);
