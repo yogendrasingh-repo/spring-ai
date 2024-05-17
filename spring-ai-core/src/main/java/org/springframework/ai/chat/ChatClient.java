@@ -259,7 +259,7 @@ public class ChatClient {
 					this.defaultFunctions, this.defaultMedia);
 		}
 
-		public ChatClientBuilder defaultSystemPrompt(String systemPrompt) {
+		public ChatClientBuilder defaultSystem(String systemPrompt) {
 			return this;
 		}
 

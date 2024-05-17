@@ -15,7 +15,7 @@ class ChatConnectorTest {
 
 		@Bean
 		ChatClient client(OpenAiChatConnector openAiChatConnector) {
-			return ChatClient.builder(openAiChatConnector).defaultSystemPrompt("""
+			return ChatClient.builder(openAiChatConnector).defaultSystem("""
 					    you are customer service agent designed to answer questions
 					    about a the user, {userName}'s, orders. Here are their outstanding orders.
 
