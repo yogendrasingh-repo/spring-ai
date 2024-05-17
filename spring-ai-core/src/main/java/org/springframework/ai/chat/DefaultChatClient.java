@@ -4,7 +4,7 @@ import org.springframework.ai.chat.connector.ChatConnector;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.prompt.Prompt;
 
-import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 
 
@@ -17,7 +17,6 @@ import java.util.function.Consumer;
  * @author Josh Long
  * @author Arjen Poutsma
  */
-
 public class DefaultChatClient implements ChatClient {
 
 	private final ChatConnector connector;
