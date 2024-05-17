@@ -59,8 +59,8 @@ public class AzureOpenAiAutoConfiguration {
 	@ConditionalOnProperty(prefix = AzureOpenAiChatProperties.CONFIG_PREFIX, name = "enabled", havingValue = "true",
 			matchIfMissing = true)
 	public AzureOpenAiChatConnector azureOpenAiChatClient(OpenAIClient openAIClient,
-			AzureOpenAiChatProperties chatProperties, List<FunctionCallback> toolFunctionCallbacks,
-			FunctionCallbackContext functionCallbackContext) {
+                                                          AzureOpenAiChatProperties chatProperties, List<FunctionCallback> toolFunctionCallbacks,
+                                                          FunctionCallbackContext functionCallbackContext) {
 
 		if (!CollectionUtils.isEmpty(toolFunctionCallbacks)) {
 			chatProperties.getOptions().getFunctionCallbacks().addAll(toolFunctionCallbacks);

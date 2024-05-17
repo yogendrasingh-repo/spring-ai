@@ -47,7 +47,7 @@ public class VertexAiGeminiAutoConfigurationIT {
 	void generate() {
 		contextRunner.run(context -> {
 			VertexAiGeminiChatConnector client = context.getBean(VertexAiGeminiChatConnector.class);
-			String response = client.execute("Hello");
+			String response = client.call("Hello");
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);
 		});

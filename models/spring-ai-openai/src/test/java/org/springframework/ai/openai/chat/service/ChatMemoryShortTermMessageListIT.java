@@ -75,7 +75,7 @@ public class ChatMemoryShortTermMessageListIT extends BaseMemoryTest {
 
 		@Bean
 		public ChatService memoryChatService(OpenAiChatConnector chatClient, ChatMemory chatHistory,
-				TokenCountEstimator tokenCountEstimator) {
+                                             TokenCountEstimator tokenCountEstimator) {
 
 			return PromptTransformingChatService.builder(chatClient)
 				.withRetrievers(List.of(new ChatMemoryRetriever(chatHistory)))
@@ -87,7 +87,7 @@ public class ChatMemoryShortTermMessageListIT extends BaseMemoryTest {
 
 		@Bean
 		public StreamingChatService memoryStreamingChatService(OpenAiChatConnector streamingChatClient,
-				ChatMemory chatHistory, TokenCountEstimator tokenCountEstimator) {
+                                                               ChatMemory chatHistory, TokenCountEstimator tokenCountEstimator) {
 
 			return StreamingPromptTransformingChatService.builder(streamingChatClient)
 				.withRetrievers(List.of(new ChatMemoryRetriever(chatHistory)))

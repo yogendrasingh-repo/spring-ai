@@ -55,9 +55,9 @@ public class OpenAiAutoConfiguration {
 	@ConditionalOnProperty(prefix = OpenAiChatProperties.CONFIG_PREFIX, name = "enabled", havingValue = "true",
 			matchIfMissing = true)
 	public OpenAiChatConnector openAiChatClient(OpenAiConnectionProperties commonProperties,
-			OpenAiChatProperties chatProperties, RestClient.Builder restClientBuilder,
-			List<FunctionCallback> toolFunctionCallbacks, FunctionCallbackContext functionCallbackContext,
-			RetryTemplate retryTemplate, ResponseErrorHandler responseErrorHandler) {
+                                                OpenAiChatProperties chatProperties, RestClient.Builder restClientBuilder,
+                                                List<FunctionCallback> toolFunctionCallbacks, FunctionCallbackContext functionCallbackContext,
+                                                RetryTemplate retryTemplate, ResponseErrorHandler responseErrorHandler) {
 
 		var openAiApi = openAiApi(chatProperties.getBaseUrl(), commonProperties.getBaseUrl(),
 				chatProperties.getApiKey(), commonProperties.getApiKey(), restClientBuilder, responseErrorHandler);

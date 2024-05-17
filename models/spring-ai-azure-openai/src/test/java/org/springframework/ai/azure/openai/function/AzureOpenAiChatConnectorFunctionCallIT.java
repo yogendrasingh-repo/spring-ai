@@ -60,7 +60,7 @@ class AzureOpenAiChatConnectorFunctionCallIT {
 	private AzureOpenAiChatConnector chatClient;
 
 	@Test
-	void functionExecuteTest() {
+	void functionCallTest() {
 
 		UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, in Tokyo, and in Paris?");
 
@@ -75,7 +75,7 @@ class AzureOpenAiChatConnectorFunctionCallIT {
 				.build()))
 			.build();
 
-		ChatResponse response = chatClient.execute(new Prompt(messages, promptOptions));
+		ChatResponse response = chatClient.call(new Prompt(messages, promptOptions));
 
 		logger.info("Response: {}", response);
 
@@ -85,7 +85,7 @@ class AzureOpenAiChatConnectorFunctionCallIT {
 	}
 
 	@Test
-	void streamFunctionExecuteTest() {
+	void streamFunctionCallTest() {
 		UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
 
 		List<Message> messages = new ArrayList<>(List.of(userMessage));

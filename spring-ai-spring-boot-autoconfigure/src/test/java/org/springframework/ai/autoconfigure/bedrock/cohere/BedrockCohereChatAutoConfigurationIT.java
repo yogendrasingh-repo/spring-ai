@@ -73,7 +73,7 @@ public class BedrockCohereChatAutoConfigurationIT {
 	public void chatCompletion() {
 		contextRunner.run(context -> {
 			BedrockCohereChatConnector cohereChatClient = context.getBean(BedrockCohereChatConnector.class);
-			ChatResponse response = cohereChatClient.execute(new Prompt(List.of(userMessage, systemMessage)));
+			ChatResponse response = cohereChatClient.call(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
 	}

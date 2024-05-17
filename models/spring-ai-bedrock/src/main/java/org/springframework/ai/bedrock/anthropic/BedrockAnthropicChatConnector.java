@@ -61,7 +61,7 @@ public class BedrockAnthropicChatConnector implements ChatConnector, StreamingCh
 	}
 
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 
 		AnthropicChatRequest request = createRequest(prompt);
 

@@ -72,7 +72,7 @@ public class BedrockLlamaChatAutoConfigurationIT {
 	public void chatCompletion() {
 		contextRunner.run(context -> {
 			BedrockLlamaChatConnector llamaChatClient = context.getBean(BedrockLlamaChatConnector.class);
-			ChatResponse response = llamaChatClient.execute(new Prompt(List.of(userMessage, systemMessage)));
+			ChatResponse response = llamaChatClient.call(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
 	}

@@ -71,7 +71,7 @@ public class BedrockTitanChatAutoConfigurationIT {
 	public void chatCompletion() {
 		contextRunner.run(context -> {
 			BedrockTitanChatConnector chatClient = context.getBean(BedrockTitanChatConnector.class);
-			ChatResponse response = chatClient.execute(new Prompt(List.of(userMessage, systemMessage)));
+			ChatResponse response = chatClient.call(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
 	}

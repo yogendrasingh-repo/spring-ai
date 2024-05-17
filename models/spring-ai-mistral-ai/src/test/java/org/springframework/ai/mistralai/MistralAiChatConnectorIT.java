@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.connector.ChatConnector;
 import reactor.core.publisher.Flux;
 
-import org.springframework.ai.chat.connector.ChatConnector;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.StreamingChatClient;
@@ -90,7 +90,7 @@ class MistralAiChatConnectorIT {
 		// NOTE: Mistral expects the system message to be before the user message or will
 		// fail with 400 error.
 		Prompt prompt = new Prompt(List.of(systemMessage, userMessage));
-		ChatResponse response = chatConnector.execute(prompt);
+		ChatResponse response = chatConnector.call(prompt);
 		assertThat(response.getResults()).hasSize(1);
 		assertThat(response.getResults().get(0).getOutput().getContent()).contains("Blackbeard");
 	}
@@ -108,7 +108,7 @@ class MistralAiChatConnectorIT {
 		PromptTemplate promptTemplate = new PromptTemplate(template,
 				Map.of("subject", "ice cream flavors", "format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = this.chatConnector.execute(prompt).getResult();
+		Generation generation = this.chatConnector.call(prompt).getResult();
 
 		List<String> list = outputConverter.convert(generation.getOutput().getContent());
 		assertThat(list).hasSize(5);
@@ -126,7 +126,7 @@ class MistralAiChatConnectorIT {
 		PromptTemplate promptTemplate = new PromptTemplate(template,
 				Map.of("subject", "an array of numbers from 1 to 9 under they key name 'numbers'", "format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = chatConnector.execute(prompt).getResult();
+		Generation generation = chatConnector.call(prompt).getResult();
 
 		Map<String, Object> result = outputConverter.convert(generation.getOutput().getContent());
 		assertThat(result.get("numbers")).isEqualTo(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
@@ -148,7 +148,7 @@ class MistralAiChatConnectorIT {
 				""";
 		PromptTemplate promptTemplate = new PromptTemplate(template, Map.of("format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = chatConnector.execute(prompt).getResult();
+		Generation generation = chatConnector.call(prompt).getResult();
 
 		ActorsFilmsRecord actorsFilms = outputConverter.convert(generation.getOutput().getContent());
 		logger.info("" + actorsFilms);
@@ -186,7 +186,7 @@ class MistralAiChatConnectorIT {
 	}
 
 	@Test
-	void functionExecuteTest() {
+	void functionCallTest() {
 
 		UserMessage userMessage = new UserMessage("What's the weather like in San Francisco?");
 
@@ -201,7 +201,7 @@ class MistralAiChatConnectorIT {
 				.build()))
 			.build();
 
-		ChatResponse response = chatConnector.execute(new Prompt(messages, promptOptions));
+		ChatResponse response = chatConnector.call(new Prompt(messages, promptOptions));
 
 		logger.info("Response: {}", response);
 
@@ -209,7 +209,7 @@ class MistralAiChatConnectorIT {
 	}
 
 	@Test
-	void streamFunctionExecuteTest() {
+	void streamFunctionCallTest() {
 
 		UserMessage userMessage = new UserMessage("What's the weather like in Tokyo, Japan?");
 

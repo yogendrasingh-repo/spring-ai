@@ -88,7 +88,7 @@ public class CricketWorldCupHanaController {
 
 		var userMessage = new UserMessage(message);
 		Prompt prompt = new Prompt(List.of(similarDocsMessage, userMessage));
-		String generation = chatConnector.execute(prompt).getResult().getOutput().getContent();
+		String generation = chatConnector.call(prompt).getResult().getOutput().getContent();
 		logger.info("Generation: {}", generation);
 		return Map.of("generation", generation);
 	}

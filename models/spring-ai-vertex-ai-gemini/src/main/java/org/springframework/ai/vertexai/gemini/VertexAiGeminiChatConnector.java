@@ -130,7 +130,7 @@ public class VertexAiGeminiChatConnector
 	}
 
 	public VertexAiGeminiChatConnector(VertexAI vertexAI, VertexAiGeminiChatOptions options,
-			FunctionCallbackContext functionCallbackContext) {
+									   FunctionCallbackContext functionCallbackContext) {
 
 		super(functionCallbackContext);
 
@@ -145,7 +145,7 @@ public class VertexAiGeminiChatConnector
 
 	// https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/gemini
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 
 		var geminiRequest = createGeminiRequest(prompt);
 

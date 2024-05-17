@@ -67,7 +67,7 @@ public class FunctionCallWithFunctionWrapperIT {
 						""");
 				var userMessage = new UserMessage("What's the weather like in San Francisco, Paris and in Tokyo?");
 
-				ChatResponse response = chatClient.execute(new Prompt(List.of(systemMessage, userMessage),
+				ChatResponse response = chatClient.call(new Prompt(List.of(systemMessage, userMessage),
 						VertexAiGeminiChatOptions.builder().withFunction("WeatherInfo").build()));
 
 				logger.info("Response: {}", response);

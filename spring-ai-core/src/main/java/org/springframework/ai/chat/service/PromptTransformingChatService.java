@@ -46,8 +46,8 @@ public class PromptTransformingChatService implements ChatService {
 	private List<ChatServiceListener> chatServiceListeners;
 
 	public PromptTransformingChatService(ChatConnector chatConnector, List<PromptTransformer> retrievers,
-			List<PromptTransformer> documentPostProcessors, List<PromptTransformer> augmentors,
-			List<ChatServiceListener> chatServiceListeners) {
+                                         List<PromptTransformer> documentPostProcessors, List<PromptTransformer> augmentors,
+                                         List<ChatServiceListener> chatServiceListeners) {
 		Objects.requireNonNull(chatConnector, "chatConnector must not be null");
 		this.chatConnector = chatConnector;
 		this.retrievers = retrievers;
@@ -86,7 +86,7 @@ public class PromptTransformingChatService implements ChatService {
 		}
 
 		// Perform generation
-		ChatResponse chatResponse = this.chatConnector.execute(chatServiceContext.getPrompt());
+		ChatResponse chatResponse = this.chatConnector.call(chatServiceContext.getPrompt());
 
 		// Invoke Listeners onComplete
 		ChatServiceResponse chatServiceResponse = new ChatServiceResponse(chatServiceContext, chatResponse);

@@ -70,9 +70,9 @@ public class MistralAiAutoConfiguration {
 	@ConditionalOnProperty(prefix = MistralAiChatProperties.CONFIG_PREFIX, name = "enabled", havingValue = "true",
 			matchIfMissing = true)
 	public MistralAiChatConnector mistralAiChatClient(MistralAiCommonProperties commonProperties,
-			MistralAiChatProperties chatProperties, RestClient.Builder restClientBuilder,
-			List<FunctionCallback> toolFunctionCallbacks, FunctionCallbackContext functionCallbackContext,
-			RetryTemplate retryTemplate, ResponseErrorHandler responseErrorHandler) {
+                                                      MistralAiChatProperties chatProperties, RestClient.Builder restClientBuilder,
+                                                      List<FunctionCallback> toolFunctionCallbacks, FunctionCallbackContext functionCallbackContext,
+                                                      RetryTemplate retryTemplate, ResponseErrorHandler responseErrorHandler) {
 
 		var mistralAiApi = mistralAiApi(chatProperties.getApiKey(), commonProperties.getApiKey(),
 				chatProperties.getBaseUrl(), commonProperties.getBaseUrl(), restClientBuilder, responseErrorHandler);

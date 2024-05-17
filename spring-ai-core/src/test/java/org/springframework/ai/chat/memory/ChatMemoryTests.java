@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 public class ChatMemoryTests {
 
 	@Mock
-	ChatConnector chatConnector;
+    ChatConnector chatConnector;
 
 	@Mock
 	StreamingChatClient streamingChatClient;
@@ -90,7 +90,7 @@ public class ChatMemoryTests {
 
 	public void chatClientUserMessages(PromptTransformingChatService chatService, ChatMemory chatHistory) {
 
-		when(chatConnector.execute(promptCaptor.capture()))
+		when(chatConnector.call(promptCaptor.capture()))
 				.thenReturn(new ChatResponse(List.of(new Generation("assistant:1"))))
 				.thenReturn(new ChatResponse(List.of(new Generation("assistant:2"))))
 				.thenReturn(new ChatResponse(List.of(new Generation("assistant:3"))));

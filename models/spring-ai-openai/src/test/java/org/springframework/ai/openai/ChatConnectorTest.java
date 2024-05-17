@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 
-class ChatClientTest {
+class ChatConnectorTest {
 
 	@Configuration
 	static class ChatClientTestConfiguration {
@@ -28,7 +28,7 @@ class ChatClientTest {
 
 	private final ChatClient singularity;
 
-	ChatClientTest(@Autowired ChatClient singularity) {
+	ChatConnectorTest(@Autowired ChatClient singularity) {
 		this.singularity = singularity;
 	}
 

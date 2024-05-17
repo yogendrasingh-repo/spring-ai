@@ -75,7 +75,7 @@ class AzureOpenAiChatConnectorMetadataTests {
 
 		Prompt prompt = new Prompt("Can I fly like a bird?");
 
-		ChatResponse response = this.aiClient.execute(prompt);
+		ChatResponse response = this.aiClient.call(prompt);
 
 		assertThat(response).isNotNull();
 

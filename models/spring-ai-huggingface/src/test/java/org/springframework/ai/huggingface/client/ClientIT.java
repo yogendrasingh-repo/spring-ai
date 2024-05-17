@@ -46,7 +46,7 @@ public class ClientIT {
 				[/INST]
 				 """;
 		Prompt prompt = new Prompt(mistral7bInstruct);
-		ChatResponse chatResponse = huggingfaceChatClient.execute(prompt);
+		ChatResponse chatResponse = huggingfaceChatClient.call(prompt);
 		assertThat(chatResponse.getResult().getOutput().getContent()).isNotEmpty();
 		String expectedResponse = """
 				```json

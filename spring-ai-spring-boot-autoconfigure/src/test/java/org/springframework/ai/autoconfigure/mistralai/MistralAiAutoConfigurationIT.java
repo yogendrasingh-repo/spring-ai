@@ -55,7 +55,7 @@ public class MistralAiAutoConfigurationIT {
 	void generate() {
 		contextRunner.run(context -> {
 			MistralAiChatConnector client = context.getBean(MistralAiChatConnector.class);
-			String response = client.execute("Hello");
+			String response = client.call("Hello");
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);
 		});

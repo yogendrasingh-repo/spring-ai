@@ -155,7 +155,7 @@ public class WatsonxAiChatConnectorTest {
 	}
 
 	@Test
-	public void testExecuteMethod() {
+	public void testCallMethod() {
 		WatsonxAiApi mockChatApi = mock(WatsonxAiApi.class);
 		WatsonxAiChatConnector client = new WatsonxAiChatConnector(mockChatApi);
 
@@ -177,7 +177,7 @@ public class WatsonxAiChatConnectorTest {
 					Map.of("warnings", List.of(Map.of("message", "the message", "id", "disclaimer_warning")))));
 
 		ChatResponse expectedResponse = new ChatResponse(List.of(expectedGenerator));
-		ChatResponse response = client.execute(prompt);
+		ChatResponse response = client.call(prompt);
 
 		Assert.assertEquals(expectedResponse.getResults().size(), response.getResults().size());
 		Assert.assertEquals(expectedResponse.getResult().getOutput(), response.getResult().getOutput());

@@ -18,10 +18,10 @@ package org.springframework.ai.ollama;
 import java.util.Base64;
 import java.util.List;
 
+import org.springframework.ai.chat.connector.ChatConnector;
 import org.springframework.ai.ollama.metadata.OllamaChatResponseMetadata;
 import reactor.core.publisher.Flux;
 
-import org.springframework.ai.chat.connector.ChatConnector;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.StreamingChatClient;
@@ -94,7 +94,7 @@ public class OllamaChatConnector implements ChatConnector, StreamingChatClient {
 	}
 
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 
 		OllamaApi.ChatResponse response = this.chatApi.chat(ollamaChatRequest(prompt, false));
 

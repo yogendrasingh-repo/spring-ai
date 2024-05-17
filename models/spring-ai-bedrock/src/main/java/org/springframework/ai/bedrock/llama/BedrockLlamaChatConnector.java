@@ -62,7 +62,7 @@ public class BedrockLlamaChatConnector implements ChatConnector, StreamingChatCl
 	}
 
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 
 		var request = createRequest(prompt);
 

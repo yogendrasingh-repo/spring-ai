@@ -72,7 +72,7 @@ class FunctionCallWithFunctionBeanIT {
 						// Please let me know how many function calls you've preformed.");
 						"What's the weather like in San Francisco, Paris and in Tokyo?");
 
-				ChatResponse response = chatClient.execute(new Prompt(List.of(systemMessage, userMessage),
+				ChatResponse response = chatClient.call(new Prompt(List.of(systemMessage, userMessage),
 						VertexAiGeminiChatOptions.builder().withFunction("weatherFunction").build()));
 				// ChatResponse response = chatConnector.call(new
 				// Prompt(List.of(userMessage),
@@ -84,7 +84,7 @@ class FunctionCallWithFunctionBeanIT {
 
 				Thread.sleep(10000);
 
-				response = chatClient.execute(new Prompt(List.of(systemMessage, userMessage),
+				response = chatClient.call(new Prompt(List.of(systemMessage, userMessage),
 						VertexAiGeminiChatOptions.builder().withFunction("weatherFunction3").build()));
 
 				logger.info("Response: {}", response);
@@ -92,7 +92,7 @@ class FunctionCallWithFunctionBeanIT {
 				assertThat(response.getResult().getOutput().getContent()).contains("30", "10", "15");
 
 				response = chatClient
-					.execute(new Prompt(List.of(systemMessage, userMessage), VertexAiGeminiChatOptions.builder().build()));
+					.call(new Prompt(List.of(systemMessage, userMessage), VertexAiGeminiChatOptions.builder().build()));
 
 				logger.info("Response: {}", response);
 

@@ -70,7 +70,7 @@ class PaymentStatusBeanOpenAiIT {
 				OpenAiChatConnector chatClient = context.getBean(OpenAiChatConnector.class);
 
 				ChatResponse response = chatClient
-					.execute(new Prompt(List.of(new UserMessage("What's the status of my transaction with id T1001?")),
+					.call(new Prompt(List.of(new UserMessage("What's the status of my transaction with id T1001?")),
 							OpenAiChatOptions.builder()
 								.withFunction("retrievePaymentStatus")
 								.withFunction("retrievePaymentDate")

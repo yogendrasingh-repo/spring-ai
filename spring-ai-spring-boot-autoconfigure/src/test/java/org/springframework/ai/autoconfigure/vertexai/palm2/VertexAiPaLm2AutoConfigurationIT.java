@@ -50,7 +50,7 @@ public class VertexAiPaLm2AutoConfigurationIT {
 		contextRunner.run(context -> {
 			VertexAiPaLm2ChatConnector client = context.getBean(VertexAiPaLm2ChatConnector.class);
 
-			String response = client.execute("Hello");
+			String response = client.call("Hello");
 
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);

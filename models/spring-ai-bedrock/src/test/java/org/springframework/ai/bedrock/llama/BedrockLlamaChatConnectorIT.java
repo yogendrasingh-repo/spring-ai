@@ -98,7 +98,7 @@ class BedrockLlamaChatConnectorIT {
 
 		Prompt prompt = new Prompt(List.of(userMessage, systemMessage));
 
-		ChatResponse response = client.execute(prompt);
+		ChatResponse response = client.call(prompt);
 
 		assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 	}
@@ -116,7 +116,7 @@ class BedrockLlamaChatConnectorIT {
 		PromptTemplate promptTemplate = new PromptTemplate(template,
 				Map.of("subject", "ice cream flavors.", "format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = this.client.execute(prompt).getResult();
+		Generation generation = this.client.call(prompt).getResult();
 
 		List<String> list = outputConverter.convert(generation.getOutput().getContent());
 		assertThat(list).hasSize(5);
@@ -134,7 +134,7 @@ class BedrockLlamaChatConnectorIT {
 		PromptTemplate promptTemplate = new PromptTemplate(template,
 				Map.of("subject", "an array of numbers from 1 to 9 under they key name 'numbers'", "format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = client.execute(prompt).getResult();
+		Generation generation = client.call(prompt).getResult();
 
 		Map<String, Object> result = outputConverter.convert(generation.getOutput().getContent());
 		assertThat(result.get("numbers")).isEqualTo(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
@@ -158,7 +158,7 @@ class BedrockLlamaChatConnectorIT {
 				""";
 		PromptTemplate promptTemplate = new PromptTemplate(template, Map.of("format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = client.execute(prompt).getResult();
+		Generation generation = client.call(prompt).getResult();
 
 		ActorsFilmsRecord actorsFilms = outputConverter.convert(generation.getOutput().getContent());
 		assertThat(actorsFilms.actor()).isEqualTo("Tom Hanks");

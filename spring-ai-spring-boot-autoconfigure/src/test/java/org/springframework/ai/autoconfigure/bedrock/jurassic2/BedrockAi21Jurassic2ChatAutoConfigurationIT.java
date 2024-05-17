@@ -71,7 +71,7 @@ public class BedrockAi21Jurassic2ChatAutoConfigurationIT {
 		contextRunner.run(context -> {
 			BedrockAi21Jurassic2ChatConnector ai21Jurassic2ChatClient = context
 				.getBean(BedrockAi21Jurassic2ChatConnector.class);
-			ChatResponse response = ai21Jurassic2ChatClient.execute(new Prompt(List.of(userMessage, systemMessage)));
+			ChatResponse response = ai21Jurassic2ChatClient.call(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
 	}

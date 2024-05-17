@@ -48,7 +48,7 @@ public class VertexAiPalm2AutoConfiguration {
 	@ConditionalOnProperty(prefix = VertexAiPlam2ChatProperties.CONFIG_PREFIX, name = "enabled", havingValue = "true",
 			matchIfMissing = true)
 	public VertexAiPaLm2ChatConnector vertexAiChatClient(VertexAiPaLm2Api vertexAiApi,
-			VertexAiPlam2ChatProperties chatProperties) {
+                                                         VertexAiPlam2ChatProperties chatProperties) {
 		return new VertexAiPaLm2ChatConnector(vertexAiApi, chatProperties.getOptions());
 	}
 

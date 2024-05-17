@@ -76,7 +76,7 @@ class AnthropicChatConnectorIT {
 		SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemResource);
 		Message systemMessage = systemPromptTemplate.createMessage(Map.of("name", "Bob", "voice", "pirate"));
 		Prompt prompt = new Prompt(List.of(userMessage, systemMessage));
-		ChatResponse response = chatConnector.execute(prompt);
+		ChatResponse response = chatConnector.call(prompt);
 		assertThat(response.getResults()).hasSize(1);
 		assertThat(response.getMetadata().getUsage().getGenerationTokens()).isGreaterThan(0);
 		assertThat(response.getMetadata().getUsage().getPromptTokens()).isGreaterThan(0);
@@ -102,7 +102,7 @@ class AnthropicChatConnectorIT {
 		PromptTemplate promptTemplate = new PromptTemplate(template,
 				Map.of("subject", "ice cream flavors", "format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = this.chatConnector.execute(prompt).getResult();
+		Generation generation = this.chatConnector.call(prompt).getResult();
 
 		List<String> list = listOutputConverter.convert(generation.getOutput().getContent());
 		assertThat(list).hasSize(5);
@@ -120,7 +120,7 @@ class AnthropicChatConnectorIT {
 		PromptTemplate promptTemplate = new PromptTemplate(template,
 				Map.of("subject", "an array of numbers from 1 to 9 under they key name 'numbers'", "format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = chatConnector.execute(prompt).getResult();
+		Generation generation = chatConnector.call(prompt).getResult();
 
 		Map<String, Object> result = mapOutputConverter.convert(generation.getOutput().getContent());
 		assertThat(result.get("numbers")).isEqualTo(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
@@ -142,7 +142,7 @@ class AnthropicChatConnectorIT {
 				""";
 		PromptTemplate promptTemplate = new PromptTemplate(template, Map.of("format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = chatConnector.execute(prompt).getResult();
+		Generation generation = chatConnector.call(prompt).getResult();
 
 		ActorsFilmsRecord actorsFilms = beanOutputConverter.convert(generation.getOutput().getContent());
 		logger.info("" + actorsFilms);
@@ -187,14 +187,14 @@ class AnthropicChatConnectorIT {
 		var userMessage = new UserMessage("Explain what do you see on this picture?",
 				List.of(new Media(MimeTypeUtils.IMAGE_PNG, imageData)));
 
-		var response = chatConnector.execute(new Prompt(List.of(userMessage)));
+		var response = chatConnector.call(new Prompt(List.of(userMessage)));
 
 		logger.info(response.getResult().getOutput().getContent());
 		assertThat(response.getResult().getOutput().getContent()).contains("bananas", "apple", "basket");
 	}
 
 	@Test
-	void functionExecuteTest() {
+	void functionCallTest() {
 
 		UserMessage userMessage = new UserMessage(
 				"What's the weather like in San Francisco, Tokyo and Paris? Return the result in Celsius.");
@@ -209,7 +209,7 @@ class AnthropicChatConnectorIT {
 				.build()))
 			.build();
 
-		ChatResponse response = chatConnector.execute(new Prompt(messages, promptOptions));
+		ChatResponse response = chatConnector.call(new Prompt(messages, promptOptions));
 
 		logger.info("Response: {}", response);
 

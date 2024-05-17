@@ -56,7 +56,7 @@ public class OpenAiAutoConfigurationIT {
 	void generate() {
 		contextRunner.run(context -> {
 			OpenAiChatConnector client = context.getBean(OpenAiChatConnector.class);
-			String response = client.execute("Hello");
+			String response = client.call("Hello");
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);
 		});

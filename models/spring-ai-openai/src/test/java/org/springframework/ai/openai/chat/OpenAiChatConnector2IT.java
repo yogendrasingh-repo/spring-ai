@@ -67,7 +67,7 @@ public class OpenAiChatConnector2IT {
 					.withResponseFormat(new ChatCompletionRequest.ResponseFormat("json_object"))
 					.build());
 
-		ChatResponse response = this.openAiChatClient.execute(prompt);
+		ChatResponse response = this.openAiChatClient.call(prompt);
 
 		assertThat(response).isNotNull();
 

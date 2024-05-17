@@ -86,7 +86,7 @@ public class HuggingfaceChatConnector implements ChatConnector {
 	 * @return ChatResponse containing the generated text and other related details.
 	 */
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 		GenerateRequest generateRequest = new GenerateRequest();
 		generateRequest.setInputs(prompt.getContents());
 		GenerateParameters generateParameters = new GenerateParameters();

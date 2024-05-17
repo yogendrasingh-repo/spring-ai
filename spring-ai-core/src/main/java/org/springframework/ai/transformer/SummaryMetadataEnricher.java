@@ -81,7 +81,7 @@ public class SummaryMetadataEnricher implements DocumentTransformer {
 	}
 
 	public SummaryMetadataEnricher(ChatConnector chatConnector, List<SummaryType> summaryTypes, String summaryTemplate,
-			MetadataMode metadataMode) {
+                                   MetadataMode metadataMode) {
 		Assert.notNull(chatConnector, "ChatConnector must not be null");
 		Assert.hasText(summaryTemplate, "Summary template must not be empty");
 
@@ -101,7 +101,7 @@ public class SummaryMetadataEnricher implements DocumentTransformer {
 
 			Prompt prompt = new PromptTemplate(this.summaryTemplate)
 				.create(Map.of(CONTEXT_STR_PLACEHOLDER, documentContext));
-			documentSummaries.add(this.chatConnector.execute(prompt).getResult().getOutput().getContent());
+			documentSummaries.add(this.chatConnector.call(prompt).getResult().getOutput().getContent());
 		}
 
 		for (int i = 0; i < documentSummaries.size(); i++) {

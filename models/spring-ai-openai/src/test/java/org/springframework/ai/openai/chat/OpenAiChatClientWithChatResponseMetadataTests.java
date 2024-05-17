@@ -74,7 +74,7 @@ public class OpenAiChatClientWithChatResponseMetadataTests {
 
 		Prompt prompt = new Prompt("Reach for the sky.");
 
-		ChatResponse response = this.openAiChatClient.execute(prompt);
+		ChatResponse response = this.openAiChatClient.call(prompt);
 
 		assertThat(response).isNotNull();
 

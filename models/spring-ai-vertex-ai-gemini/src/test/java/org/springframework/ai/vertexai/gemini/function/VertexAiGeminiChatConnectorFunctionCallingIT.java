@@ -68,7 +68,7 @@ public class VertexAiGeminiChatConnectorFunctionCallingIT {
 
 	@Test
 	// @Disabled("Google Vertex AI degraded support for parallel function calls")
-	public void functionExecuteExplicitOpenApiSchema() {
+	public void functionCallExplicitOpenApiSchema() {
 
 		UserMessage userMessage = new UserMessage(
 				"What's the weather like in San Francisco, in Paris and in Tokyo, Japan?"
@@ -106,7 +106,7 @@ public class VertexAiGeminiChatConnectorFunctionCallingIT {
 				.build()))
 			.build();
 
-		ChatResponse response = vertexGeminiClient.execute(new Prompt(messages, promptOptions));
+		ChatResponse response = vertexGeminiClient.call(new Prompt(messages, promptOptions));
 
 		logger.info("Response: {}", response);
 
@@ -118,7 +118,7 @@ public class VertexAiGeminiChatConnectorFunctionCallingIT {
 	}
 
 	@Test
-	public void functionExecuteTestInferredOpenApiSchema() {
+	public void functionCallTestInferredOpenApiSchema() {
 
 		UserMessage userMessage = new UserMessage("What's the weather like in Paris? Use Celsius units.");
 
@@ -141,14 +141,14 @@ public class VertexAiGeminiChatConnectorFunctionCallingIT {
 						.build()))
 			.build();
 
-		ChatResponse response = vertexGeminiClient.execute(new Prompt(messages, promptOptions));
+		ChatResponse response = vertexGeminiClient.call(new Prompt(messages, promptOptions));
 
 		logger.info("Response: {}", response);
 
 		assertThat(response.getResult().getOutput().getContent()).containsAnyOf("15.0", "15");
 
 		ChatResponse response2 = vertexGeminiClient
-			.execute(new Prompt("What is the payment status for transaction 696?", promptOptions));
+			.call(new Prompt("What is the payment status for transaction 696?", promptOptions));
 
 		logger.info("Response: {}", response2);
 
@@ -157,7 +157,7 @@ public class VertexAiGeminiChatConnectorFunctionCallingIT {
 	}
 
 	@Test
-	public void functionExecuteTestInferredOpenApiSchemaStream() {
+	public void functionCallTestInferredOpenApiSchemaStream() {
 
 		UserMessage userMessage = new UserMessage("What's the weather like in San Francisco in Celsius units?");
 		// UserMessage userMessage = new UserMessage(

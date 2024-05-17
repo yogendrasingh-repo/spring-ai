@@ -51,7 +51,7 @@ public class AnthropicAutoConfigurationIT {
 	void generate() {
 		contextRunner.run(context -> {
 			AnthropicChatConnector chatClient = context.getBean(AnthropicChatConnector.class);
-			String response = chatClient.execute("Hello");
+			String response = chatClient.call("Hello");
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);
 		});

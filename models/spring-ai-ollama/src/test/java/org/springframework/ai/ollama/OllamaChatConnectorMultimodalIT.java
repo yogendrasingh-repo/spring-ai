@@ -75,7 +75,7 @@ class OllamaChatConnectorMultimodalIT {
 		var userMessage = new UserMessage("Explain what do you see on this picture?",
 				List.of(new Media(MimeTypeUtils.IMAGE_PNG, imageData)));
 
-		var response = client.execute(new Prompt(List.of(userMessage)));
+		var response = client.call(new Prompt(List.of(userMessage)));
 
 		logger.info(response.getResult().getOutput().getContent());
 		assertThat(response.getResult().getOutput().getContent()).contains("bananas", "apple", "basket");

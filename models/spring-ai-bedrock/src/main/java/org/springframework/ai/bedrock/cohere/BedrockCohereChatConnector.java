@@ -58,7 +58,7 @@ public class BedrockCohereChatConnector implements ChatConnector, StreamingChatC
 	}
 
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 		CohereChatResponse response = this.chatApi.chatCompletion(this.createRequest(prompt, false));
 		List<Generation> generations = response.generations().stream().map(g -> {
 			return new Generation(g.text());

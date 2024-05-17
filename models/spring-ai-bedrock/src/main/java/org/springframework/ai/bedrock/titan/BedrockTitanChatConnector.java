@@ -57,7 +57,7 @@ public class BedrockTitanChatConnector implements ChatConnector, StreamingChatCl
 	}
 
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 		TitanChatResponse response = this.chatApi.chatCompletion(this.createRequest(prompt));
 		List<Generation> generations = response.results().stream().map(result -> {
 			return new Generation(result.outputText());

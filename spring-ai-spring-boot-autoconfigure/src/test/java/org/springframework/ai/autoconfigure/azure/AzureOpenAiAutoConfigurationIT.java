@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.springframework.ai.azure.openai.AzureOpenAiChatConnector;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.autoconfigure.azure.openai.AzureOpenAiAutoConfiguration;
-import org.springframework.ai.azure.openai.AzureOpenAiChatConnector;
 import org.springframework.ai.azure.openai.AzureOpenAiEmbeddingClient;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
@@ -78,7 +78,7 @@ public class AzureOpenAiAutoConfigurationIT {
 	public void chatCompletion() {
 		contextRunner.run(context -> {
 			AzureOpenAiChatConnector chatClient = context.getBean(AzureOpenAiChatConnector.class);
-			ChatResponse response = chatClient.execute(new Prompt(List.of(userMessage, systemMessage)));
+			ChatResponse response = chatClient.call(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
 	}

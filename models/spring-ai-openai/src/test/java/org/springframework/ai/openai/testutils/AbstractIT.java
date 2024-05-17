@@ -85,12 +85,12 @@ public abstract class AbstractIT {
 		}
 		Message userMessage = userPromptTemplate.createMessage();
 		Prompt prompt = new Prompt(List.of(userMessage, systemMessage));
-		String yesOrNo = chatConnector.execute(prompt).getResult().getOutput().getContent();
+		String yesOrNo = chatConnector.call(prompt).getResult().getOutput().getContent();
 		logger.info("Is Answer related to question: " + yesOrNo);
 		if (yesOrNo.equalsIgnoreCase("no")) {
 			SystemMessage notRelatedSystemMessage = new SystemMessage(qaEvaluatorNotRelatedResource);
 			prompt = new Prompt(List.of(userMessage, notRelatedSystemMessage));
-			String reasonForFailure = chatConnector.execute(prompt).getResult().getOutput().getContent();
+			String reasonForFailure = chatConnector.call(prompt).getResult().getOutput().getContent();
 			fail(reasonForFailure);
 		}
 		else {

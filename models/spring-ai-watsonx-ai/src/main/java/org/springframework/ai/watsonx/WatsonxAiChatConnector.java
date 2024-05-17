@@ -18,9 +18,9 @@ package org.springframework.ai.watsonx;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.ai.chat.connector.ChatConnector;
 import reactor.core.publisher.Flux;
 
-import org.springframework.ai.chat.connector.ChatConnector;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.StreamingChatClient;
@@ -76,7 +76,7 @@ public class WatsonxAiChatConnector implements ChatConnector, StreamingChatClien
 	}
 
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 
 		WatsonxAiRequest request = request(prompt);
 

@@ -62,14 +62,14 @@ class FunctionCallWithFunctionBeanIT {
 				UserMessage userMessage = new UserMessage(
 						"What's the weather like in San Francisco, Paris and in Tokyo? Use Multi-turn function calling.");
 
-				ChatResponse response = chatConnector.execute(new Prompt(List.of(userMessage),
+				ChatResponse response = chatConnector.call(new Prompt(List.of(userMessage),
 						AzureOpenAiChatOptions.builder().withFunction("weatherFunction").build()));
 
 				logger.info("Response: {}", response);
 
 				assertThat(response.getResult().getOutput().getContent()).contains("30", "10", "15");
 
-				response = chatConnector.execute(new Prompt(List.of(userMessage),
+				response = chatConnector.call(new Prompt(List.of(userMessage),
 						AzureOpenAiChatOptions.builder().withFunction("weatherFunction3").build()));
 
 				logger.info("Response: {}", response);

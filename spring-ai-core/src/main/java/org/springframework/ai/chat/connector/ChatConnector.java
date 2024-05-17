@@ -30,6 +30,6 @@ public interface ChatConnector {
 	 * return (generation != null) ? generation.getOutput().getContent() : ""; }
 	 */
 
-	ChatResponse execute(Prompt prompt);
+	ChatResponse call(Prompt prompt);
 
 }

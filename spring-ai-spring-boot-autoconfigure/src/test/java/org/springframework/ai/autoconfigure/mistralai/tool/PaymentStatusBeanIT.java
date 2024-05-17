@@ -63,7 +63,7 @@ class PaymentStatusBeanIT {
 				MistralAiChatConnector chatClient = context.getBean(MistralAiChatConnector.class);
 
 				ChatResponse response = chatClient
-					.execute(new Prompt(List.of(new UserMessage("What's the status of my transaction with id T1001?")),
+					.call(new Prompt(List.of(new UserMessage("What's the status of my transaction with id T1001?")),
 							MistralAiChatOptions.builder()
 								.withFunction("retrievePaymentStatus")
 								.withFunction("retrievePaymentDate")

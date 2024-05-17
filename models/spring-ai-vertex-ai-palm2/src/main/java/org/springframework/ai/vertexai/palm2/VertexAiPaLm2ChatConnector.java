@@ -55,7 +55,7 @@ public class VertexAiPaLm2ChatConnector implements ChatConnector {
 	}
 
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 
 		GenerateMessageRequest request = createRequest(prompt);
 

@@ -65,7 +65,7 @@ class ChatConnectorTests {
 		// ChatResponse response = spy(new
 		// ChatResponse(Collections.singletonList(generation)));
 
-		doCallRealMethod().when(mockClient).execute(anyString());
+		doCallRealMethod().when(mockClient).call(anyString());
 
 		doAnswer(invocationOnMock -> {
 
@@ -76,12 +76,12 @@ class ChatConnectorTests {
 
 			return response;
 
-		}).when(mockClient).execute(any(Prompt.class));
+		}).when(mockClient).call(any(Prompt.class));
 
-		assertThat(mockClient.execute(userMessage)).isEqualTo(responseMessage);
+		assertThat(mockClient.call(userMessage)).isEqualTo(responseMessage);
 
-		verify(mockClient, times(1)).execute(eq(userMessage));
-		verify(mockClient, times(1)).execute(isA(Prompt.class));
+		verify(mockClient, times(1)).call(eq(userMessage));
+		verify(mockClient, times(1)).call(isA(Prompt.class));
 		verify(response, times(1)).getResult();
 		verify(generation, times(1)).getOutput();
 		verify(mockAssistantMessage, times(1)).getContent();

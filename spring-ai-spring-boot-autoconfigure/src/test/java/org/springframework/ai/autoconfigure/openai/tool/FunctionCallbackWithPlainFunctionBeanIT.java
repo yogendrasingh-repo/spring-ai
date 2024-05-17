@@ -65,7 +65,7 @@ class FunctionCallbackWithPlainFunctionBeanIT {
 			// Test weatherFunction
 			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
 
-			ChatResponse response = chatClient.execute(new Prompt(List.of(userMessage),
+			ChatResponse response = chatClient.call(new Prompt(List.of(userMessage),
 					OpenAiChatOptions.builder().withFunction("weatherFunction").build()));
 
 			logger.info("Response: {}", response);
@@ -73,7 +73,7 @@ class FunctionCallbackWithPlainFunctionBeanIT {
 			assertThat(response.getResult().getOutput().getContent()).contains("30", "10", "15");
 
 			// Test weatherFunctionTwo
-			response = chatClient.execute(new Prompt(List.of(userMessage),
+			response = chatClient.call(new Prompt(List.of(userMessage),
 					OpenAiChatOptions.builder().withFunction("weatherFunctionTwo").build()));
 
 			logger.info("Response: {}", response);
@@ -96,7 +96,7 @@ class FunctionCallbackWithPlainFunctionBeanIT {
 				.withFunction("weatherFunction")
 				.build();
 
-			ChatResponse response = chatClient.execute(new Prompt(List.of(userMessage), functionOptions));
+			ChatResponse response = chatClient.call(new Prompt(List.of(userMessage), functionOptions));
 
 			logger.info("Response: {}", response);
 		});

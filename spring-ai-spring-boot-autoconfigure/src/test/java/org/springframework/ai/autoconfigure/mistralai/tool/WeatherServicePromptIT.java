@@ -79,7 +79,7 @@ public class WeatherServicePromptIT {
 						.build()))
 					.build();
 
-				ChatResponse response = chatClient.execute(new Prompt(List.of(userMessage), promptOptions));
+				ChatResponse response = chatClient.call(new Prompt(List.of(userMessage), promptOptions));
 
 				logger.info("Response: {}", response);
 

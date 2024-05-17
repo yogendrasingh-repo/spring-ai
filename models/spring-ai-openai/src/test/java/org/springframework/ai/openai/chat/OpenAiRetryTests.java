@@ -23,20 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.ai.openai.*;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.MetadataMode;
 import org.springframework.ai.image.ImageMessage;
 import org.springframework.ai.image.ImagePrompt;
-import org.springframework.ai.openai.OpenAiAudioTranscriptionClient;
-import org.springframework.ai.openai.OpenAiAudioTranscriptionOptions;
 import org.springframework.ai.openai.OpenAiChatConnector;
-import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.ai.openai.OpenAiEmbeddingClient;
-import org.springframework.ai.openai.OpenAiEmbeddingOptions;
-import org.springframework.ai.openai.OpenAiImageClient;
-import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionChunk;
@@ -146,7 +140,7 @@ public class OpenAiRetryTests {
 			.thenThrow(new TransientAiException("Transient Error 2"))
 			.thenReturn(ResponseEntity.of(Optional.of(expectedChatCompletion)));
 
-		var result = chatClient.execute(new Prompt("text"));
+		var result = chatClient.call(new Prompt("text"));
 
 		assertThat(result).isNotNull();
 		assertThat(result.getResult().getOutput().getContent()).isSameAs("Response");
@@ -158,7 +152,7 @@ public class OpenAiRetryTests {
 	public void openAiChatNonTransientError() {
 		when(openAiApi.chatCompletionEntity(isA(ChatCompletionRequest.class)))
 				.thenThrow(new RuntimeException("Non Transient Error"));
-		assertThrows(RuntimeException.class, () -> chatClient.execute(new Prompt("text")));
+		assertThrows(RuntimeException.class, () -> chatClient.call(new Prompt("text")));
 	}
 
 	@Test

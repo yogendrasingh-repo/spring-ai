@@ -123,7 +123,7 @@ public class OpenAiChatConnector extends
 	 * @param retryTemplate The retry template.
 	 */
 	public OpenAiChatConnector(OpenAiApi openAiApi, OpenAiChatOptions options,
-			FunctionCallbackContext functionCallbackContext, RetryTemplate retryTemplate) {
+							   FunctionCallbackContext functionCallbackContext, RetryTemplate retryTemplate) {
 		super(functionCallbackContext);
 		Assert.notNull(openAiApi, "OpenAiApi must not be null");
 		Assert.notNull(options, "Options must not be null");
@@ -134,7 +134,7 @@ public class OpenAiChatConnector extends
 	}
 
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 
 		ChatCompletionRequest request = createRequest(prompt, false);
 

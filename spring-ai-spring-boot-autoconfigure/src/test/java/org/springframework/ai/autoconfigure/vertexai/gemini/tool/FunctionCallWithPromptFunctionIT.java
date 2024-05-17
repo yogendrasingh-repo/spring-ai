@@ -72,7 +72,7 @@ public class FunctionCallWithPromptFunctionIT {
 						.build()))
 					.build();
 
-				ChatResponse response = chatClient.execute(new Prompt(List.of(systemMessage, userMessage), promptOptions));
+				ChatResponse response = chatClient.call(new Prompt(List.of(systemMessage, userMessage), promptOptions));
 
 				logger.info("Response: {}", response);
 
@@ -80,7 +80,7 @@ public class FunctionCallWithPromptFunctionIT {
 
 				// Verify that no function call is made.
 				response = chatClient
-					.execute(new Prompt(List.of(systemMessage, userMessage), VertexAiGeminiChatOptions.builder().build()));
+					.call(new Prompt(List.of(systemMessage, userMessage), VertexAiGeminiChatOptions.builder().build()));
 
 				logger.info("Response: {}", response);
 

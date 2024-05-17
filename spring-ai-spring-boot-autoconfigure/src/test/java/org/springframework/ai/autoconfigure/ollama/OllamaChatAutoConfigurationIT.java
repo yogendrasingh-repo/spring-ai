@@ -105,7 +105,7 @@ public class OllamaChatAutoConfigurationIT {
 	public void chatCompletion() {
 		contextRunner.run(context -> {
 			OllamaChatConnector chatClient = context.getBean(OllamaChatConnector.class);
-			ChatResponse response = chatClient.execute(new Prompt(List.of(userMessage, systemMessage)));
+			ChatResponse response = chatClient.call(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
 	}

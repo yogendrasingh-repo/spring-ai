@@ -41,7 +41,7 @@ public class BedrockAi21Jurassic2ChatConnector implements ChatConnector {
 	private final BedrockAi21Jurassic2ChatOptions defaultOptions;
 
 	public BedrockAi21Jurassic2ChatConnector(Ai21Jurassic2ChatBedrockApi chatApi,
-			BedrockAi21Jurassic2ChatOptions options) {
+											 BedrockAi21Jurassic2ChatOptions options) {
 		Assert.notNull(chatApi, "Ai21Jurassic2ChatBedrockApi must not be null");
 		Assert.notNull(options, "BedrockAi21Jurassic2ChatOptions must not be null");
 
@@ -59,7 +59,7 @@ public class BedrockAi21Jurassic2ChatConnector implements ChatConnector {
 	}
 
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 		var request = createRequest(prompt);
 		var response = this.chatApi.chatCompletion(request);
 

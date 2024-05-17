@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.prompt.transformer.ChatServiceContext;
 import org.springframework.ai.chat.service.ChatService;
 import org.springframework.ai.chat.service.PromptTransformingChatService;
+import org.springframework.ai.openai.OpenAiChatConnector;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -52,7 +53,6 @@ import org.springframework.ai.document.DocumentTransformer;
 import org.springframework.ai.embedding.EmbeddingClient;
 import org.springframework.ai.evaluation.EvaluationResponse;
 import org.springframework.ai.evaluation.RelevancyEvaluator;
-import org.springframework.ai.openai.OpenAiChatConnector;
 import org.springframework.ai.openai.OpenAiEmbeddingClient;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.reader.JsonReader;
@@ -187,7 +187,7 @@ public class LongShortTermChatMemoryWithRagIT {
 
 		@Bean
 		public ChatService memoryChatService(OpenAiChatConnector chatClient, VectorStore vectorStore,
-				TokenCountEstimator tokenCountEstimator, ChatMemory chatHistory) {
+                                             TokenCountEstimator tokenCountEstimator, ChatMemory chatHistory) {
 
 			return PromptTransformingChatService.builder(chatClient)
 				.withRetrievers(List.of(new VectorStoreRetriever(vectorStore, SearchRequest.defaults()),

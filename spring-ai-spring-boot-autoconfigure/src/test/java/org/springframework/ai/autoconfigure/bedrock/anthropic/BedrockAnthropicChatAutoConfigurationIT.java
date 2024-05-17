@@ -70,7 +70,7 @@ public class BedrockAnthropicChatAutoConfigurationIT {
 	public void chatCompletion() {
 		contextRunner.run(context -> {
 			BedrockAnthropicChatConnector anthropicChatClient = context.getBean(BedrockAnthropicChatConnector.class);
-			ChatResponse response = anthropicChatClient.execute(new Prompt(List.of(userMessage, systemMessage)));
+			ChatResponse response = anthropicChatClient.call(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
 	}

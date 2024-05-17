@@ -52,7 +52,7 @@ public class RelevancyEvaluator implements Evaluator {
 		Message message = promptTemplate
 			.createMessage(Map.of("query", query, "response", response, "context", context));
 
-		ChatResponse chatResponse = this.chatConnector.execute(new Prompt(message, this.chatOptions));
+		ChatResponse chatResponse = this.chatConnector.call(new Prompt(message, this.chatOptions));
 
 		var evaluationResponse = chatResponse.getResult().getOutput().getContent();
 		boolean passing = false;

@@ -117,7 +117,7 @@ public class AnthropicChatConnector extends
 	 * @param retryTemplate the retry template used to retry the Anthropic API calls.
 	 */
 	public AnthropicChatConnector(AnthropicApi anthropicApi, AnthropicChatOptions defaultOptions,
-			RetryTemplate retryTemplate) {
+								  RetryTemplate retryTemplate) {
 		this(anthropicApi, defaultOptions, retryTemplate, null);
 	}
 
@@ -130,7 +130,7 @@ public class AnthropicChatConnector extends
 	 * state of the function calls.
 	 */
 	public AnthropicChatConnector(AnthropicApi anthropicApi, AnthropicChatOptions defaultOptions,
-			RetryTemplate retryTemplate, FunctionCallbackContext functionCallbackContext) {
+								  RetryTemplate retryTemplate, FunctionCallbackContext functionCallbackContext) {
 
 		super(functionCallbackContext);
 
@@ -144,7 +144,7 @@ public class AnthropicChatConnector extends
 	}
 
 	@Override
-	public ChatResponse execute(Prompt prompt) {
+	public ChatResponse call(Prompt prompt) {
 
 		ChatCompletionRequest request = createRequest(prompt, false);
 
