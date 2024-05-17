@@ -14,6 +14,14 @@ import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
 
+/*
+ * @author Mark Pollack
+ * @author Christian Tzolov
+ * @author Josh Long
+ * @author Arjen Poutsma
+ *
+ */
+
 public interface ChatClient {
     static ChatClientBuilder builder(ChatConnector connector) {
         return new ChatClientBuilder(connector);

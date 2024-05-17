@@ -15,6 +15,7 @@ import java.util.function.Consumer;
  * @author Mark Pollack
  * @author Christian Tzolov
  * @author Josh Long
+ * @author Arjen Poutsma
  */
 
 public class DefaultChatClient implements ChatClient {
