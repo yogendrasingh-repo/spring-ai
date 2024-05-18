@@ -2,7 +2,7 @@
 
 link:https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html[Amazon Bedrock] is a managed service that provides foundation models from various AI providers, available through a unified API.
 
-Spring AI supports https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html[all the Chat and Embedding AI models] available through Amazon Bedrock by implementing the Spring interfaces `ChatClient`, `StreamingChatClient`, and  `EmbeddingClient`.
+Spring AI supports https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html[all the Chat and Embedding AI models] available through Amazon Bedrock by implementing the Spring interfaces `ModelCall`, `StreamingChatClient`, and  `EmbeddingClient`.
 
 Additionally, Spring AI provides Spring Auto-Configurations and Boot Starters for all clients, making it easy to bootstrap and configure for the Bedrock models.
 

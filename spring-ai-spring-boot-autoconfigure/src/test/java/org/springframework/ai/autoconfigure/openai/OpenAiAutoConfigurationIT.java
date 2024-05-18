@@ -27,18 +27,15 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
-import org.springframework.ai.openai.OpenAiImageClient;
+import org.springframework.ai.openai.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import reactor.core.publisher.Flux;
-import org.springframework.ai.openai.OpenAiAudioSpeechClient;
 
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.embedding.EmbeddingResponse;
-import org.springframework.ai.openai.OpenAiAudioTranscriptionClient;
-import org.springframework.ai.openai.OpenAiChatClient;
-import org.springframework.ai.openai.OpenAiEmbeddingClient;
+import org.springframework.ai.openai.OpenAiModelCall;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -58,7 +55,7 @@ public class OpenAiAutoConfigurationIT {
 	@Test
 	void generate() {
 		contextRunner.run(context -> {
-			OpenAiChatClient client = context.getBean(OpenAiChatClient.class);
+			OpenAiModelCall client = context.getBean(OpenAiModelCall.class);
 			String response = client.call("Hello");
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);
@@ -105,7 +102,7 @@ public class OpenAiAutoConfigurationIT {
 	@Test
 	void generateStreaming() {
 		contextRunner.run(context -> {
-			OpenAiChatClient client = context.getBean(OpenAiChatClient.class);
+			OpenAiModelCall client = context.getBean(OpenAiModelCall.class);
 			Flux<ChatResponse> responseFlux = client.stream(new Prompt(new UserMessage("Hello")));
 			String response = responseFlux.collectList().block().stream().map(chatResponse -> {
 				return chatResponse.getResults().get(0).getOutput().getContent();

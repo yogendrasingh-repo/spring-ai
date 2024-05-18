@@ -25,7 +25,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.ai.chat.ChatClient;
+import org.springframework.ai.chat.ModelCall;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.StreamingChatClient;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 public class ChatMemoryTests {
 
 	@Mock
-	ChatClient chatClient;
+	ModelCall modelCall;
 
 	@Mock
 	StreamingChatClient streamingChatClient;
@@ -61,7 +61,7 @@ public class ChatMemoryTests {
 
 		ChatMemory chatHistory = new InMemoryChatMemory();
 
-		PromptTransformingChatService chatService = PromptTransformingChatService.builder(chatClient)
+		PromptTransformingChatService chatService = PromptTransformingChatService.builder(modelCall)
 			.withRetrievers(List.of(ChatMemoryRetriever.builder().withChatHistory(chatHistory).build()))
 			.withContentPostProcessors(
 					List.of(new LastMaxTokenSizeContentTransformer(new JTokkitTokenCountEstimator(), 10)))
@@ -77,7 +77,7 @@ public class ChatMemoryTests {
 
 		ChatMemory chatHistory = new InMemoryChatMemory();
 
-		PromptTransformingChatService chatService = PromptTransformingChatService.builder(chatClient)
+		PromptTransformingChatService chatService = PromptTransformingChatService.builder(modelCall)
 			.withRetrievers(List.of(new ChatMemoryRetriever(chatHistory)))
 			.withContentPostProcessors(
 					List.of(new LastMaxTokenSizeContentTransformer(new JTokkitTokenCountEstimator(), 10)))
@@ -90,7 +90,7 @@ public class ChatMemoryTests {
 
 	public void chatClientUserMessages(PromptTransformingChatService chatService, ChatMemory chatHistory) {
 
-		when(chatClient.call(promptCaptor.capture()))
+		when(modelCall.call(promptCaptor.capture()))
 				.thenReturn(new ChatResponse(List.of(new Generation("assistant:1"))))
 				.thenReturn(new ChatResponse(List.of(new Generation("assistant:2"))))
 				.thenReturn(new ChatResponse(List.of(new Generation("assistant:3"))));

@@ -29,7 +29,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.model.function.FunctionCallbackWrapper;
 import org.springframework.ai.model.function.FunctionCallbackWrapper.Builder.SchemaType;
-import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatClient;
+import org.springframework.ai.vertexai.gemini.VertexAiGeminiModelCall;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatOptions;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -51,10 +51,10 @@ public class FunctionCallWithPromptFunctionIT {
 	void functionCallTest() {
 		contextRunner
 			.withPropertyValues("spring.ai.vertex.ai.gemini.chat.options.model="
-					+ VertexAiGeminiChatClient.ChatModel.GEMINI_PRO.getValue())
+					+ VertexAiGeminiModelCall.ChatModel.GEMINI_PRO.getValue())
 			.run(context -> {
 
-				VertexAiGeminiChatClient chatClient = context.getBean(VertexAiGeminiChatClient.class);
+				VertexAiGeminiModelCall chatClient = context.getBean(VertexAiGeminiModelCall.class);
 
 				var systemMessage = new SystemMessage("""
 						Use Multi-turn function calling.

@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.springframework.ai.mistralai.MistralAiModelCall;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
@@ -29,7 +30,6 @@ import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.embedding.EmbeddingResponse;
-import org.springframework.ai.mistralai.MistralAiChatClient;
 import org.springframework.ai.mistralai.MistralAiEmbeddingClient;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
@@ -54,7 +54,7 @@ public class MistralAiAutoConfigurationIT {
 	@Test
 	void generate() {
 		contextRunner.run(context -> {
-			MistralAiChatClient client = context.getBean(MistralAiChatClient.class);
+			MistralAiModelCall client = context.getBean(MistralAiModelCall.class);
 			String response = client.call("Hello");
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);
@@ -64,7 +64,7 @@ public class MistralAiAutoConfigurationIT {
 	@Test
 	void generateStreaming() {
 		contextRunner.run(context -> {
-			MistralAiChatClient client = context.getBean(MistralAiChatClient.class);
+			MistralAiModelCall client = context.getBean(MistralAiModelCall.class);
 			Flux<ChatResponse> responseFlux = client.stream(new Prompt(new UserMessage("Hello")));
 			String response = responseFlux.collectList().block().stream().map(chatResponse -> {
 				return chatResponse.getResults().get(0).getOutput().getContent();

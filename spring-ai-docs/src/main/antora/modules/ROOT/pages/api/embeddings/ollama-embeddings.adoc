@@ -177,8 +177,8 @@ dependencies {
 
 TIP: Refer to the xref:getting-started.adoc#dependency-management[Dependency Management] section to add the Spring AI BOM to your build file.
 
-NOTE: The `spring-ai-ollama` dependency provides access also to the `OllamaChatClient`.
-For more information about the `OllamaChatClient` refer to the link:../chat/ollama-chat.html[Ollama Chat Client] section.
+NOTE: The `spring-ai-ollama` dependency provides access also to the `OllamaModelCall`.
+For more information about the `OllamaModelCall` refer to the link:../chat/ollama-chat.html[Ollama Chat Client] section.
 
 Next, create an `OllamaEmbeddingClient` instance and use it to compute the similarity between two input texts:
 
