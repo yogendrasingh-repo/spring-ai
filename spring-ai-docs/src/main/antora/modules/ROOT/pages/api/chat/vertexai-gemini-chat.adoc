@@ -150,7 +150,7 @@ spring.ai.vertex.ai.gemini.chat.options.temperature=0.5
 
 TIP: replace the `api-key` with your VertexAI credentials.
 
-This will create a `VertexAiGeminiChatConnector` implementation that you can inject into your class.
+This will create a `VertexAiGeminiModelCall` implementation that you can inject into your class.
 Here is an example of a simple `@Controller` class that uses the chat client for text generations.
 
 [source,java]
@@ -180,7 +180,7 @@ public class ChatController {
 
 == Manual Configuration
 
-The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-vertex-ai-gemini/src/main/java/org/springframework/ai/vertexai/gemini/VertexAiGeminiChatClient.java[VertexAiGeminiChatClient] implements the `ChatConnector` and uses the `VertexAI` to connect to the Vertex AI Gemini service.
+The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-vertex-ai-gemini/src/main/java/org/springframework/ai/vertexai/gemini/VertexAiGeminiChatClient.java[VertexAiGeminiChatClient] implements the `ModelCall` and uses the `VertexAI` to connect to the Vertex AI Gemini service.
 
 Add the `spring-ai-vertex-ai-gemini` dependency to your project's Maven `pom.xml` file:
 
@@ -203,7 +203,7 @@ dependencies {
 
 TIP: Refer to the xref:getting-started.adoc#dependency-management[Dependency Management] section to add the Spring AI BOM to your build file.
 
-Next, create a `VertexAiGeminiChatConnector` and use it for text generations:
+Next, create a `VertexAiGeminiModelCall` and use it for text generations:
 
 [source,java]
 ----

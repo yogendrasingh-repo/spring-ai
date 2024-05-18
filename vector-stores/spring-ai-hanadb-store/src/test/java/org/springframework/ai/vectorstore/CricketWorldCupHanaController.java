@@ -17,7 +17,7 @@ package org.springframework.ai.vectorstore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.chat.connector.ChatConnector;
+import org.springframework.ai.chat.connector.ModelCall;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
@@ -51,11 +51,11 @@ public class CricketWorldCupHanaController {
 
 	private final VectorStore hanaCloudVectorStore;
 
-	private final ChatConnector chatConnector;
+	private final ModelCall modelCall;
 
 	@Autowired
-	public CricketWorldCupHanaController(ChatConnector chatConnector, VectorStore hanaCloudVectorStore) {
-		this.chatConnector = chatConnector;
+	public CricketWorldCupHanaController(ModelCall modelCall, VectorStore hanaCloudVectorStore) {
+		this.modelCall = modelCall;
 		this.hanaCloudVectorStore = hanaCloudVectorStore;
 	}
 
@@ -88,7 +88,7 @@ public class CricketWorldCupHanaController {
 
 		var userMessage = new UserMessage(message);
 		Prompt prompt = new Prompt(List.of(similarDocsMessage, userMessage));
-		String generation = chatConnector.call(prompt).getResult().getOutput().getContent();
+		String generation = modelCall.call(prompt).getResult().getOutput().getContent();
 		logger.info("Generation: {}", generation);
 		return Map.of("generation", generation);
 	}

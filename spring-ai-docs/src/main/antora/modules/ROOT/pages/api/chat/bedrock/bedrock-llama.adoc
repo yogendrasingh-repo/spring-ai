@@ -128,7 +128,7 @@ spring.ai.bedrock.llama.chat.options.temperature=0.8
 
 TIP: replace the `regions`, `access-key` and `secret-key` with your AWS credentials.
 
-This will create a `BedrockLlamaChatConnector` implementation that you can inject into your class.
+This will create a `BedrockLlamaModelCall` implementation that you can inject into your class.
 Here is an example of a simple `@Controller` class that uses the chat client for text generations.
 
 [source,java]
@@ -158,7 +158,7 @@ public class ChatController {
 
 == Manual Configuration
 
-The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-bedrock/src/main/java/org/springframework/ai/bedrock/llama/BedrockLlamaChatClient.java[BedrockLlamaChatClient] implements the `ChatConnector` and `StreamingChatClient` and uses the <<low-level-api>> to connect to the Bedrock Anthropic service.
+The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-bedrock/src/main/java/org/springframework/ai/bedrock/llama/BedrockLlamaChatClient.java[BedrockLlamaChatClient] implements the `ModelCall` and `StreamingChatClient` and uses the <<low-level-api>> to connect to the Bedrock Anthropic service.
 
 Add the `spring-ai-bedrock` dependency to your project's Maven `pom.xml` file:
 

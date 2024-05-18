@@ -15,7 +15,7 @@
  */
 package org.springframework.ai.autoconfigure.watsonxai;
 
-import org.springframework.ai.watsonx.WatsonxAiChatConnector;
+import org.springframework.ai.watsonx.WatsonxAiModelCall;
 import org.springframework.ai.watsonx.api.WatsonxAiApi;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -50,8 +50,8 @@ public class WatsonxAiAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WatsonxAiChatConnector watsonxChatClient(WatsonxAiApi watsonxApi, WatsonxAiChatProperties chatProperties) {
-		return new WatsonxAiChatConnector(watsonxApi, chatProperties.getOptions());
+	public WatsonxAiModelCall watsonxChatClient(WatsonxAiApi watsonxApi, WatsonxAiChatProperties chatProperties) {
+		return new WatsonxAiModelCall(watsonxApi, chatProperties.getOptions());
 	}
 
 }

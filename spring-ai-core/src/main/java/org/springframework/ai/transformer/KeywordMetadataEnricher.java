@@ -18,7 +18,7 @@ package org.springframework.ai.transformer;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.ai.chat.connector.ChatConnector;
+import org.springframework.ai.chat.connector.ModelCall;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.document.DocumentTransformer;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -43,18 +43,18 @@ public class KeywordMetadataEnricher implements DocumentTransformer {
 	/**
 	 * Model predictor
 	 */
-	private final ChatConnector chatConnector;
+	private final ModelCall modelCall;
 
 	/**
 	 * The number of keywords to extract.
 	 */
 	private final int keywordCount;
 
-	public KeywordMetadataEnricher(ChatConnector chatConnector, int keywordCount) {
-		Assert.notNull(chatConnector, "ChatConnector must not be null");
+	public KeywordMetadataEnricher(ModelCall modelCall, int keywordCount) {
+		Assert.notNull(modelCall, "ModelCall must not be null");
 		Assert.isTrue(keywordCount >= 1, "Document count must be >= 1");
 
-		this.chatConnector = chatConnector;
+		this.modelCall = modelCall;
 		this.keywordCount = keywordCount;
 	}
 
@@ -64,7 +64,7 @@ public class KeywordMetadataEnricher implements DocumentTransformer {
 
 			var template = new PromptTemplate(String.format(KEYWORDS_TEMPLATE, keywordCount));
 			Prompt prompt = template.create(Map.of(CONTEXT_STR_PLACEHOLDER, document.getContent()));
-			String keywords = this.chatConnector.call(prompt).getResult().getOutput().getContent();
+			String keywords = this.modelCall.call(prompt).getResult().getOutput().getContent();
 			document.getMetadata().putAll(Map.of(EXCERPT_KEYWORDS_METADATA_KEY, keywords));
 		}
 		return documents;

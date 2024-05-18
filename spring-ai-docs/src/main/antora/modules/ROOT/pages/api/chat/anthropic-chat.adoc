@@ -132,7 +132,7 @@ TIP: In addition to the model specific https://github.com/spring-projects/spring
 
 == Function Calling
 
-You can register custom Java functions with the `AnthropicChatConnector` and have the Anthropic Claude model intelligently choose to output a JSON object containing arguments to call one or many of the registered functions.
+You can register custom Java functions with the `AnthropicModelCall` and have the Anthropic Claude model intelligently choose to output a JSON object containing arguments to call one or many of the registered functions.
 This is a powerful technique to connect the LLM capabilities with external tools and APIs.
 Read more about xref:api/chat/functions/anthropic-chat-functions.adoc[Anthropic Function Calling].
 
@@ -194,7 +194,7 @@ spring.ai.anthropic.chat.options.max-tokens=450
 
 TIP: replace the `api-key` with your Anthropic credentials.
 
-This will create a `AnthropicChatConnector` implementation that you can inject into your class.
+This will create a `AnthropicModelCall` implementation that you can inject into your class.
 Here is an example of a simple `@Controller` class that uses the chat client for text generations.
 
 [source,java]
@@ -224,7 +224,7 @@ public class ChatController {
 
 == Manual Configuration
 
-The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-anthropic/src/main/java/org/springframework/ai/anthropic/AnthropicChatClient.java[AnthropicChatClient] implements the `ChatConnector` and `StreamingChatClient` and uses the <<low-level-api>> to connect to the Anthropic service.
+The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-anthropic/src/main/java/org/springframework/ai/anthropic/AnthropicChatClient.java[AnthropicChatClient] implements the `ModelCall` and `StreamingChatClient` and uses the <<low-level-api>> to connect to the Anthropic service.
 
 Add the `spring-ai-anthropic` dependency to your project's Maven `pom.xml` file:
 
@@ -247,7 +247,7 @@ dependencies {
 
 TIP: Refer to the xref:getting-started.adoc#dependency-management[Dependency Management] section to add the Spring AI BOM to your build file.
 
-Next, create a `AnthropicChatConnector` and use it for text generations:
+Next, create a `AnthropicModelCall` and use it for text generations:
 
 [source,java]
 ----

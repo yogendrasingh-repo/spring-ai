@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.prompt.transformer.ChatServiceContext;
 import org.springframework.ai.chat.service.ChatService;
 import org.springframework.ai.chat.service.PromptTransformingChatService;
-import org.springframework.ai.openai.OpenAiChatConnector;
+import org.springframework.ai.openai.OpenAiModelCall;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -163,8 +163,8 @@ public class LongShortTermChatMemoryWithRagIT {
 		}
 
 		@Bean
-		public OpenAiChatConnector openAiClient(OpenAiApi openAiApi) {
-			return new OpenAiChatConnector(openAiApi);
+		public OpenAiModelCall openAiClient(OpenAiApi openAiApi) {
+			return new OpenAiModelCall(openAiApi);
 		}
 
 		@Bean
@@ -186,7 +186,7 @@ public class LongShortTermChatMemoryWithRagIT {
 		}
 
 		@Bean
-		public ChatService memoryChatService(OpenAiChatConnector chatClient, VectorStore vectorStore,
+		public ChatService memoryChatService(OpenAiModelCall chatClient, VectorStore vectorStore,
 				TokenCountEstimator tokenCountEstimator, ChatMemory chatHistory) {
 
 			return PromptTransformingChatService.builder(chatClient)
@@ -223,7 +223,7 @@ public class LongShortTermChatMemoryWithRagIT {
 		}
 
 		// @Bean
-		// public StreamingChatService memoryStreamingChatAgent(OpenAiChatConnector
+		// public StreamingChatService memoryStreamingChatAgent(OpenAiModelCall
 		// streamingChatClient,
 		// VectorStore vectorStore, TokenCountEstimator tokenCountEstimator, ChatHistory
 		// chatHistory) {
@@ -240,7 +240,7 @@ public class LongShortTermChatMemoryWithRagIT {
 		// }
 
 		@Bean
-		public RelevancyEvaluator relevancyEvaluator(OpenAiChatConnector chatClient) {
+		public RelevancyEvaluator relevancyEvaluator(OpenAiModelCall chatClient) {
 			// Use GPT 4 as a better model for determining relevancy. gpt 3.5 makes basic
 			// mistakes
 			OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder()

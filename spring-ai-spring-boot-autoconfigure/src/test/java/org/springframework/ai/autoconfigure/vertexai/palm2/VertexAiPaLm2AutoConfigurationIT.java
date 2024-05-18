@@ -24,7 +24,7 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.embedding.EmbeddingResponse;
-import org.springframework.ai.vertexai.palm2.VertexAiPaLm2ChatConnector;
+import org.springframework.ai.vertexai.palm2.VertexAiPaLm2ModelCall;
 import org.springframework.ai.vertexai.palm2.VertexAiPaLm2EmbeddingClient;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
@@ -49,7 +49,7 @@ public class VertexAiPaLm2AutoConfigurationIT {
 	@Test
 	void generate() {
 		contextRunner.run(context -> {
-			VertexAiPaLm2ChatConnector connector = context.getBean(VertexAiPaLm2ChatConnector.class);
+			VertexAiPaLm2ModelCall connector = context.getBean(VertexAiPaLm2ModelCall.class);
 			ChatClient client = ChatClient.builder(connector).build();
 			String response = client.call("Hello");
 
@@ -103,19 +103,19 @@ public class VertexAiPaLm2AutoConfigurationIT {
 		// Disable the chat auto-configuration.
 		contextRunner.withPropertyValues("spring.ai.vertex.ai.chat.enabled=false").run(context -> {
 			assertThat(context.getBeansOfType(VertexAiPlam2ChatProperties.class)).isNotEmpty();
-			assertThat(context.getBeansOfType(VertexAiPaLm2ChatConnector.class)).isEmpty();
+			assertThat(context.getBeansOfType(VertexAiPaLm2ModelCall.class)).isEmpty();
 		});
 
 		// The chat auto-configuration is enabled by default.
 		contextRunner.run(context -> {
 			assertThat(context.getBeansOfType(VertexAiPlam2ChatProperties.class)).isNotEmpty();
-			assertThat(context.getBeansOfType(VertexAiPaLm2ChatConnector.class)).isNotEmpty();
+			assertThat(context.getBeansOfType(VertexAiPaLm2ModelCall.class)).isNotEmpty();
 		});
 
 		// Explicitly enable the chat auto-configuration.
 		contextRunner.withPropertyValues("spring.ai.vertex.ai.chat.enabled=true").run(context -> {
 			assertThat(context.getBeansOfType(VertexAiPlam2ChatProperties.class)).isNotEmpty();
-			assertThat(context.getBeansOfType(VertexAiPaLm2ChatConnector.class)).isNotEmpty();
+			assertThat(context.getBeansOfType(VertexAiPaLm2ModelCall.class)).isNotEmpty();
 		});
 	}
 

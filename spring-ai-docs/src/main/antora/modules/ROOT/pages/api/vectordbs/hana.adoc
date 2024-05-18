@@ -226,7 +226,7 @@ public class CricketWorldCupRepository implements HanaVectorRepository<CricketWo
 }
 ----
 
-* Now, create a REST Controller class `CricketWorldCupHanaController`, and autowire `ChatConnector` and `VectorStore` as dependencies
+* Now, create a REST Controller class `CricketWorldCupHanaController`, and autowire `ModelCall` and `VectorStore` as dependencies
 In this controller class, create the following REST endpoints:
 
     - `/ai/hana-vector-store/cricket-world-cup/purge-embeddings` - to purge all the embeddings from the Vector Store
@@ -238,7 +238,7 @@ In this controller class, create the following REST endpoints:
 package com.interviewpedia.spring.ai.hana;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.connector.ChatConnector;
+import org.springframework.ai.chat.connector.ModelCall;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;

@@ -23,7 +23,7 @@ import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatConnector;
+import org.springframework.ai.vertexai.gemini.VertexAiGeminiModelCall;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import reactor.core.publisher.Flux;
@@ -46,7 +46,7 @@ public class VertexAiGeminiAutoConfigurationIT {
 	@Test
 	void generate() {
 		contextRunner.run(context -> {
-			ChatClient client = ChatClient.builder(context.getBean(VertexAiGeminiChatConnector.class)).build();
+			ChatClient client = ChatClient.builder(context.getBean(VertexAiGeminiModelCall.class)).build();
 			String response = client.call("Hello");
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);
@@ -56,7 +56,7 @@ public class VertexAiGeminiAutoConfigurationIT {
 	@Test
 	void generateStreaming() {
 		contextRunner.run(context -> {
-			VertexAiGeminiChatConnector client = context.getBean(VertexAiGeminiChatConnector.class);
+			VertexAiGeminiModelCall client = context.getBean(VertexAiGeminiModelCall.class);
 			Flux<ChatResponse> responseFlux = client.stream(new Prompt(new UserMessage("Hello")));
 			String response = responseFlux.collectList().block().stream().map(chatResponse -> {
 				return chatResponse.getResults().get(0).getOutput().getContent();

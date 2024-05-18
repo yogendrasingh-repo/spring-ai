@@ -23,11 +23,11 @@ import io.qdrant.client.QdrantClient;
 import io.qdrant.client.QdrantGrpcClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
-import org.springframework.ai.chat.connector.ChatConnector;
+import org.springframework.ai.chat.connector.ModelCall;
 import org.springframework.ai.chat.service.ChatService;
 import org.springframework.ai.chat.prompt.transformer.TransformerContentType;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.openai.OpenAiChatConnector;
+import org.springframework.ai.openai.OpenAiModelCall;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -71,7 +71,7 @@ public class OpenAiPromptTransformingChatServiceIT {
 	@Container
 	static QdrantContainer qdrantContainer = new QdrantContainer("qdrant/qdrant:v1.9.2");
 
-	private final ChatConnector chatConnector;
+	private final ModelCall modelCall;
 
 	private final VectorStore vectorStore;
 
@@ -81,9 +81,9 @@ public class OpenAiPromptTransformingChatServiceIT {
 	private ChatService chatService;
 
 	@Autowired
-	public OpenAiPromptTransformingChatServiceIT(ChatConnector chatConnector, ChatService chatService,
+	public OpenAiPromptTransformingChatServiceIT(ModelCall modelCall, ChatService chatService,
 			VectorStore vectorStore) {
-		this.chatConnector = chatConnector;
+		this.modelCall = modelCall;
 		this.chatService = chatService;
 		this.vectorStore = vectorStore;
 	}
@@ -102,7 +102,7 @@ public class OpenAiPromptTransformingChatServiceIT {
 		OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder()
 			.withModel(GPT_4_TURBO_PREVIEW.getValue())
 			.build();
-		var relevancyEvaluator = new RelevancyEvaluator(this.chatConnector, openAiChatOptions);
+		var relevancyEvaluator = new RelevancyEvaluator(this.modelCall, openAiChatOptions);
 
 		EvaluationResponse evaluationResponse = relevancyEvaluator.evaluate(chatServiceResponse.toEvaluationRequest());
 		assertTrue(evaluationResponse.isPass(), "Response is not relevant to the question");
@@ -145,8 +145,8 @@ public class OpenAiPromptTransformingChatServiceIT {
 		}
 
 		@Bean
-		public ChatConnector openAiClient(OpenAiApi openAiApi) {
-			return new OpenAiChatConnector(openAiApi);
+		public ModelCall openAiClient(OpenAiApi openAiApi) {
+			return new OpenAiModelCall(openAiApi);
 		}
 
 		@Bean
@@ -163,8 +163,8 @@ public class OpenAiPromptTransformingChatServiceIT {
 		}
 
 		@Bean
-		public ChatService chatService(ChatConnector chatConnector, VectorStore vectorStore) {
-			return PromptTransformingChatService.builder(chatConnector)
+		public ChatService chatService(ModelCall modelCall, VectorStore vectorStore) {
+			return PromptTransformingChatService.builder(modelCall)
 				.withRetrievers(List.of(new VectorStoreRetriever(vectorStore, SearchRequest.defaults())))
 				.withAugmentors(List.of(new QuestionContextAugmentor()))
 				.build();

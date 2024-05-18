@@ -28,7 +28,7 @@ import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatConnector;
+import org.springframework.ai.vertexai.gemini.VertexAiGeminiModelCall;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatOptions;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -55,12 +55,12 @@ class FunctionCallWithFunctionBeanIT {
 	void functionCallTest() {
 
 		contextRunner.withPropertyValues("spring.ai.vertex.ai.gemini.chat.options.model="
-				// + VertexAiGeminiChatConnector.ChatModel.GEMINI_PRO.getValue())
-				+ VertexAiGeminiChatConnector.ChatModel.GEMINI_PRO_1_5_PRO.getValue())
-			// + VertexAiGeminiChatConnector.ChatModel.GEMINI_PRO_1_5_FLASH.getValue())
+				// + VertexAiGeminiModelCall.ChatModel.GEMINI_PRO.getValue())
+				+ VertexAiGeminiModelCall.ChatModel.GEMINI_PRO_1_5_PRO.getValue())
+			// + VertexAiGeminiModelCall.ChatModel.GEMINI_PRO_1_5_FLASH.getValue())
 			.run(context -> {
 
-				VertexAiGeminiChatConnector chatClient = context.getBean(VertexAiGeminiChatConnector.class);
+				VertexAiGeminiModelCall chatClient = context.getBean(VertexAiGeminiModelCall.class);
 
 				var systemMessage = new SystemMessage("""
 						Use Multi-turn function calling.
@@ -74,7 +74,7 @@ class FunctionCallWithFunctionBeanIT {
 
 				ChatResponse response = chatClient.call(new Prompt(List.of(systemMessage, userMessage),
 						VertexAiGeminiChatOptions.builder().withFunction("weatherFunction").build()));
-				// ChatResponse response = chatConnector.call(new
+				// ChatResponse response = modelCall.call(new
 				// Prompt(List.of(userMessage),
 				// VertexAiGeminiChatOptions.builder().withFunction("weatherFunction").build()));
 

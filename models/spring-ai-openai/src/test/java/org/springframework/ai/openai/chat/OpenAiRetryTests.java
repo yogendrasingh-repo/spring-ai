@@ -30,7 +30,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.MetadataMode;
 import org.springframework.ai.image.ImageMessage;
 import org.springframework.ai.image.ImagePrompt;
-import org.springframework.ai.openai.OpenAiChatConnector;
+import org.springframework.ai.openai.OpenAiModelCall;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionChunk;
@@ -101,7 +101,7 @@ public class OpenAiRetryTests {
 
 	private @Mock OpenAiImageApi openAiImageApi;
 
-	private OpenAiChatConnector chatClient;
+	private OpenAiModelCall chatClient;
 
 	private OpenAiEmbeddingClient embeddingClient;
 
@@ -115,7 +115,7 @@ public class OpenAiRetryTests {
 		retryListener = new TestRetryListener();
 		retryTemplate.registerListener(retryListener);
 
-		chatClient = new OpenAiChatConnector(openAiApi, OpenAiChatOptions.builder().build(), null, retryTemplate);
+		chatClient = new OpenAiModelCall(openAiApi, OpenAiChatOptions.builder().build(), null, retryTemplate);
 		embeddingClient = new OpenAiEmbeddingClient(openAiApi, MetadataMode.EMBED,
 				OpenAiEmbeddingOptions.builder().build(), retryTemplate);
 		audioTranscriptionClient = new OpenAiAudioTranscriptionClient(openAiAudioApi,

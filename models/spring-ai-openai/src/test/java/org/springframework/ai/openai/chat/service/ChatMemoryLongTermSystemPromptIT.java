@@ -23,7 +23,7 @@ import io.qdrant.client.QdrantGrpcClient;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.ai.chat.service.ChatService;
 import org.springframework.ai.chat.service.StreamingChatService;
-import org.springframework.ai.openai.OpenAiChatConnector;
+import org.springframework.ai.openai.OpenAiModelCall;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.qdrant.QdrantContainer;
@@ -75,8 +75,8 @@ public class ChatMemoryLongTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public OpenAiChatConnector openAiClient(OpenAiApi openAiApi) {
-			return new OpenAiChatConnector(openAiApi);
+		public OpenAiModelCall openAiClient(OpenAiApi openAiApi) {
+			return new OpenAiModelCall(openAiApi);
 		}
 
 		@Bean
@@ -98,7 +98,7 @@ public class ChatMemoryLongTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public ChatService memoryChatService(OpenAiChatConnector chatClient, VectorStore vectorStore,
+		public ChatService memoryChatService(OpenAiModelCall chatClient, VectorStore vectorStore,
 				TokenCountEstimator tokenCountEstimator) {
 
 			return PromptTransformingChatService.builder(chatClient)
@@ -110,7 +110,7 @@ public class ChatMemoryLongTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public StreamingChatService memoryStreamingChatService(OpenAiChatConnector streamingChatClient,
+		public StreamingChatService memoryStreamingChatService(OpenAiModelCall streamingChatClient,
 				VectorStore vectorStore, TokenCountEstimator tokenCountEstimator) {
 
 			return StreamingPromptTransformingChatService.builder(streamingChatClient)
@@ -122,7 +122,7 @@ public class ChatMemoryLongTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public RelevancyEvaluator relevancyEvaluator(OpenAiChatConnector chatClient) {
+		public RelevancyEvaluator relevancyEvaluator(OpenAiModelCall chatClient) {
 			return new RelevancyEvaluator(chatClient);
 		}
 

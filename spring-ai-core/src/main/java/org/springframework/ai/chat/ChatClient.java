@@ -1,6 +1,6 @@
 package org.springframework.ai.chat;
 
-import org.springframework.ai.chat.connector.ChatConnector;
+import org.springframework.ai.chat.connector.ModelCall;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 // todo rebase to use the latest code
 // todo can the fluid DSL be designed in such a way that calling .user() or .system()
 //  	returns an object that wont let u call .messages(), and vice versa?
-
+// todo make it so that i can reuse the specs when setting up defaults: defaultUser( spec->spec.text("..").
 /*
  * @author Mark Pollack
  * @author Christian Tzolov
@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  */
 public interface ChatClient {
 
-	static ChatClientBuilder builder(ChatConnector connector) {
+	static ChatClientBuilder builder(ModelCall connector) {
 		return new ChatClientBuilder(connector);
 	}
 
@@ -156,7 +156,7 @@ public interface ChatClient {
 
 	class ChatClientRequest {
 
-		private final ChatConnector connector;
+		private final ModelCall connector;
 
 		private String userText = "";
 
@@ -176,8 +176,8 @@ public interface ChatClient {
 
 		private final Map<String, Object> systemParams = new HashMap<>();
 
-		public ChatClientRequest(ChatConnector connector, String userText, String systemText,
-				List<String> functionNames, List<Media> media, ChatOptions chatOptions) {
+		public ChatClientRequest(ModelCall connector, String userText, String systemText, List<String> functionNames,
+				List<Media> media, ChatOptions chatOptions) {
 			this.userText = userText;
 			this.systemText = systemText;
 			this.connector = connector;
@@ -233,10 +233,10 @@ public interface ChatClient {
 
 			private final ChatClientRequest request;
 
-			private final ChatConnector chatConnector;
+			private final ModelCall modelCall;
 
-			public ChatResponseSpec(ChatConnector chatConnector, ChatClientRequest request) {
-				this.chatConnector = chatConnector;
+			public ChatResponseSpec(ModelCall modelCall, ChatClientRequest request) {
+				this.modelCall = modelCall;
 				this.request = request;
 			}
 
@@ -296,7 +296,7 @@ public interface ChatClient {
 					}
 				}
 				var prompt = new Prompt(messages, this.request.chatOptions);
-				return this.chatConnector.call(prompt);
+				return this.modelCall.call(prompt);
 			}
 
 			public ChatResponse chatResponse() {
@@ -343,38 +343,73 @@ public interface ChatClient {
 
 	class ChatClientBuilder {
 
-		private final ChatConnector connector;
+		private final ModelCall modelCall;
 
 		private final List<Media> defaultMedia = new ArrayList<>();
 
-		private final List<String> defaultFunctions = new ArrayList<>();
+		private final List<String> defaultFunctionsNames = new ArrayList<>();
+
+		private final List<FunctionCallback> defaultFunctionCallbacks = new ArrayList<>();
 
 		private String defaultSystem;
 
 		private String defaultUser;
 
-		ChatClientBuilder(ChatConnector connector) {
-			Assert.notNull(connector, "the " + ChatConnector.class.getName() + " must be non-null!");
-			this.connector = connector;
+		ChatClientBuilder(ModelCall modelCall) {
+			Assert.notNull(modelCall, "the " + ModelCall.class.getName() + " must be non-null");
+			this.modelCall = modelCall;
 		}
 
 		public ChatClient build() {
-			return new DefaultChatClient(this.connector, this.defaultSystem, this.defaultUser, this.defaultFunctions,
-					this.defaultMedia);
+			return new DefaultChatClient(this.modelCall, this.defaultSystem, this.defaultUser,
+					this.defaultFunctionsNames, this.defaultMedia);
 		}
 
-		public ChatClientBuilder defaultSystem(String systemPrompt) {
-			this.defaultSystem = systemPrompt;
+		public ChatClientBuilder defaultSystem(Resource resource) {
+			return this.defaultSystem(resource, Charset.defaultCharset());
+		}
+
+		public ChatClientBuilder defaultSystem(Resource resource, Charset charset) {
+			try {
+				this.defaultSystem = resource.getContentAsString(charset);
+			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return this;
+		}
+
+		public ChatClientBuilder defaultSystem(String systemText) {
+			this.defaultSystem = systemText;
 			return this;
 		}
 
 		public ChatClientBuilder defaultFunctions(String... functionNames) {
-			this.defaultFunctions.addAll(List.of(functionNames));
+			this.defaultFunctionsNames.addAll(List.of(functionNames));
 			return this;
 		}
 
-		public ChatClientBuilder defaultUser(String userPrompt) {
-			this.defaultUser = userPrompt;
+		public ChatClientBuilder defaultFunctions(List<FunctionCallback> functions) {
+			this.defaultFunctionCallbacks.addAll(functions);
+			return this;
+		}
+
+		public ChatClientBuilder defaultUser(Resource userText) {
+			return this.defaultUser(userText, Charset.defaultCharset());
+		}
+
+		public ChatClientBuilder defaultUser(Resource userText, Charset charset) {
+			try {
+				this.defaultUser = userText.getContentAsString(charset);
+			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return this;
+		}
+
+		public ChatClientBuilder defaultUser(String userText) {
+			this.defaultUser = userText;
 			return this;
 		}
 
@@ -382,15 +417,15 @@ public interface ChatClient {
 
 	@Deprecated(since = "1.0.0 M1", forRemoval = true)
 	default String call(String message) {
-		Prompt prompt = new Prompt(new UserMessage(message));
-		Generation generation = call(prompt).getResult();
+		var prompt = new Prompt(new UserMessage(message));
+		var generation = call(prompt).getResult();
 		return (generation != null) ? generation.getOutput().getContent() : "";
 	}
 
 	@Deprecated(since = "1.0.0 M1", forRemoval = true)
 	default String call(Message... messages) {
-		Prompt prompt = new Prompt(Arrays.asList(messages));
-		Generation generation = call(prompt).getResult();
+		var prompt = new Prompt(Arrays.asList(messages));
+		var generation = call(prompt).getResult();
 		return (generation != null) ? generation.getOutput().getContent() : "";
 	}
 

@@ -47,7 +47,7 @@ public interface StreamingChatClient extends StreamingModelClient<Prompt, ChatRe
 }
 ----
 
-The `stream` method takes a `Prompt` request similar to `ChatConnector` but it streams the responses using the reactive Flux API.
+The `stream` method takes a `Prompt` request similar to `ModelCall` but it streams the responses using the reactive Flux API.
 
 === Prompt
 
@@ -184,7 +184,7 @@ public class Generation implements ModelResult<AssistantMessage> {
 
 == Available Implementations
 
-The `ChatConnector` and `StreamingChatClient` implementations are provided for the following Model providers:
+The `ModelCall` and `StreamingChatClient` implementations are provided for the following Model providers:
 
 image::spring-ai-chat-completions-clients.jpg[align="center", width="800px"]
 

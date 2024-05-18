@@ -94,7 +94,7 @@ The prefix `spring.ai.mistralai.embedding` is property prefix that configures th
 | spring.ai.mistralai.embedding.options.encodingFormat   | The format to return the embeddings in. Can be either float or base64.  | -
 |====
 
-NOTE: You can override the common `spring.ai.mistralai.base-url` and `spring.ai.mistralai.api-key` for the `ChatConnector` and `EmbeddingClient` implementations.
+NOTE: You can override the common `spring.ai.mistralai.base-url` and `spring.ai.mistralai.api-key` for the `ModelCall` and `EmbeddingClient` implementations.
 The `spring.ai.mistralai.embedding.base-url` and `spring.ai.mistralai.embedding.api-key` properties if set take precedence over the common properties.
 Similarly, the `spring.ai.mistralai.embedding.base-url` and `spring.ai.mistralai.embedding.api-key` properties if set take precedence over the common properties.
 This is useful if you want to use different MistralAI accounts for different models and different model endpoints.
@@ -175,8 +175,8 @@ dependencies {
 
 TIP: Refer to the xref:getting-started.adoc#dependency-management[Dependency Management] section to add the Spring AI BOM to your build file.
 
-NOTE: The `spring-ai-mistral-ai` dependency provides access also to the `MistralAiChatConnector`.
-For more information about the `MistralAiChatConnector` refer to the link:../chat/mistralai-chat.html[MistralAI Chat Client] section.
+NOTE: The `spring-ai-mistral-ai` dependency provides access also to the `MistralAiModelCall`.
+For more information about the `MistralAiModelCall` refer to the link:../chat/mistralai-chat.html[MistralAI Chat Client] section.
 
 Next, create an `MistralAiEmbeddingClient` instance and use it to compute the similarity between two input texts:
 

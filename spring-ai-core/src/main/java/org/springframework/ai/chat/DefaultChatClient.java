@@ -1,6 +1,6 @@
 package org.springframework.ai.chat;
 
-import org.springframework.ai.chat.connector.ChatConnector;
+import org.springframework.ai.chat.connector.ModelCall;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.prompt.Prompt;
 
@@ -14,7 +14,7 @@ import java.util.List;
  */
 class DefaultChatClient implements ChatClient {
 
-	private final ChatConnector connector;
+	private final ModelCall modelCall;
 
 	private final String userText, systemText;
 
@@ -22,9 +22,9 @@ class DefaultChatClient implements ChatClient {
 
 	private final List<Media> media;
 
-	public DefaultChatClient(ChatConnector connector, String defaultSystemPrompt, String defaultUserPrompt,
+	public DefaultChatClient(ModelCall modelCall, String defaultSystemPrompt, String defaultUserPrompt,
 			List<String> defaultFunctions, List<Media> defaultMedia) {
-		this.connector = connector;
+		this.modelCall = modelCall;
 		this.userText = defaultUserPrompt;
 		this.systemText = defaultSystemPrompt;
 		this.functionNames = defaultFunctions;
@@ -34,7 +34,7 @@ class DefaultChatClient implements ChatClient {
 
 	@Override
 	public ChatClientRequest call() {
-		return new ChatClientRequest(this.connector, this.userText, this.systemText, this.functionNames, this.media,
+		return new ChatClientRequest(this.modelCall, this.userText, this.systemText, this.functionNames, this.media,
 				null);
 	}
 
@@ -46,7 +46,7 @@ class DefaultChatClient implements ChatClient {
 	@Deprecated(forRemoval = true, since = "1.0.0 M1")
 	@Override
 	public ChatResponse call(Prompt prompt) {
-		return this.connector.call(prompt);
+		return this.modelCall.call(prompt);
 	}
 
 }

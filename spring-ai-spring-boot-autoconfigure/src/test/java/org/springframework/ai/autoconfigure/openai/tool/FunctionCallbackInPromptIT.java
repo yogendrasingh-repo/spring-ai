@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.openai.OpenAiChatConnector;
+import org.springframework.ai.openai.OpenAiModelCall;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration;
@@ -54,7 +54,7 @@ public class FunctionCallbackInPromptIT {
 	void functionCallTest() {
 		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			OpenAiChatConnector chatClient = context.getBean(OpenAiChatConnector.class);
+			OpenAiModelCall chatClient = context.getBean(OpenAiModelCall.class);
 
 			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
 
@@ -79,7 +79,7 @@ public class FunctionCallbackInPromptIT {
 
 		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			OpenAiChatConnector chatClient = context.getBean(OpenAiChatConnector.class);
+			OpenAiModelCall chatClient = context.getBean(OpenAiModelCall.class);
 
 			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
 

@@ -25,7 +25,7 @@ import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.embedding.EmbeddingResponse;
-import org.springframework.ai.mistralai.MistralAiChatConnector;
+import org.springframework.ai.mistralai.MistralAiModelCall;
 import org.springframework.ai.mistralai.MistralAiEmbeddingClient;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
@@ -54,7 +54,7 @@ public class MistralAiAutoConfigurationIT {
 	@Test
 	void generate() {
 		contextRunner.run(context -> {
-			ChatClient client = ChatClient.builder(context.getBean(MistralAiChatConnector.class)).build();
+			ChatClient client = ChatClient.builder(context.getBean(MistralAiModelCall.class)).build();
 			String response = client.call("Hello");
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);
@@ -64,7 +64,7 @@ public class MistralAiAutoConfigurationIT {
 	@Test
 	void generateStreaming() {
 		contextRunner.run(context -> {
-			MistralAiChatConnector client = context.getBean(MistralAiChatConnector.class);
+			MistralAiModelCall client = context.getBean(MistralAiModelCall.class);
 			Flux<ChatResponse> responseFlux = client.stream(new Prompt(new UserMessage("Hello")));
 			String response = responseFlux.collectList().block().stream().map(chatResponse -> {
 				return chatResponse.getResults().get(0).getOutput().getContent();

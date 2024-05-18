@@ -32,7 +32,7 @@ import org.springframework.ai.chat.memory.LastMaxTokenSizeContentTransformer;
 import org.springframework.ai.chat.memory.SystemPromptChatMemoryAugmentor;
 import org.springframework.ai.evaluation.BaseMemoryTest;
 import org.springframework.ai.evaluation.RelevancyEvaluator;
-import org.springframework.ai.openai.OpenAiChatConnector;
+import org.springframework.ai.openai.OpenAiModelCall;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.tokenizer.JTokkitTokenCountEstimator;
 import org.springframework.ai.tokenizer.TokenCountEstimator;
@@ -60,8 +60,8 @@ public class ChatMemoryShortTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public OpenAiChatConnector openAiClient(OpenAiApi openAiApi) {
-			return new OpenAiChatConnector(openAiApi);
+		public OpenAiModelCall openAiClient(OpenAiApi openAiApi) {
+			return new OpenAiModelCall(openAiApi);
 		}
 
 		@Bean
@@ -75,7 +75,7 @@ public class ChatMemoryShortTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public ChatService memoryChatService(OpenAiChatConnector chatClient, ChatMemory chatHistory,
+		public ChatService memoryChatService(OpenAiModelCall chatClient, ChatMemory chatHistory,
 				TokenCountEstimator tokenCountEstimator) {
 
 			return PromptTransformingChatService.builder(chatClient)
@@ -87,7 +87,7 @@ public class ChatMemoryShortTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public StreamingChatService memoryStreamingChatService(OpenAiChatConnector streamingChatClient,
+		public StreamingChatService memoryStreamingChatService(OpenAiModelCall streamingChatClient,
 				ChatMemory chatHistory, TokenCountEstimator tokenCountEstimator) {
 
 			return StreamingPromptTransformingChatService.builder(streamingChatClient)
@@ -99,7 +99,7 @@ public class ChatMemoryShortTermSystemPromptIT extends BaseMemoryTest {
 		}
 
 		@Bean
-		public RelevancyEvaluator relevancyEvaluator(OpenAiChatConnector chatClient) {
+		public RelevancyEvaluator relevancyEvaluator(OpenAiModelCall chatClient) {
 			return new RelevancyEvaluator(chatClient);
 		}
 

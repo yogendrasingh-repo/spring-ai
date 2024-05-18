@@ -97,7 +97,7 @@ The prefix `spring.ai.openai.embedding` is property prefix that configures the `
 | spring.ai.openai.embedding.options.dimensions   | The number of dimensions the resulting output embeddings should have. Only supported in `text-embedding-3` and later models.  | -
 |====
 
-NOTE: You can override the common `spring.ai.openai.base-url` and `spring.ai.openai.api-key` for the `ChatConnector` and `EmbeddingClient` implementations.
+NOTE: You can override the common `spring.ai.openai.base-url` and `spring.ai.openai.api-key` for the `ModelCall` and `EmbeddingClient` implementations.
 The `spring.ai.openai.embedding.base-url` and `spring.ai.openai.embedding.api-key` properties if set take precedence over the common properties.
 Similarly, the `spring.ai.openai.embedding.base-url` and `spring.ai.openai.embedding.api-key` properties if set take precedence over the common properties.
 This is useful if you want to use different OpenAI accounts for different models and different model endpoints.
@@ -178,8 +178,8 @@ dependencies {
 
 TIP: Refer to the xref:getting-started.adoc#dependency-management[Dependency Management] section to add the Spring AI BOM to your build file.
 
-NOTE: The `spring-ai-openai` dependency provides access also to the `OpenAiChatConnector`.
-For more information about the `OpenAiChatConnector` refer to the link:../chat/openai-chat.html[OpenAI Chat Client] section.
+NOTE: The `spring-ai-openai` dependency provides access also to the `OpenAiModelCall`.
+For more information about the `OpenAiModelCall` refer to the link:../chat/openai-chat.html[OpenAI Chat Client] section.
 
 Next, create an `OpenAiEmbeddingClient` instance and use it to compute the similarity between two input texts:
 

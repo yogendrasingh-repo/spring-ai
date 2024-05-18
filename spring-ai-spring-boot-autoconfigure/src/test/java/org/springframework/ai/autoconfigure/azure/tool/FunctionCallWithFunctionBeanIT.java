@@ -24,9 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.ai.autoconfigure.azure.openai.AzureOpenAiAutoConfiguration;
-import org.springframework.ai.azure.openai.AzureOpenAiChatConnector;
+import org.springframework.ai.azure.openai.AzureOpenAiModelCall;
 import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
-import org.springframework.ai.chat.connector.ChatConnector;
+import org.springframework.ai.chat.connector.ModelCall;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -57,19 +57,19 @@ class FunctionCallWithFunctionBeanIT {
 		contextRunner.withPropertyValues("spring.ai.azure.openai.chat.options..deployment-name=gpt-4-0125-preview")
 			.run(context -> {
 
-				ChatConnector chatConnector = context.getBean(AzureOpenAiChatConnector.class);
+				ModelCall modelCall = context.getBean(AzureOpenAiModelCall.class);
 
 				UserMessage userMessage = new UserMessage(
 						"What's the weather like in San Francisco, Paris and in Tokyo? Use Multi-turn function calling.");
 
-				ChatResponse response = chatConnector.call(new Prompt(List.of(userMessage),
+				ChatResponse response = modelCall.call(new Prompt(List.of(userMessage),
 						AzureOpenAiChatOptions.builder().withFunction("weatherFunction").build()));
 
 				logger.info("Response: {}", response);
 
 				assertThat(response.getResult().getOutput().getContent()).contains("30", "10", "15");
 
-				response = chatConnector.call(new Prompt(List.of(userMessage),
+				response = modelCall.call(new Prompt(List.of(userMessage),
 						AzureOpenAiChatOptions.builder().withFunction("weatherFunction3").build()));
 
 				logger.info("Response: {}", response);

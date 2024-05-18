@@ -16,7 +16,7 @@
 package org.springframework.ai.autoconfigure.bedrock.llama;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.ai.bedrock.llama.BedrockLlamaChatConnector;
+import org.springframework.ai.bedrock.llama.BedrockLlamaModelCall;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.providers.AwsRegionProvider;
 
@@ -59,10 +59,9 @@ public class BedrockLlamaChatAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(LlamaChatBedrockApi.class)
-	public BedrockLlamaChatConnector llamaChatClient(LlamaChatBedrockApi llamaApi,
-			BedrockLlamaChatProperties properties) {
+	public BedrockLlamaModelCall llamaChatClient(LlamaChatBedrockApi llamaApi, BedrockLlamaChatProperties properties) {
 
-		return new BedrockLlamaChatConnector(llamaApi, properties.getOptions());
+		return new BedrockLlamaModelCall(llamaApi, properties.getOptions());
 	}
 
 }

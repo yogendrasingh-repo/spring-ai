@@ -53,7 +53,7 @@ public class AzureChatCompletionsOptionsTests {
 			.withUser("user")
 			.build();
 
-		var client = new AzureOpenAiChatConnector(mockClient, defaultOptions);
+		var client = new AzureOpenAiModelCall(mockClient, defaultOptions);
 
 		var requestOptions = client.toAzureChatCompletionsOptions(new Prompt("Test message content"));
 

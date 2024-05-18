@@ -24,7 +24,7 @@ import com.google.cloud.vertexai.VertexAI;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallbackContext;
 import org.springframework.ai.model.function.FunctionCallbackWrapper.Builder.SchemaType;
-import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatConnector;
+import org.springframework.ai.vertexai.gemini.VertexAiGeminiModelCall;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Tzolov
  * @since 0.8.0
  */
-@ConditionalOnClass({ VertexAI.class, VertexAiGeminiChatConnector.class })
+@ConditionalOnClass({ VertexAI.class, VertexAiGeminiModelCall.class })
 @EnableConfigurationProperties({ VertexAiGeminiChatProperties.class, VertexAiGeminiConnectionProperties.class })
 public class VertexAiGeminiAutoConfiguration {
 
@@ -74,9 +74,8 @@ public class VertexAiGeminiAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public VertexAiGeminiChatConnector vertexAiGeminiChat(VertexAI vertexAi,
-			VertexAiGeminiChatProperties chatProperties, List<FunctionCallback> toolFunctionCallbacks,
-			ApplicationContext context) {
+	public VertexAiGeminiModelCall vertexAiGeminiChat(VertexAI vertexAi, VertexAiGeminiChatProperties chatProperties,
+			List<FunctionCallback> toolFunctionCallbacks, ApplicationContext context) {
 
 		FunctionCallbackContext functionCallbackContext = springAiFunctionManager(context);
 
@@ -84,7 +83,7 @@ public class VertexAiGeminiAutoConfiguration {
 			chatProperties.getOptions().getFunctionCallbacks().addAll(toolFunctionCallbacks);
 		}
 
-		return new VertexAiGeminiChatConnector(vertexAi, chatProperties.getOptions(), functionCallbackContext);
+		return new VertexAiGeminiModelCall(vertexAi, chatProperties.getOptions(), functionCallbackContext);
 	}
 
 	/**

@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.ai.chat.connector.ChatConnector;
+import org.springframework.ai.chat.connector.ModelCall;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.document.DocumentTransformer;
 import org.springframework.ai.document.MetadataMode;
@@ -62,7 +62,7 @@ public class SummaryMetadataEnricher implements DocumentTransformer {
 	/**
 	 * AI client.
 	 */
-	private final ChatConnector chatConnector;
+	private final ModelCall modelCall;
 
 	/**
 	 * Number of documents from front to use for title extraction.
@@ -76,16 +76,16 @@ public class SummaryMetadataEnricher implements DocumentTransformer {
 	 */
 	private final String summaryTemplate;
 
-	public SummaryMetadataEnricher(ChatConnector chatConnector, List<SummaryType> summaryTypes) {
-		this(chatConnector, summaryTypes, DEFAULT_SUMMARY_EXTRACT_TEMPLATE, MetadataMode.ALL);
+	public SummaryMetadataEnricher(ModelCall modelCall, List<SummaryType> summaryTypes) {
+		this(modelCall, summaryTypes, DEFAULT_SUMMARY_EXTRACT_TEMPLATE, MetadataMode.ALL);
 	}
 
-	public SummaryMetadataEnricher(ChatConnector chatConnector, List<SummaryType> summaryTypes, String summaryTemplate,
+	public SummaryMetadataEnricher(ModelCall modelCall, List<SummaryType> summaryTypes, String summaryTemplate,
 			MetadataMode metadataMode) {
-		Assert.notNull(chatConnector, "ChatConnector must not be null");
+		Assert.notNull(modelCall, "ModelCall must not be null");
 		Assert.hasText(summaryTemplate, "Summary template must not be empty");
 
-		this.chatConnector = chatConnector;
+		this.modelCall = modelCall;
 		this.summaryTypes = CollectionUtils.isEmpty(summaryTypes) ? List.of(SummaryType.CURRENT) : summaryTypes;
 		this.metadataMode = metadataMode;
 		this.summaryTemplate = summaryTemplate;
@@ -101,7 +101,7 @@ public class SummaryMetadataEnricher implements DocumentTransformer {
 
 			Prompt prompt = new PromptTemplate(this.summaryTemplate)
 				.create(Map.of(CONTEXT_STR_PLACEHOLDER, documentContext));
-			documentSummaries.add(this.chatConnector.call(prompt).getResult().getOutput().getContent());
+			documentSummaries.add(this.modelCall.call(prompt).getResult().getOutput().getContent());
 		}
 
 		for (int i = 0; i < documentSummaries.size(); i++) {

@@ -107,7 +107,7 @@ The prefix `spring.ai.openai.chat` is the property prefix that lets you configur
 | spring.ai.openai.chat.options.functions | List of functions, identified by their names, to enable for function calling in a single prompt requests. Functions with those names must exist in the functionCallbacks registry. | -
 |====
 
-NOTE: You can override the common `spring.ai.openai.base-url` and `spring.ai.openai.api-key` for the `ChatConnector` and `EmbeddingClient` implementations.
+NOTE: You can override the common `spring.ai.openai.base-url` and `spring.ai.openai.api-key` for the `ModelCall` and `EmbeddingClient` implementations.
 The `spring.ai.openai.chat.base-url` and `spring.ai.openai.chat.api-key` properties if set take precedence over the common properties.
 This is useful if you want to use different OpenAI accounts for different models and different model endpoints.
 
@@ -209,7 +209,7 @@ spring.ai.openai.chat.options.temperature=0.7
 
 TIP: replace the `api-key` with your OpenAI credentials.
 
-This will create a `OpenAiChatConnector` implementation that you can inject into your class.
+This will create a `OpenAiModelCall` implementation that you can inject into your class.
 Here is an example of a simple `@Controller` class that uses the chat client for text generations.
 
 [source,java]
@@ -239,7 +239,7 @@ public class ChatController {
 
 == Manual Configuration
 
-The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-openai/src/main/java/org/springframework/ai/openai/OpenAiChatClient.java[OpenAiChatClient] implements the `ChatConnector` and `StreamingChatClient` and uses the <<low-level-api>> to connect to the OpenAI service.
+The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-openai/src/main/java/org/springframework/ai/openai/OpenAiChatClient.java[OpenAiChatClient] implements the `ModelCall` and `StreamingChatClient` and uses the <<low-level-api>> to connect to the OpenAI service.
 
 Add the `spring-ai-openai` dependency to your project's Maven `pom.xml` file:
 
@@ -262,7 +262,7 @@ dependencies {
 
 TIP: Refer to the xref:getting-started.adoc#dependency-management[Dependency Management] section to add the Spring AI BOM to your build file.
 
-Next, create a `OpenAiChatConnector` and use it for text generations:
+Next, create a `OpenAiModelCall` and use it for text generations:
 
 [source,java]
 ----

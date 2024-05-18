@@ -1,7 +1,7 @@
 = Ollama Chat
 
 With https://ollama.ai/[Ollama] you can run various Large Language Models (LLMs) locally and generate text from them.
-Spring AI supports the Ollama text generation with `OllamaChatConnector`.
+Spring AI supports the Ollama text generation with `OllamaModelCall`.
 
 == Prerequisites
 
@@ -185,7 +185,7 @@ spring.ai.ollama.chat.options.temperature=0.7
 
 TIP: replace the `base-url` with your Ollama server URL.
 
-This will create a `OllamaChatConnector` implementation that you can inject into your class.
+This will create a `OllamaModelCall` implementation that you can inject into your class.
 Here is an example of a simple `@Controller` class that uses the chat client for text generations.
 
 [source,java]
@@ -216,8 +216,8 @@ public class ChatController {
 
 == Manual Configuration
 
-If you don't want to use the Spring Boot auto-configuration, you can manually configure the `OllamaChatConnector` in your application.
-The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-ollama/src/main/java/org/springframework/ai/ollama/OllamaChatClient.java[OllamaChatClient] implements the `ChatConnector` and `StreamingChatClient` and uses the <<low-level-api>> to connect to the Ollama service.
+If you don't want to use the Spring Boot auto-configuration, you can manually configure the `OllamaModelCall` in your application.
+The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-ollama/src/main/java/org/springframework/ai/ollama/OllamaChatClient.java[OllamaChatClient] implements the `ModelCall` and `StreamingChatClient` and uses the <<low-level-api>> to connect to the Ollama service.
 
 To use it add the `spring-ai-ollama` dependency to your project's Maven `pom.xml` file:
 
@@ -243,7 +243,7 @@ TIP: Refer to the xref:getting-started.adoc#dependency-management[Dependency Man
 TIP: The `spring-ai-ollama` dependency provides access also to the `OllamaEmbeddingClient`.
 For more information about the `OllamaEmbeddingClient` refer to the link:../embeddings/ollama-embeddings.html[Ollama Embedding Client] section.
 
-Next, create an `OllamaChatConnector` instance and use it to text generations requests:
+Next, create an `OllamaModelCall` instance and use it to text generations requests:
 
 [source,java]
 ----
@@ -274,7 +274,7 @@ image::ollama-chat-completion-api.jpg[OllamaApi Chat Completion API Diagram, 800
 
 Here is a simple snippet showing how to use the API programmatically:
 
-NOTE: The `OllamaApi` is low level api and is not recommended for direct use. Use the `OllamaChatConnector` instead.
+NOTE: The `OllamaApi` is low level api and is not recommended for direct use. Use the `OllamaModelCall` instead.
 
 [source,java]
 ----

@@ -1,7 +1,7 @@
 = watsonx.ai Chat
 
 With https://dataplatform.cloud.ibm.com/docs/content/wsj/getting-started/overview-wx.html?context=wx&audience=wdp[watsonx.ai] you can run various Large Language Models (LLMs) locally and generate text from them.
-Spring AI supports the watsonx.ai text generation with `WatsonxAiChatConnector`.
+Spring AI supports the watsonx.ai text generation with `WatsonxAiModelCall`.
 
 
 == Prerequisites

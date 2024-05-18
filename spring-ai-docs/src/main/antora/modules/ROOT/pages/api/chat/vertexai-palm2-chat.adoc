@@ -114,7 +114,7 @@ spring.ai.vertex.ai.chat.options.temperature=0.5
 
 TIP: replace the `api-key` with your VertexAI credentials.
 
-This will create a `VertexAiPaLm2ChatConnector` implementation that you can inject into your class.
+This will create a `VertexAiPaLm2ModelCall` implementation that you can inject into your class.
 Here is an example of a simple `@Controller` class that uses the chat client for text generations.
 
 [source,java]
@@ -144,7 +144,7 @@ public class ChatController {
 
 == Manual Configuration
 
-The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-openai/src/main/java/org/springframework/ai/vertexai/paml2/VertexAiPaLm2ChatClient.java[VertexAiPaLm2ChatClient] implements the `ChatConnector` and uses the <<low-level-api>> to connect to the VertexAI service.
+The https://github.com/spring-projects/spring-ai/blob/main/models/spring-ai-openai/src/main/java/org/springframework/ai/vertexai/paml2/VertexAiPaLm2ChatClient.java[VertexAiPaLm2ChatClient] implements the `ModelCall` and uses the <<low-level-api>> to connect to the VertexAI service.
 
 Add the `spring-ai-vertex-ai-palm2` dependency to your project's Maven `pom.xml` file:
 
@@ -167,7 +167,7 @@ dependencies {
 
 TIP: Refer to the xref:getting-started.adoc#dependency-management[Dependency Management] section to add the Spring AI BOM to your build file.
 
-Next, create a `VertexAiPaLm2ChatConnector` and use it for text generations:
+Next, create a `VertexAiPaLm2ModelCall` and use it for text generations:
 
 [source,java]
 ----

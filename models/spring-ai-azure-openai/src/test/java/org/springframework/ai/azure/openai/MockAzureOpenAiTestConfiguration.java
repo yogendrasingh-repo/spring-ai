@@ -59,8 +59,8 @@ public class MockAzureOpenAiTestConfiguration {
 	}
 
 	@Bean
-	AzureOpenAiChatConnector azureOpenAiChatClient(OpenAIClient microsoftAzureOpenAiClient) {
-		return new AzureOpenAiChatConnector(microsoftAzureOpenAiClient);
+	AzureOpenAiModelCall azureOpenAiChatClient(OpenAIClient microsoftAzureOpenAiClient) {
+		return new AzureOpenAiModelCall(microsoftAzureOpenAiClient);
 	}
 
 }

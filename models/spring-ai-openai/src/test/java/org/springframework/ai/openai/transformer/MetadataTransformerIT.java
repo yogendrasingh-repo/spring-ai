@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.ai.document.DefaultContentFormatter;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.openai.OpenAiChatConnector;
+import org.springframework.ai.openai.OpenAiModelCall;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.transformer.ContentFormatTransformer;
 import org.springframework.ai.transformer.KeywordMetadataEnricher;
@@ -163,18 +163,18 @@ public class MetadataTransformerIT {
 		}
 
 		@Bean
-		public OpenAiChatConnector openAiChatClient(OpenAiApi openAiApi) {
-			OpenAiChatConnector openAiChatClient = new OpenAiChatConnector(openAiApi);
+		public OpenAiModelCall openAiChatClient(OpenAiApi openAiApi) {
+			OpenAiModelCall openAiChatClient = new OpenAiModelCall(openAiApi);
 			return openAiChatClient;
 		}
 
 		@Bean
-		public KeywordMetadataEnricher keywordMetadata(OpenAiChatConnector aiClient) {
+		public KeywordMetadataEnricher keywordMetadata(OpenAiModelCall aiClient) {
 			return new KeywordMetadataEnricher(aiClient, 5);
 		}
 
 		@Bean
-		public SummaryMetadataEnricher summaryMetadata(OpenAiChatConnector aiClient) {
+		public SummaryMetadataEnricher summaryMetadata(OpenAiModelCall aiClient) {
 			return new SummaryMetadataEnricher(aiClient,
 					List.of(SummaryType.PREVIOUS, SummaryType.CURRENT, SummaryType.NEXT));
 		}

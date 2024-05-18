@@ -51,8 +51,8 @@ public class OpenAiTestConfiguration {
 	}
 
 	@Bean
-	public OpenAiChatConnector openAiChatClient(OpenAiApi api) {
-		OpenAiChatConnector openAiChatClient = new OpenAiChatConnector(api);
+	public OpenAiModelCall openAiChatClient(OpenAiApi api) {
+		OpenAiModelCall openAiChatClient = new OpenAiModelCall(api);
 		return openAiChatClient;
 	}
 
