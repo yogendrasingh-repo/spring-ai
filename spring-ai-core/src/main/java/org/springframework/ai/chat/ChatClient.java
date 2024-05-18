@@ -16,6 +16,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 
 import java.io.IOException;
@@ -25,85 +26,18 @@ import java.util.*;
 import java.util.function.Consumer;
 
 // todo support plugging in a outputConverter at runtime
+// todo use the new BeanOutputConverter that supports a ParameterizedTypeReference
+// todo figure out stream and list methods
+// todo rebase to use the latest code
+// todo can the fluid DSL be designed in such a way that calling .user() or .system()
+//  	returns an object that wont let u call .messages(), and vice versa?
 
 /*
  * @author Mark Pollack
  * @author Christian Tzolov
  * @author Josh Long
  * @author Arjen Poutsma
- *
  */
-
-/*
-
-Here's some sample usage:
-
-package com.example.demo;
-
-import org.springframework.ai.chat.ChatClient;
-import org.springframework.ai.chat.messages.Media;
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.openai.OpenAiChatConnector;
-import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-
-import java.util.Map;
-
-@SpringBootApplication
-public class DemoApplication {
-
-
-    @Bean
-    ChatClient chatClient(
-            OpenAiChatConnector connector) {
-
-        var sp = """
-                you're a non-hostile sentient AI from the future, built
-                by Cyberdyne systems.
-
-                Answer all questions in this persona.
-
-                Return all answers as a JSON document with one attribute called "response"
-                whose value contains your response.
-
-                """;
-        return ChatClient
-                .builder(connector)
-                .defaultSystem(sp)
-                .build();
-    }
-
-    @Bean
-    ApplicationRunner demo1(ChatClient client) {
-        return args -> {
-            var response = client
-                    .user(spec -> spec
-                            .param("name", "Christian")
-                            .media(new Media[]{})
-                            .params(Map.of("a", "b"))
-                    )
-                    .options(OpenAiChatOptions.builder().withModel("gpt-3").withFunction("asdf").build())
-                    .functions("asdf")
-                    .messages(new Message[0])
-                    .chat()
-                    .single(Actor.class);
-
-            System.out.println("response: " + response);
-        };
-    }
-
-    record Actor(String name) {
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
-    }
-}
-*/
-
 public interface ChatClient {
 
 	static ChatClientBuilder builder(ChatConnector connector) {
@@ -136,7 +70,7 @@ public interface ChatClient {
 
 		@Override
 		public T text(String text) {
-			this.text = (text);
+			this.text = text;
 			return self();
 		}
 
@@ -327,24 +261,40 @@ public interface ChatClient {
 				return doSingleWithBeanOutputConverter(boc);
 			}
 
-			private ChatResponse doGetChatResponse(String processUserText) {
+			private ChatResponse doGetChatResponse(String processedUserText) {
 
-				var userMessage = new UserMessage(new PromptTemplate(processUserText, this.request.userParams).render(),
-						this.request.media);
 
-				var systemMessage = new SystemMessage(
-						new PromptTemplate(this.request.systemText, this.request.systemParams).render());
+				var messages = new ArrayList<Message>();
+				var textsAreValid = (StringUtils.hasText(processedUserText) || StringUtils.hasText(this.request.systemText));
+				var messagesAreValid = !this.request.messages.isEmpty();
 
-				if (request.chatOptions instanceof FunctionCallingOptionsBuilder.PortableFunctionCallingOptions functionCallingOptions) {
-					if (!request.functionNames.isEmpty()) {
-						functionCallingOptions.setFunctions(request.functionNames);
+				Assert.state(!(messagesAreValid && textsAreValid),
+						"you must specify either " + Message.class.getName() +
+								" instances or user/system texts, but not both");
+
+				if (textsAreValid) {
+
+					var userMessage = new UserMessage(new PromptTemplate(processedUserText, this.request.userParams).render(),
+							this.request.media);
+
+					var systemMessage = new SystemMessage(
+							new PromptTemplate(this.request.systemText, this.request.systemParams).render());
+
+					messages.add(systemMessage);
+					messages.add(userMessage);
+
+				} else {
+					messages.addAll(this.request.messages);
+				}
+				if (this.request.chatOptions instanceof FunctionCallingOptionsBuilder.PortableFunctionCallingOptions functionCallingOptions) {
+					if (!this.request.functionNames.isEmpty()) {
+						functionCallingOptions.setFunctions(this.request.functionNames);
 					}
-					if (!request.functionCallbacks.isEmpty()) {
-						functionCallingOptions.setFunctionCallbacks(request.functionCallbacks);
+					if (!this.request.functionCallbacks.isEmpty()) {
+						functionCallingOptions.setFunctionCallbacks(this.request.functionCallbacks);
 					}
 				}
-				var prompt = new Prompt(List.of(systemMessage, userMessage), request.chatOptions);
-
+				var prompt = new Prompt(messages, this.request.chatOptions);
 				return this.chatConnector.call(prompt);
 			}
 
@@ -353,21 +303,34 @@ public interface ChatClient {
 			}
 
 			public <T> Flux<T> stream(Class<T> t) {
+				notSupported();
 				return null;
 			}
 
 			public <T> Flux<T> stream(ParameterizedTypeReference<T> t) {
+				notSupported();
 				return Flux.empty();
 			}
 
+			public String content() {
+				return doGetChatResponse(this.request.userText).getResult().getOutput().getContent();
+			}
+
 			public <T> Collection<T> list(Class<T> clzz) {
+				// todo move to the new ParameterizedTypeReference ready BeanOutputConverter
+				notSupported();
 				return null;
 			}
 
 			public <T> Collection<T> list(ParameterizedTypeReference<Collection<T>> ptr) {
+				notSupported();
 				return List.of();
 			}
 
+
+			private static void notSupported() {
+				throw new RuntimeException("this operation is not supported");
+			}
 		}
 
 		public ChatResponseSpec chat() {
