@@ -8,6 +8,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallbackWrapper;
 import org.springframework.ai.model.function.FunctionCallingOptionsBuilder;
@@ -22,6 +23,8 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.Consumer;
+
+// todo support plugging in a outputConverter at runtime
 
 /*
  * @author Mark Pollack
@@ -304,17 +307,29 @@ public interface ChatClient {
 			}
 
 			public <T> T single(ParameterizedTypeReference<T> t) {
-				return null;
+				// todo once rebased make sure to use the {BeanOutputConverter} that now
+				// accepts a ParameterizedTypeReference<T>
+				return doSingleWithBeanOutputConverter(
+						new BeanOutputConverter<T>(null /* todo */));
+			}
+
+			private <T> T doSingleWithBeanOutputConverter(BeanOutputConverter<T> boc) {
+				var processedUserText = this.request.userText + System.lineSeparator() + System.lineSeparator()
+						+ boc.getFormat();
+				var chatResponse = doGetChatResponse(processedUserText);
+				var stringResponse = chatResponse.getResult().getOutput().getContent();
+				return boc.convert(stringResponse);
 			}
 
 			public <T> T single(Class<T> clzz) {
-				return null;
+				Assert.notNull(clzz, "the class must be non-null");
+				var boc = new BeanOutputConverter<T>(clzz);
+				return doSingleWithBeanOutputConverter(boc);
 			}
 
-			public ChatResponse chatResponse() {
+			private ChatResponse doGetChatResponse(String processUserText) {
 
-				var userMessage = new UserMessage(
-						new PromptTemplate(this.request.userText, this.request.userParams).render(),
+				var userMessage = new UserMessage(new PromptTemplate(processUserText, this.request.userParams).render(),
 						this.request.media);
 
 				var systemMessage = new SystemMessage(
@@ -331,6 +346,10 @@ public interface ChatClient {
 				var prompt = new Prompt(List.of(systemMessage, userMessage), request.chatOptions);
 
 				return this.chatConnector.call(prompt);
+			}
+
+			public ChatResponse chatResponse() {
+				return doGetChatResponse(this.request.userText);
 			}
 
 			public <T> Flux<T> stream(Class<T> t) {
