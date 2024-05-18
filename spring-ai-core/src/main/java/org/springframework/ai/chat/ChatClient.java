@@ -263,18 +263,18 @@ public interface ChatClient {
 
 			private ChatResponse doGetChatResponse(String processedUserText) {
 
-
 				var messages = new ArrayList<Message>();
-				var textsAreValid = (StringUtils.hasText(processedUserText) || StringUtils.hasText(this.request.systemText));
+				var textsAreValid = (StringUtils.hasText(processedUserText)
+						|| StringUtils.hasText(this.request.systemText));
 				var messagesAreValid = !this.request.messages.isEmpty();
 
-				Assert.state(!(messagesAreValid && textsAreValid),
-						"you must specify either " + Message.class.getName() +
-								" instances or user/system texts, but not both");
+				Assert.state(!(messagesAreValid && textsAreValid), "you must specify either " + Message.class.getName()
+						+ " instances or user/system texts, but not both");
 
 				if (textsAreValid) {
 
-					var userMessage = new UserMessage(new PromptTemplate(processedUserText, this.request.userParams).render(),
+					var userMessage = new UserMessage(
+							new PromptTemplate(processedUserText, this.request.userParams).render(),
 							this.request.media);
 
 					var systemMessage = new SystemMessage(
@@ -283,7 +283,8 @@ public interface ChatClient {
 					messages.add(systemMessage);
 					messages.add(userMessage);
 
-				} else {
+				}
+				else {
 					messages.addAll(this.request.messages);
 				}
 				if (this.request.chatOptions instanceof FunctionCallingOptionsBuilder.PortableFunctionCallingOptions functionCallingOptions) {
@@ -317,7 +318,8 @@ public interface ChatClient {
 			}
 
 			public <T> Collection<T> list(Class<T> clzz) {
-				// todo move to the new ParameterizedTypeReference ready BeanOutputConverter
+				// todo move to the new ParameterizedTypeReference ready
+				// BeanOutputConverter
 				notSupported();
 				return null;
 			}
@@ -327,10 +329,10 @@ public interface ChatClient {
 				return List.of();
 			}
 
-
 			private static void notSupported() {
 				throw new RuntimeException("this operation is not supported");
 			}
+
 		}
 
 		public ChatResponseSpec chat() {
