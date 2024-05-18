@@ -99,7 +99,7 @@ public class ChatMemoryLongTermSystemPromptIT extends BaseMemoryTest {
 
 		@Bean
 		public ChatService memoryChatService(OpenAiChatConnector chatClient, VectorStore vectorStore,
-                                             TokenCountEstimator tokenCountEstimator) {
+				TokenCountEstimator tokenCountEstimator) {
 
 			return PromptTransformingChatService.builder(chatClient)
 				.withRetrievers(List.of(new VectorStoreChatMemoryRetriever(vectorStore, 10)))
@@ -111,7 +111,7 @@ public class ChatMemoryLongTermSystemPromptIT extends BaseMemoryTest {
 
 		@Bean
 		public StreamingChatService memoryStreamingChatService(OpenAiChatConnector streamingChatClient,
-                                                               VectorStore vectorStore, TokenCountEstimator tokenCountEstimator) {
+				VectorStore vectorStore, TokenCountEstimator tokenCountEstimator) {
 
 			return StreamingPromptTransformingChatService.builder(streamingChatClient)
 				.withRetrievers(List.of(new VectorStoreChatMemoryRetriever(vectorStore, 10)))

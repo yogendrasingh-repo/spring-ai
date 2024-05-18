@@ -15,11 +15,7 @@
  */
 package org.springframework.ai.model.function;
 
-import java.lang.reflect.Type;
-import java.util.function.Function;
-
 import com.fasterxml.jackson.annotation.JsonClassDescription;
-
 import org.springframework.ai.model.function.FunctionCallbackWrapper.Builder.SchemaType;
 import org.springframework.beans.BeansException;
 import org.springframework.cloud.function.context.catalog.FunctionTypeUtils;
@@ -31,6 +27,9 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Type;
+import java.util.function.Function;
 
 /**
  * A Spring {@link ApplicationContextAware} implementation that provides a way to retrieve
@@ -47,6 +46,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian Tzolov
  * @author Christopher Smith
+ * @author Josh Long
  */
 public class FunctionCallbackContext implements ApplicationContextAware {
 
@@ -61,6 +61,19 @@ public class FunctionCallbackContext implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = (GenericApplicationContext) applicationContext;
+	}
+
+	public <I, O> FunctionCallback getFunctionCallback(String beanName, String defaultDescription,
+			Function<I, O> function, SchemaType schemaType) {
+		var beanType = FunctionTypeUtils.discoverFunctionTypeFromClass(function.getClass());
+		var functionInputType = TypeResolverHelper.getFunctionArgumentType(beanType, 0);
+		var functionInputClass = FunctionTypeUtils.getRawType(functionInputType);
+		return FunctionCallbackWrapper.builder(function)
+			.withName(beanName)
+			.withSchemaType(schemaType)
+			.withDescription(defaultDescription)
+			.withInputType(functionInputClass)
+			.build();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

@@ -5,52 +5,48 @@ import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.prompt.Prompt;
 
 import java.util.List;
-import java.util.function.Consumer;
-
 
 /**
- * todo follow WebClient -> DefaultWebClient
- * todo make sure ChatConnector also supports call(Prompt) and then mark as deprecated
- *
  * @author Mark Pollack
  * @author Christian Tzolov
  * @author Josh Long
  * @author Arjen Poutsma
  */
-public class DefaultChatClient implements ChatClient {
+class DefaultChatClient implements ChatClient {
 
 	private final ChatConnector connector;
 
-	private final String userPrompt, systemPrompt;
+	private final String userText, systemText;
 
-	private final List<String> functions;
+	private final List<String> functionNames;
 
 	private final List<Media> media;
 
 	public DefaultChatClient(ChatConnector connector, String defaultSystemPrompt, String defaultUserPrompt,
-							 List<String> defaultFunctions, List<Media> defaultMedia) {
+			List<String> defaultFunctions, List<Media> defaultMedia) {
 		this.connector = connector;
-		this.userPrompt = defaultUserPrompt;
-		this.systemPrompt = defaultSystemPrompt;
-		this.functions = defaultFunctions;
+		this.userText = defaultUserPrompt;
+		this.systemText = defaultSystemPrompt;
+		this.functionNames = defaultFunctions;
 		this.media = defaultMedia;
 
 	}
 
 	@Override
-	public ChatClientRequest build() {
-		return new ChatClientRequest(this.userPrompt, this.systemPrompt, this.functions, this.media);
+	public ChatClientRequest call() {
+		return new ChatClientRequest(this.connector, this.userText, this.systemText, this.functionNames, this.media,
+				null);
 	}
 
+	/**
+	 * use the new fluid DSL starting in {@link #call()}
+	 * @param prompt the {@link Prompt prompt} object
+	 * @return a {@link ChatResponse chat response}
+	 */
+	@Deprecated(forRemoval = true, since = "1.0.0 M1")
 	@Override
 	public ChatResponse call(Prompt prompt) {
-		return null;
-	}
-
-
-	@Override
-	public ChatClientRequest user(Consumer<UserSpec> consumer) {
-		return null;
+		return this.connector.call(prompt);
 	}
 
 }

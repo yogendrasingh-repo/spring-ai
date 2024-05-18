@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
+import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.embedding.EmbeddingResponse;
 import org.springframework.ai.vertexai.palm2.VertexAiPaLm2ChatConnector;
 import org.springframework.ai.vertexai.palm2.VertexAiPaLm2EmbeddingClient;
@@ -48,8 +49,8 @@ public class VertexAiPaLm2AutoConfigurationIT {
 	@Test
 	void generate() {
 		contextRunner.run(context -> {
-			VertexAiPaLm2ChatConnector client = context.getBean(VertexAiPaLm2ChatConnector.class);
-
+			VertexAiPaLm2ChatConnector connector = context.getBean(VertexAiPaLm2ChatConnector.class);
+			ChatClient client = ChatClient.builder(connector).build();
 			String response = client.call("Hello");
 
 			assertThat(response).isNotEmpty();

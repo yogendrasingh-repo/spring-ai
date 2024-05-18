@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 public class ChatMemoryTests {
 
 	@Mock
-    ChatConnector chatConnector;
+	ChatConnector chatConnector;
 
 	@Mock
 	StreamingChatClient streamingChatClient;

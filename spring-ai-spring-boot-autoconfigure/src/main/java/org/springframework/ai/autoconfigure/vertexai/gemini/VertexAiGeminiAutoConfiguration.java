@@ -75,8 +75,8 @@ public class VertexAiGeminiAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public VertexAiGeminiChatConnector vertexAiGeminiChat(VertexAI vertexAi,
-                                                          VertexAiGeminiChatProperties chatProperties, List<FunctionCallback> toolFunctionCallbacks,
-                                                          ApplicationContext context) {
+			VertexAiGeminiChatProperties chatProperties, List<FunctionCallback> toolFunctionCallbacks,
+			ApplicationContext context) {
 
 		FunctionCallbackContext functionCallbackContext = springAiFunctionManager(context);
 

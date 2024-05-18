@@ -3,14 +3,23 @@ package org.springframework.ai.chat;
 import org.springframework.ai.chat.connector.ChatConnector;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.model.function.FunctionCallback;
+import org.springframework.ai.model.function.FunctionCallbackWrapper;
+import org.springframework.ai.model.function.FunctionCallingOptionsBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
 import reactor.core.publisher.Flux;
 
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -93,229 +102,312 @@ public class DemoApplication {
 */
 
 public interface ChatClient {
-    static ChatClientBuilder builder(ChatConnector connector) {
-        return new ChatClientBuilder(connector);
-    }
 
-    ChatClientRequest build();
+	static ChatClientBuilder builder(ChatConnector connector) {
+		return new ChatClientBuilder(connector);
+	}
 
-    ChatResponse call(Prompt prompt);
+	ChatResponse call(Prompt prompt);
 
-    ChatClientRequest user(Consumer<UserSpec> consumer);
+	ChatClientRequest call();
 
-    public static class UserSpec {
+	interface PromptSpec<T> {
 
+		T text(String text);
 
-        public UserSpec media(List<Media> media) {
-            return this;
-        }
+		T text(Resource text, Charset charset);
 
-        public UserSpec media(URL url, MimeType mimeType) {
-            return this;
-        }
+		T text(Resource text);
 
-        public UserSpec media(Resource resource, MimeType type) {
-            return this;
-        }
+		T params(Map<String, Object> p);
 
-        public UserSpec media(Media... m) {
-            return this;
-        }
+		T param(String k, String v);
 
-        public UserSpec params(Map<String, Object> p) {
-            return this;
-        }
+	}
 
-        public UserSpec param(String k, String v) {
-            return this;
-        }
-    }
+	abstract class AbstractPromptSpec<T extends AbstractPromptSpec<T>> implements PromptSpec<T> {
 
-    public static class ChatClientRequest {
+		private String text = "";
 
-        private String userPrompt = "";
+		private final Map<String, Object> params = new HashMap<>();
 
-        private String systemPrompt = "";
+		@Override
+		public T text(String text) {
+			this.text = (text);
+			return self();
+		}
 
-        private final List<Media> media = new ArrayList<>();
+		@Override
+		public T text(Resource text, Charset charset) {
+			try {
+				this.text(text.getContentAsString(charset));
+			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return self();
+		}
 
-        private final List<String> functions = new ArrayList<>();
+		@Override
+		public T text(Resource text) {
+			this.text(text, Charset.defaultCharset());
+			return self();
+		}
 
-        private final Map<String, String> userPromptParams = new HashMap<>();
+		@Override
+		public T param(String k, String v) {
+			this.params.put(k, v);
+			return self();
+		}
 
-        private final Map<String, String> systemPromptParams = new HashMap<>();
+		@Override
+		public T params(Map<String, Object> p) {
+			this.params.putAll(p);
+			return self();
+		}
 
-        List<Media> userMedia() {
-            return this.media;
-        }
+		protected abstract T self();
 
-        String systemText() {
-            return this.systemPrompt;
-        }
+		protected String text() {
+			return this.text;
+		}
 
-        String userText() {
-            return this.userPrompt;
-        }
+		protected Map<String, Object> params() {
+			return this.params;
+		}
 
-        List<String> functions() {
-            return this.functions;
-        }
+	}
 
-        public ChatClientRequest(String userPrompt, String systemPrompt, List<String> functions, List<Media> media) {
-            this.userPrompt = userPrompt;
-            this.systemPrompt = systemPrompt;
-            this.functions.addAll(functions);
-            this.media.addAll(media);
-        }
+	class UserSpec extends AbstractPromptSpec<UserSpec> implements PromptSpec<UserSpec> {
 
-        public ChatClientRequest messages(Message... messages) {
-            return null;
-        }
-//
-//		public ChatClientRequest userParam(String key, String value) {
-//			this.userPromptParams.put(key, value);
-//			return this;
-//		}
-//
-//		public ChatClientRequest systemParam(String key, String value) {
-//			this.systemPromptParams.put(key, value);
-//			return this;
-//		}
+		private final List<Media> media = new ArrayList<>();
 
-        public <T extends ChatOptions> ChatClientRequest options(T options) {
-            return this;
-        }
-//
-//		public ChatClientRequest systemParams(Map<String, String> systemPromptParams) {
-//			this.systemPromptParams.putAll(systemPromptParams);
-//			return this;
-//		}
-//
-//		public ChatClientRequest userParams(Map<String, String> userPromptParams) {
-//			this.userPromptParams.putAll(userPromptParams);
-//			return this;
-//		}
-//
-//		public ChatClientRequest userText(Resource resource) {
-//			return userText(resource, Charset.defaultCharset());
-//		}
+		public UserSpec media(Media... media) {
+			this.media.addAll(Arrays.asList(media));
+			return self();
+		}
 
-//		public ChatClientRequest userText(Resource resource, Charset charset) {
-//			try {
-//				this.userText(resource.getContentAsString(charset));
-//			} catch (IOException e) {
-//				throw new RuntimeException(e);
-//			}
-//			return this;
-//		}
-//
-//
-//		public ChatClientRequest userText(String userPrompt) {
-//			this.userPrompt = userPrompt;
-//			return this;
-//		}
-//
-//		public ChatClientRequest systemText(Resource systemPrompt) {
-//			return systemText(systemPrompt, Charset.defaultCharset());
-//		}
-//
-//		public ChatClientRequest systemText(Resource systemPrompt, Charset charset) {
-//			try {
-//				this.systemText(systemPrompt.getContentAsString(charset));
-//			} catch (IOException e) {
-//				throw new RuntimeException(e);
-//			}
-//			return this;
-//		}
-//
-//		public ChatClientRequest systemText(String systemPrompt) {
-//			this.systemPrompt = systemPrompt;
-//			return this;
-//		}
-//
-//		public ChatClientRequest userMedia(Media... media) {
-//			this.media.addAll(Arrays.asList(media));
-//			return this;
-//		}
+		public UserSpec media(MimeType mimeType, URL url) {
+			this.media.add(new Media(mimeType, url));
+			return self();
+		}
 
-        public ChatClientRequest functions(String... functions) {
-            this.functions.addAll(Arrays.asList(functions));
-            return this;
-        }
+		public UserSpec media(MimeType mimeType, Resource resource) {
+			this.media.add(new Media(mimeType, resource));
+			return self();
+		}
 
+		protected List<Media> media() {
+			return this.media;
+		}
 
-        public static class ChatResponseSpec {
+		@Override
+		protected UserSpec self() {
+			return this;
+		}
 
-            public <T> T single(ParameterizedTypeReference<T> t) {
-                return null;
-            }
+	}
 
+	class SystemSpec extends AbstractPromptSpec<SystemSpec> implements PromptSpec<SystemSpec> {
 
-            public <T> T single(Class<T> clzz) {
-                return null;
-            }
+		@Override
+		protected SystemSpec self() {
+			return this;
+		}
 
-            public ChatResponse chatResponse() {
-                return null;
-            }
+	}
 
-            public <T> Flux<T> stream(Class<T> t) {
-                return null;
-            }
+	class ChatClientRequest {
 
-            public <T> Flux<T> stream(ParameterizedTypeReference<T> t) {
-                return Flux.empty();
-            }
+		private final ChatConnector connector;
 
-            public <T> Collection<T> list(Class<T> clzz) {
-                return null;
-            }
+		private String userText = "";
 
-            public <T> Collection<T> list(ParameterizedTypeReference<Collection<T>> ptr) {
-                return List.of();
-            }
+		private String systemText = "";
 
-        }
+		private ChatOptions chatOptions;
 
-        public ChatResponseSpec chat() {
-            return null;
-        }
+		private final List<Media> media = new ArrayList<>();
 
+		private final Set<String> functionNames = new HashSet<>();
 
-    }
+		private final List<FunctionCallback> functionCallbacks = new ArrayList<>();
 
-    public static class ChatClientBuilder {
+		private final Map<String, Object> userParams = new HashMap<>();
 
-        private final ChatConnector connector;
+		private final List<Message> messages = new ArrayList<>();
 
-        private final List<Media> defaultMedia = new ArrayList<>();
+		private final Map<String, Object> systemParams = new HashMap<>();
 
-        private final List<String> defaultFunctions = new ArrayList<>();
+		public ChatClientRequest(ChatConnector connector, String userText, String systemText,
+				List<String> functionNames, List<Media> media, ChatOptions chatOptions) {
+			this.userText = userText;
+			this.systemText = systemText;
+			this.connector = connector;
+			this.functionNames.addAll(functionNames);
+			this.media.addAll(media);
+			this.chatOptions = chatOptions;
+		}
 
-        private String defaultSystemPrompt;
+		public ChatClientRequest messages(Message... messages) {
+			this.messages.addAll(List.of(messages));
+			return this;
+		}
 
-        private String defaultUserPrompt;
+		public <T extends ChatOptions> ChatClientRequest options(T options) {
+			this.chatOptions = options;
+			return this;
+		}
 
-        ChatClientBuilder(ChatConnector connector) {
-            this.connector = connector;
-        }
+		public <I, O> ChatClientRequest function(String name, String description,
+				java.util.function.Function<I, O> function) {
+			var fcw = FunctionCallbackWrapper.builder(function)
+				.withDescription(description)
+				.withName(name)
+				.withResponseConverter(Object::toString)
+				.build();
+			this.functionCallbacks.add(fcw);
+			return this;
+		}
 
-        public ChatClient build() {
-            return new DefaultChatClient(this.connector, this.defaultSystemPrompt, this.defaultUserPrompt,
-                    this.defaultFunctions, this.defaultMedia);
-        }
+		public ChatClientRequest functions(String... functions) {
+			this.functionNames.addAll(List.of(functions));
+			return this;
+		}
 
-        public ChatClientBuilder defaultSystem(String systemPrompt) {
-            return this;
-        }
+		public ChatClientRequest system(Consumer<SystemSpec> consumer) {
+			var ss = new SystemSpec();
+			consumer.accept(ss);
+			this.systemText = ss.text();
+			this.systemParams.putAll(ss.params());
+			return this;
+		}
 
-        public ChatClientBuilder defaultFunctions(String... functionNames) {
-            return this;
-        }
+		public ChatClientRequest user(Consumer<UserSpec> consumer) {
+			var us = new UserSpec();
+			consumer.accept(us);
+			this.userText = us.text();
+			this.userParams.putAll(us.params());
+			this.media.addAll(us.media());
+			return this;
+		}
 
-        public ChatClientBuilder defaultUserPrompt(String userPrompt) {
-            return this;
-        }
+		public static class ChatResponseSpec {
 
-    }
+			private final ChatClientRequest request;
+
+			private final ChatConnector chatConnector;
+
+			public ChatResponseSpec(ChatConnector chatConnector, ChatClientRequest request) {
+				this.chatConnector = chatConnector;
+				this.request = request;
+			}
+
+			public <T> T single(ParameterizedTypeReference<T> t) {
+				return null;
+			}
+
+			public <T> T single(Class<T> clzz) {
+				return null;
+			}
+
+			public ChatResponse chatResponse() {
+
+				var userMessage = new UserMessage(
+						new PromptTemplate(this.request.userText, this.request.userParams).render(),
+						this.request.media);
+
+				var systemMessage = new SystemMessage(
+						new PromptTemplate(this.request.systemText, this.request.systemParams).render());
+
+				if (request.chatOptions instanceof FunctionCallingOptionsBuilder.PortableFunctionCallingOptions functionCallingOptions) {
+					if (!request.functionNames.isEmpty()) {
+						functionCallingOptions.setFunctions(request.functionNames);
+					}
+					if (!request.functionCallbacks.isEmpty()) {
+						functionCallingOptions.setFunctionCallbacks(request.functionCallbacks);
+					}
+				}
+				var prompt = new Prompt(List.of(systemMessage, userMessage), request.chatOptions);
+
+				return this.chatConnector.call(prompt);
+			}
+
+			public <T> Flux<T> stream(Class<T> t) {
+				return null;
+			}
+
+			public <T> Flux<T> stream(ParameterizedTypeReference<T> t) {
+				return Flux.empty();
+			}
+
+			public <T> Collection<T> list(Class<T> clzz) {
+				return null;
+			}
+
+			public <T> Collection<T> list(ParameterizedTypeReference<Collection<T>> ptr) {
+				return List.of();
+			}
+
+		}
+
+		public ChatResponseSpec chat() {
+			return new ChatResponseSpec(this.connector, this);
+		}
+
+	}
+
+	class ChatClientBuilder {
+
+		private final ChatConnector connector;
+
+		private final List<Media> defaultMedia = new ArrayList<>();
+
+		private final List<String> defaultFunctions = new ArrayList<>();
+
+		private String defaultSystem;
+
+		private String defaultUser;
+
+		ChatClientBuilder(ChatConnector connector) {
+			Assert.notNull(connector, "the " + ChatConnector.class.getName() + " must be non-null!");
+			this.connector = connector;
+		}
+
+		public ChatClient build() {
+			return new DefaultChatClient(this.connector, this.defaultSystem, this.defaultUser, this.defaultFunctions,
+					this.defaultMedia);
+		}
+
+		public ChatClientBuilder defaultSystem(String systemPrompt) {
+			this.defaultSystem = systemPrompt;
+			return this;
+		}
+
+		public ChatClientBuilder defaultFunctions(String... functionNames) {
+			this.defaultFunctions.addAll(List.of(functionNames));
+			return this;
+		}
+
+		public ChatClientBuilder defaultUser(String userPrompt) {
+			this.defaultUser = userPrompt;
+			return this;
+		}
+
+	}
+
+	@Deprecated(since = "1.0.0 M1", forRemoval = true)
+	default String call(String message) {
+		Prompt prompt = new Prompt(new UserMessage(message));
+		Generation generation = call(prompt).getResult();
+		return (generation != null) ? generation.getOutput().getContent() : "";
+	}
+
+	@Deprecated(since = "1.0.0 M1", forRemoval = true)
+	default String call(Message... messages) {
+		Prompt prompt = new Prompt(Arrays.asList(messages));
+		Generation generation = call(prompt).getResult();
+		return (generation != null) ? generation.getOutput().getContent() : "";
+	}
+
 }

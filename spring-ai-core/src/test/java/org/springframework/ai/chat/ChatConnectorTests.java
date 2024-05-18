@@ -48,7 +48,7 @@ class ChatConnectorTests {
 		String userMessage = "Zero Wing";
 		String responseMessage = "All your bases are belong to us";
 
-		ChatConnector mockClient = Mockito.mock(ChatConnector.class);
+		ChatClient mockClient = Mockito.mock(ChatClient.class);
 
 		AssistantMessage mockAssistantMessage = Mockito.mock(AssistantMessage.class);
 		when(mockAssistantMessage.getContent()).thenReturn(responseMessage);

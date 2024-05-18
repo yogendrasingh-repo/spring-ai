@@ -58,7 +58,7 @@ public class BedrockCohereChatAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(CohereChatBedrockApi.class)
 	public BedrockCohereChatConnector cohereChatClient(CohereChatBedrockApi cohereChatApi,
-                                                       BedrockCohereChatProperties properties) {
+			BedrockCohereChatProperties properties) {
 
 		return new BedrockCohereChatConnector(cohereChatApi, properties.getOptions());
 	}

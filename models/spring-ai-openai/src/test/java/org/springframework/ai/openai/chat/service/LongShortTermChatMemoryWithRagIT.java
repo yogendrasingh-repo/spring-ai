@@ -187,7 +187,7 @@ public class LongShortTermChatMemoryWithRagIT {
 
 		@Bean
 		public ChatService memoryChatService(OpenAiChatConnector chatClient, VectorStore vectorStore,
-                                             TokenCountEstimator tokenCountEstimator, ChatMemory chatHistory) {
+				TokenCountEstimator tokenCountEstimator, ChatMemory chatHistory) {
 
 			return PromptTransformingChatService.builder(chatClient)
 				.withRetrievers(List.of(new VectorStoreRetriever(vectorStore, SearchRequest.defaults()),

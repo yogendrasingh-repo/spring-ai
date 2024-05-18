@@ -26,18 +26,18 @@ public interface FunctionCallback {
 	/**
 	 * @return Returns the Function name. Unique within the model.
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * @return Returns the function description. This description is used by the model do
 	 * decide if the function should be called or not.
 	 */
-	public String getDescription();
+	String getDescription();
 
 	/**
 	 * @return Returns the JSON schema of the function input type.
 	 */
-	public String getInputTypeSchema();
+	String getInputTypeSchema();
 
 	/**
 	 * Called when a model detects and triggers a function call. The model is responsible
@@ -47,6 +47,6 @@ public interface FunctionCallback {
 	 * model.
 	 * @return String containing the function call response.
 	 */
-	public String call(String functionInput);
+	String call(String functionInput);
 
 }

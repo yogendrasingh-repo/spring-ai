@@ -60,7 +60,7 @@ public class BedrockLlamaChatAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(LlamaChatBedrockApi.class)
 	public BedrockLlamaChatConnector llamaChatClient(LlamaChatBedrockApi llamaApi,
-                                                     BedrockLlamaChatProperties properties) {
+			BedrockLlamaChatProperties properties) {
 
 		return new BedrockLlamaChatConnector(llamaApi, properties.getOptions());
 	}

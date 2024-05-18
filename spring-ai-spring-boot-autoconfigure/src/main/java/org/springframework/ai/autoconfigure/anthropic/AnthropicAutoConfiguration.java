@@ -58,8 +58,8 @@ public class AnthropicAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public AnthropicChatConnector anthropicChatClient(AnthropicApi anthropicApi, AnthropicChatProperties chatProperties,
-                                                      RetryTemplate retryTemplate, FunctionCallbackContext functionCallbackContext,
-                                                      List<FunctionCallback> toolFunctionCallbacks) {
+			RetryTemplate retryTemplate, FunctionCallbackContext functionCallbackContext,
+			List<FunctionCallback> toolFunctionCallbacks) {
 
 		if (!CollectionUtils.isEmpty(toolFunctionCallbacks)) {
 			chatProperties.getOptions().getFunctionCallbacks().addAll(toolFunctionCallbacks);

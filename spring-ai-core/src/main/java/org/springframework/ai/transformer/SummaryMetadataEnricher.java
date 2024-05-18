@@ -81,7 +81,7 @@ public class SummaryMetadataEnricher implements DocumentTransformer {
 	}
 
 	public SummaryMetadataEnricher(ChatConnector chatConnector, List<SummaryType> summaryTypes, String summaryTemplate,
-                                   MetadataMode metadataMode) {
+			MetadataMode metadataMode) {
 		Assert.notNull(chatConnector, "ChatConnector must not be null");
 		Assert.hasText(summaryTemplate, "Summary template must not be empty");
 

@@ -82,7 +82,7 @@ public class OpenAiPromptTransformingChatServiceIT {
 
 	@Autowired
 	public OpenAiPromptTransformingChatServiceIT(ChatConnector chatConnector, ChatService chatService,
-                                                 VectorStore vectorStore) {
+			VectorStore vectorStore) {
 		this.chatConnector = chatConnector;
 		this.chatService = chatService;
 		this.vectorStore = vectorStore;

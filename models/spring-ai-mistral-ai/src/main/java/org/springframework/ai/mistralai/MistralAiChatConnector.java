@@ -83,7 +83,7 @@ public class MistralAiChatConnector extends
 	}
 
 	public MistralAiChatConnector(MistralAiApi mistralAiApi, MistralAiChatOptions options,
-								  FunctionCallbackContext functionCallbackContext, RetryTemplate retryTemplate) {
+			FunctionCallbackContext functionCallbackContext, RetryTemplate retryTemplate) {
 		super(functionCallbackContext);
 		Assert.notNull(mistralAiApi, "MistralAiApi must not be null");
 		Assert.notNull(options, "Options must not be null");

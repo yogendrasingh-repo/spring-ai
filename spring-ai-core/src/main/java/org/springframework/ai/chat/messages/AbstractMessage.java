@@ -66,9 +66,9 @@ public abstract class AbstractMessage implements Message {
 	protected AbstractMessage(MessageType messageType, String textContent, Collection<Media> media,
 			Map<String, Object> metadata) {
 
-		Assert.notNull(messageType, "Message type must not be null");
+		Assert.notNull(messageType, "MessageType must not be null");
 		Assert.notNull(textContent, "Content must not be null");
-		Assert.notNull(media, "media data must not be null");
+		Assert.notNull(media, "Media must not be null");
 
 		this.messageType = messageType;
 		this.textContent = textContent;

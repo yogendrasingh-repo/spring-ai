@@ -16,19 +16,14 @@
 package org.springframework.ai.chat.connector;
 
 import org.springframework.ai.chat.ChatResponse;
+import org.springframework.ai.chat.Generation;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 
-public interface ChatConnector {
+import java.util.Arrays;
 
-	/*
-	 * default String call(String message) { Prompt prompt = new Prompt(new
-	 * UserMessage(message)); Generation generation = call(prompt).getResult(); return
-	 * (generation != null) ? generation.getOutput().getContent() : ""; }
-	 *
-	 * public String call(Message... messages) { Prompt prompt = new
-	 * Prompt(Arrays.asList(messages)); Generation generation = call(prompt).getResult();
-	 * return (generation != null) ? generation.getOutput().getContent() : ""; }
-	 */
+public interface ChatConnector {
 
 	ChatResponse call(Prompt prompt);
 

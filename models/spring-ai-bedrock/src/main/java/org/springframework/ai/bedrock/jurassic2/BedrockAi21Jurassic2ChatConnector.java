@@ -41,7 +41,7 @@ public class BedrockAi21Jurassic2ChatConnector implements ChatConnector {
 	private final BedrockAi21Jurassic2ChatOptions defaultOptions;
 
 	public BedrockAi21Jurassic2ChatConnector(Ai21Jurassic2ChatBedrockApi chatApi,
-											 BedrockAi21Jurassic2ChatOptions options) {
+			BedrockAi21Jurassic2ChatOptions options) {
 		Assert.notNull(chatApi, "Ai21Jurassic2ChatBedrockApi must not be null");
 		Assert.notNull(options, "BedrockAi21Jurassic2ChatOptions must not be null");
 

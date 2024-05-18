@@ -130,7 +130,7 @@ public class VertexAiGeminiChatConnector
 	}
 
 	public VertexAiGeminiChatConnector(VertexAI vertexAI, VertexAiGeminiChatOptions options,
-									   FunctionCallbackContext functionCallbackContext) {
+			FunctionCallbackContext functionCallbackContext) {
 
 		super(functionCallbackContext);
 

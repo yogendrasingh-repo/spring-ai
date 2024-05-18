@@ -60,7 +60,7 @@ public class BedrockAnthropicChatAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(AnthropicChatBedrockApi.class)
 	public BedrockAnthropicChatConnector anthropicChatClient(AnthropicChatBedrockApi anthropicApi,
-                                                             BedrockAnthropicChatProperties properties) {
+			BedrockAnthropicChatProperties properties) {
 		return new BedrockAnthropicChatConnector(anthropicApi, properties.getOptions());
 	}
 

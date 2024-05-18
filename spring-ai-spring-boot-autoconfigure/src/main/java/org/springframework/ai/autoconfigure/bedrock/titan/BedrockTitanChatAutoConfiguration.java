@@ -58,7 +58,7 @@ public class BedrockTitanChatAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(TitanChatBedrockApi.class)
 	public BedrockTitanChatConnector titanChatClient(TitanChatBedrockApi titanChatApi,
-                                                     BedrockTitanChatProperties properties) {
+			BedrockTitanChatProperties properties) {
 
 		return new BedrockTitanChatConnector(titanChatApi, properties.getOptions());
 	}
