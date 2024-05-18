@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.springframework.ai.bedrock.anthropic.BedrockAnthropicModelCall;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import reactor.core.publisher.Flux;
 import software.amazon.awssdk.regions.Region;
 
 import org.springframework.ai.autoconfigure.bedrock.BedrockAwsConnectionProperties;
-import org.springframework.ai.bedrock.anthropic.BedrockAnthropicChatClient;
 import org.springframework.ai.bedrock.anthropic.api.AnthropicChatBedrockApi.AnthropicChatModel;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
@@ -69,7 +69,7 @@ public class BedrockAnthropicChatAutoConfigurationIT {
 	@Test
 	public void chatCompletion() {
 		contextRunner.run(context -> {
-			BedrockAnthropicChatClient anthropicChatClient = context.getBean(BedrockAnthropicChatClient.class);
+			BedrockAnthropicModelCall anthropicChatClient = context.getBean(BedrockAnthropicModelCall.class);
 			ChatResponse response = anthropicChatClient.call(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
@@ -79,7 +79,7 @@ public class BedrockAnthropicChatAutoConfigurationIT {
 	public void chatCompletionStreaming() {
 		contextRunner.run(context -> {
 
-			BedrockAnthropicChatClient anthropicChatClient = context.getBean(BedrockAnthropicChatClient.class);
+			BedrockAnthropicModelCall anthropicChatClient = context.getBean(BedrockAnthropicModelCall.class);
 
 			Flux<ChatResponse> response = anthropicChatClient.stream(new Prompt(List.of(userMessage, systemMessage)));
 
@@ -130,7 +130,7 @@ public class BedrockAnthropicChatAutoConfigurationIT {
 			.withConfiguration(AutoConfigurations.of(BedrockAnthropicChatAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(BedrockAnthropicChatProperties.class)).isEmpty();
-				assertThat(context.getBeansOfType(BedrockAnthropicChatClient.class)).isEmpty();
+				assertThat(context.getBeansOfType(BedrockAnthropicModelCall.class)).isEmpty();
 			});
 
 		// Explicitly enable the chat auto-configuration.
@@ -138,7 +138,7 @@ public class BedrockAnthropicChatAutoConfigurationIT {
 			.withConfiguration(AutoConfigurations.of(BedrockAnthropicChatAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(BedrockAnthropicChatProperties.class)).isNotEmpty();
-				assertThat(context.getBeansOfType(BedrockAnthropicChatClient.class)).isNotEmpty();
+				assertThat(context.getBeansOfType(BedrockAnthropicModelCall.class)).isNotEmpty();
 			});
 
 		// Explicitly disable the chat auto-configuration.
@@ -146,7 +146,7 @@ public class BedrockAnthropicChatAutoConfigurationIT {
 			.withConfiguration(AutoConfigurations.of(BedrockAnthropicChatAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(BedrockAnthropicChatProperties.class)).isEmpty();
-				assertThat(context.getBeansOfType(BedrockAnthropicChatClient.class)).isEmpty();
+				assertThat(context.getBeansOfType(BedrockAnthropicModelCall.class)).isEmpty();
 			});
 	}
 

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.huggingface.HuggingfaceChatClient;
+import org.springframework.ai.huggingface.HuggingfaceModelCall;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ClientIT {
 
 	@Autowired
-	protected HuggingfaceChatClient huggingfaceChatClient;
+	protected HuggingfaceModelCall huggingfaceChatClient;
 
 	@Test
 	void helloWorldCompletion() {

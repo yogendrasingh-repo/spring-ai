@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class VertexAiPaLm2ChatRequestTests {
 
-	VertexAiPaLm2ChatClient client = new VertexAiPaLm2ChatClient(new VertexAiPaLm2Api("bla"));
+	VertexAiPaLm2ModelCall client = new VertexAiPaLm2ModelCall(new VertexAiPaLm2Api("bla"));
 
 	@Test
 	public void createRequestWithDefaultOptions() {

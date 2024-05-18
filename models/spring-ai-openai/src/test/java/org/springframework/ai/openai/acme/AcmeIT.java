@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.openai.OpenAiModelCall;
 import org.springframework.ai.openai.OpenAiTestConfiguration;
-import org.springframework.ai.openai.OpenAiChatClient;
 import org.springframework.ai.openai.OpenAiEmbeddingClient;
 import org.springframework.ai.openai.testutils.AbstractIT;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -61,7 +61,7 @@ public class AcmeIT extends AbstractIT {
 	private OpenAiEmbeddingClient embeddingClient;
 
 	@Autowired
-	private OpenAiChatClient chatClient;
+	private OpenAiModelCall chatClient;
 
 	@Test
 	void beanTest() {

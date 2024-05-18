@@ -20,11 +20,8 @@ import java.util.List;
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallbackContext;
-import org.springframework.ai.openai.OpenAiAudioTranscriptionClient;
-import org.springframework.ai.openai.OpenAiChatClient;
-import org.springframework.ai.openai.OpenAiEmbeddingClient;
-import org.springframework.ai.openai.OpenAiImageClient;
-import org.springframework.ai.openai.OpenAiAudioSpeechClient;
+import org.springframework.ai.openai.*;
+import org.springframework.ai.openai.OpenAiModelCall;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.api.OpenAiAudioApi;
 import org.springframework.ai.openai.api.OpenAiImageApi;
@@ -57,7 +54,7 @@ public class OpenAiAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OpenAiChatProperties.CONFIG_PREFIX, name = "enabled", havingValue = "true",
 			matchIfMissing = true)
-	public OpenAiChatClient openAiChatClient(OpenAiConnectionProperties commonProperties,
+	public OpenAiModelCall openAiChatClient(OpenAiConnectionProperties commonProperties,
 			OpenAiChatProperties chatProperties, RestClient.Builder restClientBuilder,
 			List<FunctionCallback> toolFunctionCallbacks, FunctionCallbackContext functionCallbackContext,
 			RetryTemplate retryTemplate, ResponseErrorHandler responseErrorHandler) {
@@ -69,7 +66,7 @@ public class OpenAiAutoConfiguration {
 			chatProperties.getOptions().getFunctionCallbacks().addAll(toolFunctionCallbacks);
 		}
 
-		return new OpenAiChatClient(openAiApi, chatProperties.getOptions(), functionCallbackContext, retryTemplate);
+		return new OpenAiModelCall(openAiApi, chatProperties.getOptions(), functionCallbackContext, retryTemplate);
 	}
 
 	@Bean

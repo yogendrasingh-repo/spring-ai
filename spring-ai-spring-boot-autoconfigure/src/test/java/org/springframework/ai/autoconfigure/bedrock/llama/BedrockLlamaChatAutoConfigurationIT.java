@@ -21,13 +21,13 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.springframework.ai.bedrock.llama.BedrockLlamaModelCall;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import reactor.core.publisher.Flux;
 import software.amazon.awssdk.regions.Region;
 
 import org.springframework.ai.autoconfigure.bedrock.BedrockAwsConnectionProperties;
-import org.springframework.ai.bedrock.llama.BedrockLlamaChatClient;
 import org.springframework.ai.bedrock.llama.api.LlamaChatBedrockApi.LlamaChatModel;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -71,7 +71,7 @@ public class BedrockLlamaChatAutoConfigurationIT {
 	@Test
 	public void chatCompletion() {
 		contextRunner.run(context -> {
-			BedrockLlamaChatClient llamaChatClient = context.getBean(BedrockLlamaChatClient.class);
+			BedrockLlamaModelCall llamaChatClient = context.getBean(BedrockLlamaModelCall.class);
 			ChatResponse response = llamaChatClient.call(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
@@ -81,7 +81,7 @@ public class BedrockLlamaChatAutoConfigurationIT {
 	public void chatCompletionStreaming() {
 		contextRunner.run(context -> {
 
-			BedrockLlamaChatClient llamaChatClient = context.getBean(BedrockLlamaChatClient.class);
+			BedrockLlamaModelCall llamaChatClient = context.getBean(BedrockLlamaModelCall.class);
 
 			Flux<ChatResponse> response = llamaChatClient.stream(new Prompt(List.of(userMessage, systemMessage)));
 
@@ -133,7 +133,7 @@ public class BedrockLlamaChatAutoConfigurationIT {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(BedrockLlamaChatAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(BedrockLlamaChatProperties.class)).isEmpty();
-				assertThat(context.getBeansOfType(BedrockLlamaChatClient.class)).isEmpty();
+				assertThat(context.getBeansOfType(BedrockLlamaModelCall.class)).isEmpty();
 			});
 
 		// Explicitly enable the chat auto-configuration.
@@ -141,7 +141,7 @@ public class BedrockLlamaChatAutoConfigurationIT {
 			.withConfiguration(AutoConfigurations.of(BedrockLlamaChatAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(BedrockLlamaChatProperties.class)).isNotEmpty();
-				assertThat(context.getBeansOfType(BedrockLlamaChatClient.class)).isNotEmpty();
+				assertThat(context.getBeansOfType(BedrockLlamaModelCall.class)).isNotEmpty();
 			});
 
 		// Explicitly disable the chat auto-configuration.
@@ -149,7 +149,7 @@ public class BedrockLlamaChatAutoConfigurationIT {
 			.withConfiguration(AutoConfigurations.of(BedrockLlamaChatAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(BedrockLlamaChatProperties.class)).isEmpty();
-				assertThat(context.getBeansOfType(BedrockLlamaChatClient.class)).isEmpty();
+				assertThat(context.getBeansOfType(BedrockLlamaModelCall.class)).isEmpty();
 			});
 	}
 
