@@ -186,8 +186,8 @@ public interface ChatClient {
 		private final Map<String, Object> systemParams = new HashMap<>();
 
 		/* copy constructor */
-		ChatClientRequest(ModelCall connector, ChatClientRequest ccr) {
-			this(connector, ccr.userText, ccr.systemText, ccr.functionCallbacks, ccr.functionNames, ccr.media,
+		ChatClientRequest(ChatClientRequest ccr) {
+			this(ccr.connector, ccr.userText, ccr.systemText, ccr.functionCallbacks, ccr.functionNames, ccr.media,
 					ccr.chatOptions);
 		}
 
@@ -343,9 +343,9 @@ public interface ChatClient {
 
 	class ChatClientBuilder {
 
-		private final ModelCall modelCall;
 
 		private final ChatClientRequest defaultRequest;
+		private final ModelCall modelCall;
 
 		ChatClientBuilder(ModelCall modelCall) {
 			Assert.notNull(modelCall, "the " + ModelCall.class.getName() + " must be non-null");
@@ -374,7 +374,6 @@ public interface ChatClient {
 
 		public <I, O> ChatClientBuilder defaultFunctionWrappers(String name, String description,
 				java.util.function.Function<I, O> function) {
-
 			this.defaultRequest.function(name, description, function);
 			return this;
 		}
