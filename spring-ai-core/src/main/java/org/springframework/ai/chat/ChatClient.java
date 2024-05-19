@@ -343,8 +343,8 @@ public interface ChatClient {
 
 	class ChatClientBuilder {
 
-
 		private final ChatClientRequest defaultRequest;
+
 		private final ModelCall modelCall;
 
 		ChatClientBuilder(ModelCall modelCall) {
