@@ -10,13 +10,13 @@ import org.springframework.ai.chat.prompt.Prompt;
  */
 class DefaultChatClient implements ChatClient {
 
-
 	private final ModelCall modelCall;
+
 	private final ChatClientRequest defaultChatClientRequest;
 
 	public DefaultChatClient(ModelCall modelCall, ChatClientRequest defaultChatClientRequest) {
-        this.modelCall = modelCall;
-        this.defaultChatClientRequest = defaultChatClientRequest;
+		this.modelCall = modelCall;
+		this.defaultChatClientRequest = defaultChatClientRequest;
 	}
 
 	@Override
