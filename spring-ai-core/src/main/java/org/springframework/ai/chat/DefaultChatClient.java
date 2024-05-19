@@ -1,9 +1,6 @@
 package org.springframework.ai.chat;
 
-import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.prompt.Prompt;
-
-import java.util.List;
 
 /**
  * @author Mark Pollack
@@ -15,26 +12,16 @@ class DefaultChatClient implements ChatClient {
 
 	private final ModelCall modelCall;
 
-	private final String userText, systemText;
+	private final ChatClientRequest defaultChatClientRequest;
 
-	private final List<String> functionNames;
-
-	private final List<Media> media;
-
-	public DefaultChatClient(ModelCall modelCall, String defaultSystemPrompt, String defaultUserPrompt,
-			List<String> defaultFunctions, List<Media> defaultMedia) {
+	public DefaultChatClient(ModelCall modelCall, ChatClientRequest defaultChatClientRequest) {
 		this.modelCall = modelCall;
-		this.userText = defaultUserPrompt;
-		this.systemText = defaultSystemPrompt;
-		this.functionNames = defaultFunctions;
-		this.media = defaultMedia;
-
+		this.defaultChatClientRequest = defaultChatClientRequest;
 	}
 
 	@Override
 	public ChatClientRequest call() {
-		return new ChatClientRequest(this.modelCall, this.userText, this.systemText, this.functionNames, this.media,
-				null);
+		return this.defaultChatClientRequest;
 	}
 
 	/**

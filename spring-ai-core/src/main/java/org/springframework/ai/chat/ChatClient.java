@@ -31,7 +31,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
 import org.springframework.util.StringUtils;
-import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.net.URL;
@@ -180,20 +179,25 @@ public interface ChatClient {
 
 		private final List<FunctionCallback> functionCallbacks = new ArrayList<>();
 
-		private final Map<String, Object> userParams = new HashMap<>();
-
 		private final List<Message> messages = new ArrayList<>();
+
+		private final Map<String, Object> userParams = new HashMap<>();
 
 		private final Map<String, Object> systemParams = new HashMap<>();
 
-		public ChatClientRequest(ModelCall connector, String userText, String systemText, List<String> functionNames,
-				List<Media> media, ChatOptions chatOptions) {
+		public ChatClientRequest(ModelCall connector, String userText, String systemText,
+				List<FunctionCallback> functionCallbacks, List<String> functionNames, List<Media> media,
+				ChatOptions chatOptions) {
+
+			this.connector = connector;
+			this.chatOptions = chatOptions;
+
 			this.userText = userText;
 			this.systemText = systemText;
-			this.connector = connector;
+
 			this.functionNames.addAll(functionNames);
+			this.functionCallbacks.addAll(functionCallbacks);
 			this.media.addAll(media);
-			this.chatOptions = chatOptions;
 		}
 
 		public ChatClientRequest messages(Message... messages) {
@@ -219,6 +223,11 @@ public interface ChatClient {
 
 		public ChatClientRequest functions(String... functions) {
 			this.functionNames.addAll(List.of(functions));
+			return this;
+		}
+
+		public ChatClientRequest chatOptions(ChatOptions chatOptions) {
+			this.chatOptions = chatOptions;
 			return this;
 		}
 
@@ -270,27 +279,20 @@ public interface ChatClient {
 			}
 
 			private ChatResponse doGetChatResponse(String processedUserText) {
-
 				var messages = new ArrayList<Message>();
 				var textsAreValid = (StringUtils.hasText(processedUserText)
 						|| StringUtils.hasText(this.request.systemText));
 				var messagesAreValid = !this.request.messages.isEmpty();
-
 				Assert.state(!(messagesAreValid && textsAreValid), "you must specify either " + Message.class.getName()
 						+ " instances or user/system texts, but not both");
-
 				if (textsAreValid) {
-
 					var userMessage = new UserMessage(
 							new PromptTemplate(processedUserText, this.request.userParams).render(),
 							this.request.media);
-
 					var systemMessage = new SystemMessage(
 							new PromptTemplate(this.request.systemText, this.request.systemParams).render());
-
 					messages.add(systemMessage);
 					messages.add(userMessage);
-
 				}
 				else {
 					messages.addAll(this.request.messages);
@@ -311,34 +313,18 @@ public interface ChatClient {
 				return doGetChatResponse(this.request.userText);
 			}
 
-			public <T> Flux<T> stream(Class<T> t) {
-				notSupported();
-				return null;
-			}
-
-			public <T> Flux<T> stream(ParameterizedTypeReference<T> t) {
-				notSupported();
-				return Flux.empty();
-			}
-
 			public String content() {
 				return doGetChatResponse(this.request.userText).getResult().getOutput().getContent();
 			}
 
+			@SuppressWarnings("unused")
 			public <T> Collection<T> list(Class<T> clzz) {
-				// todo move to the new ParameterizedTypeReference ready
-				// BeanOutputConverter
-				notSupported();
-				return null;
+				return single(new ParameterizedTypeReference<List<T>>() {
+				});
 			}
 
-			public <T> Collection<T> list(ParameterizedTypeReference<Collection<T>> ptr) {
-				notSupported();
-				return List.of();
-			}
-
-			private static void notSupported() {
-				throw new RuntimeException("this operation is not supported");
+			public <T> Collection<T> list(ParameterizedTypeReference<List<T>> ptr) {
+				return single(ptr);
 			}
 
 		}
@@ -353,71 +339,42 @@ public interface ChatClient {
 
 		private final ModelCall modelCall;
 
-		private final List<Media> defaultMedia = new ArrayList<>();
-
-		private final List<String> defaultFunctionsNames = new ArrayList<>();
-
-		private final List<FunctionCallback> defaultFunctionCallbacks = new ArrayList<>();
-
-		private String defaultSystem;
-
-		private String defaultUser;
+		private final ChatClientRequest defaultRequest;
 
 		ChatClientBuilder(ModelCall modelCall) {
 			Assert.notNull(modelCall, "the " + ModelCall.class.getName() + " must be non-null");
 			this.modelCall = modelCall;
+			this.defaultRequest = new ChatClientRequest(modelCall, "", "", List.of(), List.of(), List.of(), null);
 		}
 
 		public ChatClient build() {
-			return new DefaultChatClient(this.modelCall, this.defaultSystem, this.defaultUser,
-					this.defaultFunctionsNames, this.defaultMedia);
+			return new DefaultChatClient(this.modelCall, this.defaultRequest);
 		}
 
-		public ChatClientBuilder defaultSystem(Resource resource) {
-			return this.defaultSystem(resource, Charset.defaultCharset());
-		}
-
-		public ChatClientBuilder defaultSystem(Resource resource, Charset charset) {
-			try {
-				this.defaultSystem = resource.getContentAsString(charset);
-			}
-			catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+		public ChatClientBuilder defaultChatOptions(ChatOptions chatOptions) {
+			this.defaultRequest.chatOptions(chatOptions);
 			return this;
 		}
 
-		public ChatClientBuilder defaultSystem(String systemText) {
-			this.defaultSystem = systemText;
+		public ChatClientBuilder defaultUser(Consumer<UserSpec> userSpecConsumer) {
+			this.defaultRequest.user(userSpecConsumer);
+			return this;
+		}
+
+		public ChatClientBuilder defaultSystem(Consumer<SystemSpec> systemSpecConsumer) {
+			this.defaultRequest.system(systemSpecConsumer);
+			return this;
+		}
+
+		public <I, O> ChatClientBuilder defaultFunctionWrappers(String name, String description,
+				java.util.function.Function<I, O> function) {
+
+			this.defaultRequest.function(name, description, function);
 			return this;
 		}
 
 		public ChatClientBuilder defaultFunctions(String... functionNames) {
-			this.defaultFunctionsNames.addAll(List.of(functionNames));
-			return this;
-		}
-
-		public ChatClientBuilder defaultFunctions(List<FunctionCallback> functions) {
-			this.defaultFunctionCallbacks.addAll(functions);
-			return this;
-		}
-
-		public ChatClientBuilder defaultUser(Resource userText) {
-			return this.defaultUser(userText, Charset.defaultCharset());
-		}
-
-		public ChatClientBuilder defaultUser(Resource userText, Charset charset) {
-			try {
-				this.defaultUser = userText.getContentAsString(charset);
-			}
-			catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			return this;
-		}
-
-		public ChatClientBuilder defaultUser(String userText) {
-			this.defaultUser = userText;
+			this.defaultRequest.functions(functionNames);
 			return this;
 		}
 
