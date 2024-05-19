@@ -21,7 +21,7 @@ class DefaultChatClient implements ChatClient {
 
 	@Override
 	public ChatClientRequest call() {
-		return this.defaultChatClientRequest;
+		return new ChatClientRequest(this.modelCall, this.defaultChatClientRequest);
 	}
 
 	/**
