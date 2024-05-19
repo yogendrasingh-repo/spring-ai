@@ -175,7 +175,7 @@ public interface ChatClient {
 
 		private final List<Media> media = new ArrayList<>();
 
-		private final Set<String> functionNames = new HashSet<>();
+		private final List<String> functionNames = new ArrayList<>();
 
 		private final List<FunctionCallback> functionCallbacks = new ArrayList<>();
 
@@ -184,6 +184,12 @@ public interface ChatClient {
 		private final Map<String, Object> userParams = new HashMap<>();
 
 		private final Map<String, Object> systemParams = new HashMap<>();
+
+		/* copy constructor */
+		ChatClientRequest(ModelCall connector, ChatClientRequest ccr) {
+			this(connector, ccr.userText, ccr.systemText, ccr.functionCallbacks, ccr.functionNames, ccr.media,
+					ccr.chatOptions);
+		}
 
 		public ChatClientRequest(ModelCall connector, String userText, String systemText,
 				List<FunctionCallback> functionCallbacks, List<String> functionNames, List<Media> media,
@@ -299,7 +305,7 @@ public interface ChatClient {
 				}
 				if (this.request.chatOptions instanceof FunctionCallingOptionsBuilder.PortableFunctionCallingOptions functionCallingOptions) {
 					if (!this.request.functionNames.isEmpty()) {
-						functionCallingOptions.setFunctions(this.request.functionNames);
+						functionCallingOptions.setFunctions(new HashSet<>(this.request.functionNames));
 					}
 					if (!this.request.functionCallbacks.isEmpty()) {
 						functionCallingOptions.setFunctionCallbacks(this.request.functionCallbacks);
