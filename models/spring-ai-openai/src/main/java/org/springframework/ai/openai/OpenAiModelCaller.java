@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.metadata.RateLimit;
 import org.springframework.ai.chat.prompt.ChatOptions;
@@ -58,7 +58,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * {@link ChatCaller} and {@link StreamingChatClient} implementation for {@literal OpenAI}
+ * {@link ChatCaller} and {@link StreamingChatCaller} implementation for {@literal OpenAI}
  * backed by {@link OpenAiApi}.
  *
  * @author Mark Pollack
@@ -69,12 +69,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Jemin Huh
  * @author Grogdunn
  * @see ChatCaller
- * @see StreamingChatClient
+ * @see StreamingChatCaller
  * @see OpenAiApi
  */
 public class OpenAiModelCaller extends
 		AbstractFunctionCallSupport<ChatCompletionMessage, OpenAiApi.ChatCompletionRequest, ResponseEntity<ChatCompletion>>
-		implements ChatCaller, StreamingChatClient {
+		implements ChatCaller, StreamingChatCaller {
 
 	private static final Logger logger = LoggerFactory.getLogger(OpenAiModelCaller.class);
 

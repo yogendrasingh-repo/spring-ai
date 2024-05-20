@@ -28,7 +28,7 @@ import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public class BedrockCohereModelCaller implements ChatCaller, StreamingChatClient {
+public class BedrockCohereModelCaller implements ChatCaller, StreamingChatCaller {
 
 	private final CohereChatBedrockApi chatApi;
 

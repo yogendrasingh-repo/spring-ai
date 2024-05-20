@@ -25,7 +25,7 @@ import org.springframework.ai.bedrock.anthropic3.api.Anthropic3ChatBedrockApi.Ch
 import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
@@ -43,14 +43,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
- * Java {@link ChatCaller} and {@link StreamingChatClient} for the Bedrock Anthropic chat
+ * Java {@link ChatCaller} and {@link StreamingChatCaller} for the Bedrock Anthropic chat
  * generative.
  *
  * @author Ben Middleton
  * @author Christian Tzolov
  * @since 1.0.0
  */
-public class BedrockAnthropic3ModelCaller implements ChatCaller, StreamingChatClient {
+public class BedrockAnthropic3ModelCaller implements ChatCaller, StreamingChatCaller {
 
 	private final Anthropic3ChatBedrockApi anthropicChatApi;
 

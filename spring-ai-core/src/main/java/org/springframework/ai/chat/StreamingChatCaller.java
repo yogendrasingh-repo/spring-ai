@@ -24,7 +24,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.model.StreamingModelClient;
 
 @FunctionalInterface
-public interface StreamingChatClient extends StreamingModelClient<Prompt, ChatResponse> {
+public interface StreamingChatCaller extends StreamingModelClient<Prompt, ChatResponse> {
 
 	default Flux<String> stream(String message) {
 		Prompt prompt = new Prompt(message);

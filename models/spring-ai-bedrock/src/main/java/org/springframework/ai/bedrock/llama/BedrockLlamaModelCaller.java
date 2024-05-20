@@ -27,7 +27,7 @@ import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -35,14 +35,14 @@ import org.springframework.ai.model.ModelOptionsUtils;
 import org.springframework.util.Assert;
 
 /**
- * Java {@link ChatCaller} and {@link StreamingChatClient} for the Bedrock Llama chat
+ * Java {@link ChatCaller} and {@link StreamingChatCaller} for the Bedrock Llama chat
  * generative.
  *
  * @author Christian Tzolov
  * @author Wei Jiang
  * @since 0.8.0
  */
-public class BedrockLlamaModelCaller implements ChatCaller, StreamingChatClient {
+public class BedrockLlamaModelCaller implements ChatCaller, StreamingChatCaller {
 
 	private final LlamaChatBedrockApi chatApi;
 

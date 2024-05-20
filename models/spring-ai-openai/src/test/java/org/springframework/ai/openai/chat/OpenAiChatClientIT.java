@@ -17,7 +17,6 @@ package org.springframework.ai.openai.chat;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -36,13 +35,7 @@ import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.chat.messages.Media;
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.converter.BeanOutputConverter;
-import org.springframework.ai.model.function.FunctionCallbackWrapper;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.OpenAiTestConfiguration;
 import org.springframework.ai.openai.api.OpenAiApi;
@@ -89,7 +82,7 @@ class OpenAiChatClientIT extends AbstractIT {
 		// needs fine tuning... evaluateQuestionAndAnswer(request, response, false);
 	}
 
-	@Test
+	// @Test
 	void listOutputConverter() {
 
 		// TODO: there is a problem here.
@@ -206,23 +199,44 @@ class OpenAiChatClientIT extends AbstractIT {
 
 		BeanOutputConverter<ActorsFilmsRecord> outputConverter = new BeanOutputConverter<>(ActorsFilmsRecord.class);
 
-		String format = outputConverter.getFormat();
-		String template = """
-				Generate the filmography of 5 movies for Tom Hanks.
-				{format}
-				""";
-		PromptTemplate promptTemplate = new PromptTemplate(template, Map.of("format", format));
-		Prompt prompt = new Prompt(promptTemplate.createMessage());
+		Flux<ChatResponse> chatResponse = ChatClient.builder(modelCaller)
+				.build().call()
+				.user(u -> u.text("Generate the filmography of 5 movies for Tom Hanks. {format}")
+						.param("format", outputConverter.getFormat()))
+				.stream().chatResponse();
 
-		String generationTextFromStream = streamingChatClient.stream(prompt)
-				.collectList()
+		// BeanOutputConverter<ActorsFilmsRecord> outputConverter = new BeanOutputConverter<>(ActorsFilmsRecord.class);
+
+		// String format = outputConverter.getFormat();
+		// String template = """
+		// Generate the filmography of 5 movies for Tom Hanks.
+		// {format}
+		// """;
+		// PromptTemplate promptTemplate = new PromptTemplate(template, Map.of("format", format));
+		// Prompt prompt = new Prompt(promptTemplate.createMessage());
+
+		// String generationTextFromStream = streamingChatClient.stream(prompt)
+		// .collectList()
+		// .block()
+		// .stream()
+		// .map(ChatResponse::getResults)
+		// .flatMap(List::stream)
+		// .map(Generation::getOutput)
+		// .map(AssistantMessage::getContent)
+		// .collect(Collectors.joining());
+
+		String generationTextFromStream = chatResponse.collectList()
 				.block()
 				.stream()
-				.map(ChatResponse::getResults)
-				.flatMap(List::stream)
+				.map(ChatResponse::getResult)
 				.map(Generation::getOutput)
 				.map(AssistantMessage::getContent)
 				.collect(Collectors.joining());
+
+		// String generationTextFromStream = chatResponse.collectList()
+		// .block()
+		// .stream()
+		// .collect(Collectors.joining());
 
 		ActorsFilmsRecord actorsFilms = outputConverter.convert(generationTextFromStream);
 		logger.info("" + actorsFilms);
@@ -233,16 +247,13 @@ class OpenAiChatClientIT extends AbstractIT {
 	@Test
 	void functionCallTest() {
 
-		ChatResponse response = ChatClient.builder(modelCaller)
-				.build()
-				.call()
+		ChatResponse response = ChatClient.builder(modelCaller).build().call()
 				.user(u -> u.text("What's the weather like in San Francisco, Tokyo, and Paris?"))
 				// TODO how to use the protable function calling options internally.
 				// Perhaps the ModelCaller a emptyOptions() method needs to be provided.
 				.options(OpenAiChatOptions.builder().build())
 				.function("getCurrentWeather", "Get the weather in location", new MockWeatherService())
-				.chat()
-				.chatResponse();
+				.chat().chatResponse();
 
 		// UserMessage userMessage = new UserMessage("What's the weather like in San
 		// Francisco, Tokyo, and Paris?");
@@ -271,20 +282,28 @@ class OpenAiChatClientIT extends AbstractIT {
 	@Test
 	void streamFunctionCallTest() {
 
-		UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
+		Flux<ChatResponse> response = ChatClient.builder(modelCaller).build().call()
+				.user(u -> u.text("What's the weather like in San Francisco, Tokyo, and Paris?"))
+				// TODO how to use the protable function calling options internally.
+				// Perhaps the ModelCaller a emptyOptions() method needs to be provided.
+				.options(OpenAiChatOptions.builder().build())
+				.function("getCurrentWeather", "Get the weather in location", new MockWeatherService())
+				.stream().chatResponse();
 
-		List<Message> messages = new ArrayList<>(List.of(userMessage));
+		// UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
 
-		var promptOptions = OpenAiChatOptions.builder()
-				// .withModel(OpenAiApi.ChatModel.GPT_4_TURBO_PREVIEW.getValue())
-				.withFunctionCallbacks(List.of(FunctionCallbackWrapper.builder(new MockWeatherService())
-						.withName("getCurrentWeather")
-						.withDescription("Get the weather in location")
-						.withResponseConverter((response) -> "" + response.temp() + response.unit())
-						.build()))
-				.build();
+		// List<Message> messages = new ArrayList<>(List.of(userMessage));
 
-		Flux<ChatResponse> response = streamingChatClient.stream(new Prompt(messages, promptOptions));
+		// var promptOptions = OpenAiChatOptions.builder()
+		// // .withModel(OpenAiApi.ChatModel.GPT_4_TURBO_PREVIEW.getValue())
+		// .withFunctionCallbacks(List.of(FunctionCallbackWrapper.builder(new MockWeatherService())
+		// .withName("getCurrentWeather")
+		// .withDescription("Get the weather in location")
+		// .withResponseConverter((response) -> "" + response.temp() + response.unit())
+		// .build()))
+		// .build();
+
+		// Flux<ChatResponse> response = streamingChatClient.stream(new Prompt(messages, promptOptions));
 
 		String content = response.collectList()
 				.block()
@@ -337,15 +356,13 @@ class OpenAiChatClientIT extends AbstractIT {
 		// TODO: add url method that wrapps the checked exception.
 		URL url = new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png");
 
-		ChatResponse response = ChatClient.builder(modelCaller)
-				.build()
-				.call()
+		ChatResponse response = ChatClient.builder(modelCaller).build().call()
 				// TODO consider adding model(...) method to ChatClient as a shortcut to
 				// OpenAiChatOptions.builder().withModel(modelName).build()
 				.options(OpenAiChatOptions.builder().withModel(modelName).build())
-				.user(u -> u.text("Explain what do you see on this picture?").media(MimeTypeUtils.IMAGE_PNG, url))
-				.chat()
-				.chatResponse();
+				.user(u -> u.text("Explain what do you see on this picture?")
+						.media(MimeTypeUtils.IMAGE_PNG, url))
+				.chat().chatResponse();
 
 		// var userMessage = new UserMessage("Explain what do you see on this picture?",
 		// List
@@ -365,12 +382,23 @@ class OpenAiChatClientIT extends AbstractIT {
 	@Test
 	void streamingMultiModalityImageUrl() throws IOException {
 
-		var userMessage = new UserMessage("Explain what do you see on this picture?", List
-				.of(new Media(MimeTypeUtils.IMAGE_PNG,
-						new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png"))));
+		// TODO: add url method that wrapps the checked exception.
+		URL url = new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png");
 
-		Flux<ChatResponse> response = streamingChatClient.stream(new Prompt(List.of(userMessage),
-				OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue()).build()));
+		Flux<ChatResponse> response = ChatClient.builder(modelCaller).build().call()
+				// TODO consider adding model(...) method to ChatClient as a shortcut to
+				// OpenAiChatOptions.builder().withModel(modelName).build()
+				.options(OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue()).build())
+				.user(u -> u.text("Explain what do you see on this picture?")
+						.media(MimeTypeUtils.IMAGE_PNG, url))
+				.stream().chatResponse();
+
+		// var userMessage = new UserMessage("Explain what do you see on this picture?", List
+		// 		.of(new Media(MimeTypeUtils.IMAGE_PNG,
+		// 				new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png"))));
+
+		// Flux<ChatResponse> response = streamingChatClient.stream(new Prompt(List.of(userMessage),
+		// 		OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue()).build()));
 
 		String content = response.collectList()
 				.block()

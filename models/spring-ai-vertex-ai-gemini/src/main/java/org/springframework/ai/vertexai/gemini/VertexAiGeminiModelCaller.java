@@ -35,7 +35,7 @@ import com.google.protobuf.util.JsonFormat;
 import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
@@ -67,7 +67,7 @@ import java.util.stream.Collectors;
  */
 public class VertexAiGeminiModelCaller
 		extends AbstractFunctionCallSupport<Content, VertexAiGeminiModelCaller.GeminiRequest, GenerateContentResponse>
-		implements ChatCaller, StreamingChatClient, DisposableBean {
+		implements ChatCaller, StreamingChatCaller, DisposableBean {
 
 	private final static boolean IS_RUNTIME_CALL = true;
 

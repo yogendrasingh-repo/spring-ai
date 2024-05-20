@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.messages.Message;
@@ -46,7 +46,7 @@ public abstract class AbstractIT {
 	protected ChatCaller modelCaller;
 
 	@Autowired
-	protected StreamingChatClient streamingChatClient;
+	protected StreamingChatCaller streamingChatClient;
 
 	@Autowired
 	protected OpenAiAudioTranscriptionClient transcriptionClient;

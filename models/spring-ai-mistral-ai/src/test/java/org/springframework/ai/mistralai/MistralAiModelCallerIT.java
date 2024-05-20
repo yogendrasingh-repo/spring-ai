@@ -30,7 +30,7 @@ import reactor.core.publisher.Flux;
 import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -64,7 +64,7 @@ class MistralAiModelCallerIT {
 	protected ChatCaller modelCall;
 
 	@Autowired
-	protected StreamingChatClient streamingChatClient;
+	protected StreamingChatCaller streamingChatClient;
 
 	@Value("classpath:/prompts/system-message.st")
 	private Resource systemResource;

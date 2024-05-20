@@ -41,7 +41,7 @@ import org.springframework.ai.azure.openai.metadata.AzureOpenAiChatResponseMetad
 import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.metadata.PromptMetadata;
@@ -76,7 +76,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AzureOpenAiModelCaller
 		extends AbstractFunctionCallSupport<ChatRequestMessage, ChatCompletionsOptions, ChatCompletions>
-		implements ChatCaller, StreamingChatClient {
+		implements ChatCaller, StreamingChatCaller {
 
 	private static final String DEFAULT_DEPLOYMENT_NAME = "gpt-35-turbo";
 

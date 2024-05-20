@@ -23,7 +23,7 @@ import org.springframework.ai.chat.prompt.transformer.ChatServiceContext;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.messages.MessageAggregator;
 import org.springframework.ai.chat.prompt.transformer.PromptTransformer;
 
@@ -33,7 +33,7 @@ import org.springframework.ai.chat.prompt.transformer.PromptTransformer;
  */
 public class StreamingPromptTransformingChatService implements StreamingChatService {
 
-	private StreamingChatClient streamingChatClient;
+	private StreamingChatCaller streamingChatClient;
 
 	private List<PromptTransformer> retrievers;
 
@@ -43,7 +43,7 @@ public class StreamingPromptTransformingChatService implements StreamingChatServ
 
 	private List<ChatServiceListener> chatServiceListeners;
 
-	public StreamingPromptTransformingChatService(StreamingChatClient chatClient, List<PromptTransformer> retrievers,
+	public StreamingPromptTransformingChatService(StreamingChatCaller chatClient, List<PromptTransformer> retrievers,
 			List<PromptTransformer> documentPostProcessors, List<PromptTransformer> augmentors,
 			List<ChatServiceListener> chatServiceListeners) {
 		Objects.requireNonNull(chatClient, "chatClient must not be null");
@@ -54,7 +54,7 @@ public class StreamingPromptTransformingChatService implements StreamingChatServ
 		this.chatServiceListeners = chatServiceListeners;
 	}
 
-	public static Builder builder(StreamingChatClient chatClient) {
+	public static Builder builder(StreamingChatCaller chatClient) {
 		return new Builder().withChatClient(chatClient);
 	}
 
@@ -99,7 +99,7 @@ public class StreamingPromptTransformingChatService implements StreamingChatServ
 
 	public static class Builder {
 
-		private StreamingChatClient chatClient;
+		private StreamingChatCaller chatClient;
 
 		private List<PromptTransformer> retrievers = new ArrayList<>();
 
@@ -109,7 +109,7 @@ public class StreamingPromptTransformingChatService implements StreamingChatServ
 
 		private List<ChatServiceListener> chatServiceListeners = new ArrayList<>();
 
-		public Builder withChatClient(StreamingChatClient chatClient) {
+		public Builder withChatClient(StreamingChatCaller chatClient) {
 			this.chatClient = chatClient;
 			return this;
 		}

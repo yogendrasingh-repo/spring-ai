@@ -23,7 +23,7 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -48,7 +48,7 @@ import org.springframework.util.Assert;
  * @author Christian Tzolov
  * @since 1.0.0
  */
-public class WatsonxAiModelCaller implements ChatCaller, StreamingChatClient {
+public class WatsonxAiModelCaller implements ChatCaller, StreamingChatCaller {
 
 	private final WatsonxAiApi watsonxAiApi;
 

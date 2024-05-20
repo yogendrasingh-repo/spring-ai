@@ -24,7 +24,7 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
@@ -52,7 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public class OllamaModelCaller implements ChatCaller, StreamingChatClient {
+public class OllamaModelCaller implements ChatCaller, StreamingChatCaller {
 
 	/**
 	 * Low-level Ollama API library.

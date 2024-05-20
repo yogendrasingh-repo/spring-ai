@@ -15,6 +15,21 @@
  */
 package org.springframework.ai.chat;
 
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import reactor.core.publisher.Flux;
+
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -26,19 +41,12 @@ import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallbackWrapper;
 import org.springframework.ai.model.function.FunctionCallingOptions;
-import org.springframework.ai.model.function.FunctionCallingOptionsBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
 import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.*;
-import java.util.function.Consumer;
 
 // todo support plugging in a outputConverter at runtime
 // todo figure out stream and list methods
@@ -175,8 +183,6 @@ public interface ChatClient {
 
 		private ChatOptions chatOptions;
 
-		private FunctionCallingOptions functionCallingOptions;
-
 		private final List<Media> media = new ArrayList<>();
 
 		private final List<String> functionNames = new ArrayList<>();
@@ -223,10 +229,10 @@ public interface ChatClient {
 		public <I, O> ChatClientRequest function(String name, String description,
 				java.util.function.Function<I, O> function) {
 			var fcw = FunctionCallbackWrapper.builder(function)
-				.withDescription(description)
-				.withName(name)
-				.withResponseConverter(Object::toString)
-				.build();
+					.withDescription(description)
+					.withName(name)
+					.withResponseConverter(Object::toString)
+					.build();
 			this.functionCallbacks.add(fcw);
 			return this;
 		}
@@ -346,6 +352,11 @@ public interface ChatClient {
 				return doGetChatResponse(this.request.userText).getResult().getOutput().getContent();
 			}
 
+			public List<String> contents() {
+				return doGetChatResponse(this.request.userText).getResults().stream()
+						.map(r -> r.getOutput().getContent()).toList();
+			}
+
 			@SuppressWarnings("unused")
 			public <T> Collection<T> list(Class<T> clzz) {
 				return single(new ParameterizedTypeReference<List<T>>() {
@@ -358,8 +369,122 @@ public interface ChatClient {
 
 		}
 
+		public static class ChatStreamResponseSpec {
+
+			private final ChatClientRequest request;
+
+			private final StreamingChatCaller modelCall;
+
+			public ChatStreamResponseSpec(StreamingChatCaller modelCall, ChatClientRequest request) {
+				this.modelCall = modelCall;
+				this.request = request;
+			}
+
+			// public <T> Flux<T> single(ParameterizedTypeReference<T> t) {
+			// return doSingleWithBeanOutputConverter(new BeanOutputConverter<T>(new ParameterizedTypeReference<>() {
+			// }));
+			// }
+
+			// private <T> Flux<T> doSingleWithBeanOutputConverter(BeanOutputConverter<T> boc) {
+			// var processedUserText = this.request.userText + System.lineSeparator() + System.lineSeparator()
+			// + "{format}";
+			// var chatResponse = doGetChatResponse(processedUserText, boc.getFormat());
+			// var stringResponse = chatResponse.getResult().getOutput().getContent();
+			// return boc.convert(stringResponse);
+			// }
+
+			// public <T> Flux<T> single(Class<T> clzz) {
+			// Assert.notNull(clzz, "the class must be non-null");
+			// var boc = new BeanOutputConverter<T>(clzz);
+			// return doSingleWithBeanOutputConverter(boc);
+			// }
+
+			private Flux<ChatResponse> doGetChatResponse(String processedUserText) {
+				return this.doGetChatResponse(processedUserText, "");
+			}
+
+			private Flux<ChatResponse> doGetChatResponse(String processedUserText, String formatParam) {
+				Map<String, Object> userParams = new HashMap<>(this.request.userParams);
+				if (StringUtils.hasText(formatParam)) {
+					userParams.put("format", formatParam);
+				}
+
+				var messages = new ArrayList<Message>();
+				var textsAreValid = (StringUtils.hasText(processedUserText)
+						|| StringUtils.hasText(this.request.systemText));
+				var messagesAreValid = !this.request.messages.isEmpty();
+				Assert.state(!(messagesAreValid && textsAreValid), "you must specify either " + Message.class.getName()
+						+ " instances or user/system texts, but not both");
+				if (textsAreValid) {
+					UserMessage userMessage = null;
+					if (!CollectionUtils.isEmpty(userParams)) {
+						userMessage = new UserMessage(new PromptTemplate(processedUserText, userParams).render(),
+								this.request.media);
+					}
+					else {
+						userMessage = new UserMessage(processedUserText, this.request.media);
+					}
+					if (StringUtils.hasText(this.request.systemText) || !this.request.systemParams.isEmpty()) {
+						var systemMessage = new SystemMessage(
+								new PromptTemplate(this.request.systemText, this.request.systemParams).render());
+						messages.add(systemMessage);
+					}
+					messages.add(userMessage);
+				}
+				else {
+					messages.addAll(this.request.messages);
+				}
+				if (this.request.chatOptions instanceof FunctionCallingOptions functionCallingOptions) {
+					// if (this.request.chatOptions instanceof
+					// FunctionCallingOptionsBuilder.PortableFunctionCallingOptions
+					// functionCallingOptions) {
+					if (!this.request.functionNames.isEmpty()) {
+						functionCallingOptions.setFunctions(new HashSet<>(this.request.functionNames));
+					}
+					if (!this.request.functionCallbacks.isEmpty()) {
+						functionCallingOptions.setFunctionCallbacks(this.request.functionCallbacks);
+					}
+				}
+				var prompt = new Prompt(messages, this.request.chatOptions);
+				return this.modelCall.stream(prompt);
+			}
+
+			public Flux<ChatResponse> chatResponse() {
+				return doGetChatResponse(this.request.userText);
+			}
+
+			public Flux<String> content() {
+				return doGetChatResponse(this.request.userText)
+						.map(ChatResponse::getResult)
+						.map(Generation::getOutput)
+						.map(AssistantMessage::getContent);
+				// .map(r -> r.getResult().getOutput().getContent())
+				// .filter(v -> StringUtils.hasText(v));
+			}
+
+			public Flux<List<String>> contents() {
+				return doGetChatResponse(this.request.userText).map(r -> r.getResults().stream()
+						.map(rr -> rr.getOutput().getContent()).toList());
+			}
+
+			// @SuppressWarnings("unused")
+			// public <T> Collection<T> list(Class<T> clzz) {
+			// return single(new ParameterizedTypeReference<List<T>>() {
+			// });
+			// }
+
+			// public <T> Collection<T> list(ParameterizedTypeReference<List<T>> ptr) {
+			// return single(ptr);
+			// }
+
+		}
+
 		public ChatResponseSpec chat() {
 			return new ChatResponseSpec(this.caller, this);
+		}
+
+		public ChatStreamResponseSpec stream() {
+			return new ChatStreamResponseSpec((StreamingChatCaller) this.caller, this);
 		}
 
 	}

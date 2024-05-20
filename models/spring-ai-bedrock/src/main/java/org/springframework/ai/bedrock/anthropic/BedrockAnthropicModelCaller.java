@@ -27,19 +27,19 @@ import org.springframework.ai.bedrock.MessageToPromptConverter;
 import org.springframework.ai.bedrock.anthropic.api.AnthropicChatBedrockApi;
 import org.springframework.ai.bedrock.anthropic.api.AnthropicChatBedrockApi.AnthropicChatRequest;
 import org.springframework.ai.bedrock.anthropic.api.AnthropicChatBedrockApi.AnthropicChatResponse;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.model.ModelOptionsUtils;
 
 /**
- * Java {@link ChatCaller} and {@link StreamingChatClient} for the Bedrock Anthropic chat
+ * Java {@link ChatCaller} and {@link StreamingChatCaller} for the Bedrock Anthropic chat
  * generative.
  *
  * @author Christian Tzolov
  * @since 0.8.0
  */
-public class BedrockAnthropicModelCaller implements ChatCaller, StreamingChatClient {
+public class BedrockAnthropicModelCaller implements ChatCaller, StreamingChatCaller {
 
 	private final AnthropicChatBedrockApi anthropicChatApi;
 

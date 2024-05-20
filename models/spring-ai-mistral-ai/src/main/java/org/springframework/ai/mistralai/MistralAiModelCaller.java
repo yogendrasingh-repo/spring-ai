@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -57,7 +57,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MistralAiModelCaller extends
 		AbstractFunctionCallSupport<MistralAiApi.ChatCompletionMessage, MistralAiApi.ChatCompletionRequest, ResponseEntity<MistralAiApi.ChatCompletion>>
-		implements ChatCaller, StreamingChatClient {
+		implements ChatCaller, StreamingChatCaller {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 

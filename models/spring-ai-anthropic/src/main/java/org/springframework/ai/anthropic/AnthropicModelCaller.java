@@ -41,7 +41,7 @@ import org.springframework.ai.anthropic.api.AnthropicApi.Usage;
 import org.springframework.ai.anthropic.metadata.AnthropicChatResponseMetadata;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.prompt.ChatOptions;
@@ -63,7 +63,7 @@ import org.springframework.util.CollectionUtils;
  */
 public class AnthropicModelCaller extends
 		AbstractFunctionCallSupport<AnthropicApi.RequestMessage, AnthropicApi.ChatCompletionRequest, ResponseEntity<AnthropicApi.ChatCompletion>>
-		implements ChatCaller, StreamingChatClient {
+		implements ChatCaller, StreamingChatCaller {
 
 	private static final Logger logger = LoggerFactory.getLogger(AnthropicModelCaller.class);
 
