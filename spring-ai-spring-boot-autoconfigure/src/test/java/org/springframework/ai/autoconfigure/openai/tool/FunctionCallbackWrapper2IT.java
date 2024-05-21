@@ -53,6 +53,7 @@ public class FunctionCallbackWrapper2IT {
 
 			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
 
+			// @formatter:off
 			ChatClient chatClient = ChatClient.builder(caller)
 				.defaultFunctions("WeatherInfo")
 				.defaultUser(u -> u.text("What's the weather like in {cities}?"))
@@ -61,6 +62,7 @@ public class FunctionCallbackWrapper2IT {
 			String content = chatClient.prompt()
 				.user(u -> u.param("cities", "San Francisco, Tokyo, Paris"))
 				.call().content();
+			// @formatter:on
 
 			logger.info("Response: {}", content);
 
@@ -76,11 +78,13 @@ public class FunctionCallbackWrapper2IT {
 
 			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
 
+			// @formatter:off
 			String content = ChatClient.builder(caller).build().prompt()
 				.functions("WeatherInfo")
 				.user(u -> u.text("What's the weather like in San Francisco, Tokyo, and Paris?"))
 				.stream().content()
 				.collectList().block().stream().collect(Collectors.joining());
+			// @formatter:on
 
 			logger.info("Response: {}", content);
 

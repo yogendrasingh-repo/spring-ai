@@ -39,9 +39,9 @@ public class FunctionCallbackInPrompt2IT {
 	private final Logger logger = LoggerFactory.getLogger(FunctionCallbackInPromptIT.class);
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("spring.ai.openai.apiKey=" + System.getenv("OPENAI_API_KEY"))
-			.withConfiguration(AutoConfigurations.of(SpringAiRetryAutoConfiguration.class,
-					RestClientAutoConfiguration.class, OpenAiAutoConfiguration.class));
+		.withPropertyValues("spring.ai.openai.apiKey=" + System.getenv("OPENAI_API_KEY"))
+		.withConfiguration(AutoConfigurations.of(SpringAiRetryAutoConfiguration.class,
+				RestClientAutoConfiguration.class, OpenAiAutoConfiguration.class));
 
 	@Test
 	void functionCallTest() {
@@ -51,6 +51,7 @@ public class FunctionCallbackInPrompt2IT {
 
 			ChatClient chatClient = ChatClient.builder(caller).build();
 
+			// @formatter:off
 			chatClient.prompt()
 					.user("Tell me a joke?")
 					.call().content();
@@ -59,6 +60,7 @@ public class FunctionCallbackInPrompt2IT {
 					.user("What's the weather like in San Francisco, Tokyo, and Paris?")
 					.function("CurrentWeatherService", "Get the weather in location", new MockWeatherService())
 					.call().content();
+			// @formatter:on
 
 			logger.info("Response: {}", content);
 
@@ -74,6 +76,7 @@ public class FunctionCallbackInPrompt2IT {
 
 			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
 
+			// @formatter:off
 			String content = ChatClient.builder(caller).build().prompt()
 					.user("What's the weather like in Amsterdam?")
 					.function("CurrentWeatherService", "Get the weather in location",
@@ -84,7 +87,7 @@ public class FunctionCallbackInPrompt2IT {
 								}
 							})
 					.call().content();
-
+			// @formatter:on
 			logger.info("Response: {}", content);
 
 			assertThat(content).contains("18");
@@ -98,11 +101,13 @@ public class FunctionCallbackInPrompt2IT {
 
 			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
 
+			// @formatter:off
 			String content = ChatClient.builder(caller).build().prompt()
 					.user("What's the weather like in San Francisco, Tokyo, and Paris?")
 					.function("CurrentWeatherService", "Get the weather in location", new MockWeatherService())
 					.stream().content()
 					.collectList().block().stream().collect(Collectors.joining());
+			// @formatter:on
 
 			logger.info("Response: {}", content);
 

@@ -246,6 +246,11 @@ public interface ChatClient {
 			return this;
 		}
 
+		public ChatClientRequest system(String text) {
+			this.systemText = text;
+			return this;
+		}
+
 		public ChatClientRequest system(Consumer<SystemSpec> consumer) {
 			var ss = new SystemSpec();
 			consumer.accept(ss);
@@ -364,7 +369,7 @@ public interface ChatClient {
 			}
 
 			@SuppressWarnings("unused")
-			public <T> Collection<T> list(Class<T> clzz) {
+			public <T> Collection<T> list(Class<T> type) {
 				return single(new ParameterizedTypeReference<List<T>>() {
 				});
 			}
@@ -461,15 +466,13 @@ public interface ChatClient {
 			}
 
 			public Flux<String> content() {
-				return doGetFluxChatResponse(this.request.userText)
-					.map(r -> {
-						if (r.getResult() == null || r.getResult().getOutput() == null
-								|| r.getResult().getOutput().getContent() == null) {
-							return "";
-						}
-						return r.getResult().getOutput().getContent();
-					})
-					.filter(v -> StringUtils.hasText(v));
+				return doGetFluxChatResponse(this.request.userText).map(r -> {
+					if (r.getResult() == null || r.getResult().getOutput() == null
+							|| r.getResult().getOutput().getContent() == null) {
+						return "";
+					}
+					return r.getResult().getOutput().getContent();
+				}).filter(v -> StringUtils.hasText(v));
 			}
 
 			// @SuppressWarnings("unused")
@@ -515,8 +518,18 @@ public interface ChatClient {
 			return this;
 		}
 
+		public ChatClientBuilder defaultUser(String text) {
+			this.defaultRequest.user(text);
+			return this;
+		}
+
 		public ChatClientBuilder defaultUser(Consumer<UserSpec> userSpecConsumer) {
 			this.defaultRequest.user(userSpecConsumer);
+			return this;
+		}
+
+		public ChatClientBuilder defaultSystem(String text) {
+			this.defaultRequest.system(text);
 			return this;
 		}
 
