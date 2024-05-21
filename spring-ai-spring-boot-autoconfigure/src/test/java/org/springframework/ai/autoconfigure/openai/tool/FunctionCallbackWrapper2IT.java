@@ -81,7 +81,7 @@ public class FunctionCallbackWrapper2IT {
 			// @formatter:off
 			String content = ChatClient.builder(caller).build().prompt()
 				.functions("WeatherInfo")
-				.user(u -> u.text("What's the weather like in San Francisco, Tokyo, and Paris?"))
+				.user("What's the weather like in San Francisco, Tokyo, and Paris?")
 				.stream().content()
 				.collectList().block().stream().collect(Collectors.joining());
 			// @formatter:on

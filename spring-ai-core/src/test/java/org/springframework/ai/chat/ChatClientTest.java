@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -48,13 +49,45 @@ public class ChatClientTest {
 	@Captor
 	ArgumentCaptor<Prompt> promptCaptor;
 
+	@BeforeEach
+	public void beforeAll() {
+		when(modelCaller.call(promptCaptor.capture()))
+				.thenReturn(new ChatResponse(List.of(new Generation("response"))));
+	}
+
 	@Test
-	public void call() throws MalformedURLException {
+	public void simpleUserPrompt() throws MalformedURLException {
+		assertThat(ChatClient.builder(modelCaller).build().prompt().user("User prompt").call().content())
+			.isEqualTo("response");
+
+		Message userMessage = promptCaptor.getValue().getInstructions().get(0);
+		assertThat(userMessage.getContent()).isEqualTo("User prompt");
+		assertThat(userMessage.getMessageType()).isEqualTo(MessageType.USER);
+	}
+
+	@Test
+	public void simpleSystemPrompt() throws MalformedURLException {
+		String response = ChatClient.builder(modelCaller).build().prompt().system("System prompt").call().content();
+
+		assertThat(response).isEqualTo("response");
+
+		assertThat(promptCaptor.getValue().getInstructions()).hasSize(2);
+
+		Message systemMessage = promptCaptor.getValue().getInstructions().get(0);
+		assertThat(systemMessage.getContent()).isEqualTo("System prompt");
+		assertThat(systemMessage.getMessageType()).isEqualTo(MessageType.SYSTEM);
+
+		// Is this expected?
+		Message userMessage = promptCaptor.getValue().getInstructions().get(1);
+		assertThat(userMessage.getContent()).isEqualTo("");
+		assertThat(userMessage.getMessageType()).isEqualTo(MessageType.USER);
+	}
+
+	@Test
+	public void complexCall() throws MalformedURLException {
 
 		var options = FunctionCallingOptions.builder().build();
 		when(modelCaller.getDefaultOptions()).thenReturn(options);
-		when(modelCaller.call(promptCaptor.capture()))
-			.thenReturn(new ChatResponse(List.of(new Generation("response"))));
 
 		var url = new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png");
 

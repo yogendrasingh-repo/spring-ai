@@ -28,6 +28,7 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration;
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
+import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -87,18 +88,17 @@ class FunctionCallbackWithPlainFunctionBeanIT {
 	void functionCallWithPortableFunctionCallingOptions() {
 		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			OpenAiModelCaller chatClient = context.getBean(OpenAiModelCaller.class);
+			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
 
-			// Test weatherFunction
-			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
+			// @formatter:off
+			String content = ChatClient.builder(caller).build().prompt()
+				.functions("weatherFunction")
+				.user("What's the weather like in San Francisco, Tokyo, and Paris?")
+				.stream().content()
+				.collectList().block().stream().collect(Collectors.joining());
+			// @formatter:on
 
-			PortableFunctionCallingOptions functionOptions = FunctionCallingOptions.builder()
-				.withFunction("weatherFunction")
-				.build();
-
-			ChatResponse response = chatClient.call(new Prompt(List.of(userMessage), functionOptions));
-
-			logger.info("Response: {}", response);
+			logger.info("Response: {}", content);
 		});
 	}
 

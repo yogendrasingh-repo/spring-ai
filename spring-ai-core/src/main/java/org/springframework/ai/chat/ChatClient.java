@@ -236,8 +236,8 @@ public interface ChatClient {
 			return this;
 		}
 
-		public ChatClientRequest functions(String... functions) {
-			this.functionNames.addAll(List.of(functions));
+		public ChatClientRequest functions(String... functionBeanNames) {
+			this.functionNames.addAll(List.of(functionBeanNames));
 			return this;
 		}
 
@@ -285,8 +285,7 @@ public interface ChatClient {
 			}
 
 			public <T> T single(ParameterizedTypeReference<T> type) {
-				return doSingleWithBeanOutputConverter(new BeanOutputConverter<T>(new ParameterizedTypeReference<>() {
-				}));
+				return doSingleWithBeanOutputConverter(new BeanOutputConverter<T>(type));
 			}
 
 			private <T> T doSingleWithBeanOutputConverter(BeanOutputConverter<T> boc) {
@@ -391,33 +390,6 @@ public interface ChatClient {
 				this.request = request;
 			}
 
-			// public <T> Flux<T> single(ParameterizedTypeReference<T> t) {
-			// return doSingleWithBeanOutputConverter(new BeanOutputConverter<T>(new
-			// ParameterizedTypeReference<>() {
-			// }));
-			// }
-
-			// private <T> Flux<T> doSingleWithBeanOutputConverter(BeanOutputConverter<T>
-			// boc) {
-			// var processedUserText = this.request.userText + System.lineSeparator() +
-			// System.lineSeparator()
-			// + "{format}";
-			// var chatResponse = doGetChatResponse(processedUserText, boc.getFormat());
-			// var stringResponse = chatResponse.getResult().getOutput().getContent();
-			// return boc.convert(stringResponse);
-			// }
-
-			// public <T> Flux<T> single(Class<T> clzz) {
-			// Assert.notNull(clzz, "the class must be non-null");
-			// var boc = new BeanOutputConverter<T>(clzz);
-			// return doSingleWithBeanOutputConverter(boc);
-			// }
-
-			// private Flux<ChatResponse> doGetFluxChatResponse(String processedUserText)
-			// {
-			// return this.doGetFluxChatResponse(processedUserText, "");
-			// }
-
 			private Flux<ChatResponse> doGetFluxChatResponse(String processedUserText) {
 				Map<String, Object> userParams = new HashMap<>(this.request.userParams);
 
@@ -474,16 +446,6 @@ public interface ChatClient {
 					return r.getResult().getOutput().getContent();
 				}).filter(v -> StringUtils.hasText(v));
 			}
-
-			// @SuppressWarnings("unused")
-			// public <T> Collection<T> list(Class<T> clzz) {
-			// return single(new ParameterizedTypeReference<List<T>>() {
-			// });
-			// }
-
-			// public <T> Collection<T> list(ParameterizedTypeReference<List<T>> ptr) {
-			// return single(ptr);
-			// }
 
 		}
 
