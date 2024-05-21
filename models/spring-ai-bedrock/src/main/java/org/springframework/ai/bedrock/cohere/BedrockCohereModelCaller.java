@@ -114,4 +114,9 @@ public class BedrockCohereModelCaller implements ChatCaller, StreamingChatCaller
 		return request;
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return BedrockCohereChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

@@ -42,8 +42,8 @@ public class MiniMaxTestConfiguration {
 	}
 
 	@Bean
-	public MiniMaxChatClient miniMaxChatClient(MiniMaxApi api) {
-		return new MiniMaxChatClient(api);
+	public MiniMaxChatCaller miniMaxChatClient(MiniMaxApi api) {
+		return new MiniMaxChatCaller(api);
 	}
 
 	@Bean

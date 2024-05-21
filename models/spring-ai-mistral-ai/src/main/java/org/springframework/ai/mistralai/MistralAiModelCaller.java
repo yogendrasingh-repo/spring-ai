@@ -324,4 +324,9 @@ public class MistralAiModelCaller extends
 		return !CollectionUtils.isEmpty(choices.get(0).message().toolCalls());
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return MistralAiChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

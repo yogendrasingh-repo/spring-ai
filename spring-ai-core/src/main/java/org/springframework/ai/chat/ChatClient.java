@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 
 import reactor.core.publisher.Flux;
 
-import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -51,7 +50,7 @@ import org.springframework.util.StringUtils;
 // todo support plugging in a outputConverter at runtime
 // todo figure out stream and list methods
 
-/*
+/**
  * @author Mark Pollack
  * @author Christian Tzolov
  * @author Josh Long
@@ -206,7 +205,7 @@ public interface ChatClient {
 				ChatOptions chatOptions) {
 
 			this.caller = caller;
-			this.chatOptions = chatOptions;
+			this.chatOptions = chatOptions != null ? chatOptions : caller.getDefaultOptions();
 
 			this.userText = userText;
 			this.systemText = systemText;
@@ -229,10 +228,10 @@ public interface ChatClient {
 		public <I, O> ChatClientRequest function(String name, String description,
 				java.util.function.Function<I, O> function) {
 			var fcw = FunctionCallbackWrapper.builder(function)
-					.withDescription(description)
-					.withName(name)
-					.withResponseConverter(Object::toString)
-					.build();
+				.withDescription(description)
+				.withName(name)
+				.withResponseConverter(Object::toString)
+				.build();
 			this.functionCallbacks.add(fcw);
 			return this;
 		}
@@ -250,27 +249,32 @@ public interface ChatClient {
 		public ChatClientRequest system(Consumer<SystemSpec> consumer) {
 			var ss = new SystemSpec();
 			consumer.accept(ss);
-			this.systemText = ss.text();
+			this.systemText = StringUtils.hasText(ss.text()) ? ss.text() : this.systemText;
 			this.systemParams.putAll(ss.params());
+			return this;
+		}
+
+		public ChatClientRequest user(String text) {
+			this.userText = text;
 			return this;
 		}
 
 		public ChatClientRequest user(Consumer<UserSpec> consumer) {
 			var us = new UserSpec();
 			consumer.accept(us);
-			this.userText = us.text();
+			this.userText = StringUtils.hasText(us.text()) ? us.text() : this.userText;
 			this.userParams.putAll(us.params());
 			this.media.addAll(us.media());
 			return this;
 		}
 
-		public static class ChatResponseSpec {
+		public static class CollectResponseSpec {
 
 			private final ChatClientRequest request;
 
 			private final ChatCaller modelCaller;
 
-			public ChatResponseSpec(ChatCaller modelCaller, ChatClientRequest request) {
+			public CollectResponseSpec(ChatCaller modelCaller, ChatClientRequest request) {
 				this.modelCaller = modelCaller;
 				this.request = request;
 			}
@@ -353,8 +357,10 @@ public interface ChatClient {
 			}
 
 			public List<String> contents() {
-				return doGetChatResponse(this.request.userText).getResults().stream()
-						.map(r -> r.getOutput().getContent()).toList();
+				return doGetChatResponse(this.request.userText).getResults()
+					.stream()
+					.map(r -> r.getOutput().getContent())
+					.toList();
 			}
 
 			@SuppressWarnings("unused")
@@ -369,24 +375,27 @@ public interface ChatClient {
 
 		}
 
-		public static class ChatStreamResponseSpec {
+		public static class StreamResponseSpec {
 
 			private final ChatClientRequest request;
 
 			private final StreamingChatCaller modelCaller;
 
-			public ChatStreamResponseSpec(StreamingChatCaller modelCaller, ChatClientRequest request) {
+			public StreamResponseSpec(StreamingChatCaller modelCaller, ChatClientRequest request) {
 				this.modelCaller = modelCaller;
 				this.request = request;
 			}
 
 			// public <T> Flux<T> single(ParameterizedTypeReference<T> t) {
-			// return doSingleWithBeanOutputConverter(new BeanOutputConverter<T>(new ParameterizedTypeReference<>() {
+			// return doSingleWithBeanOutputConverter(new BeanOutputConverter<T>(new
+			// ParameterizedTypeReference<>() {
 			// }));
 			// }
 
-			// private <T> Flux<T> doSingleWithBeanOutputConverter(BeanOutputConverter<T> boc) {
-			// var processedUserText = this.request.userText + System.lineSeparator() + System.lineSeparator()
+			// private <T> Flux<T> doSingleWithBeanOutputConverter(BeanOutputConverter<T>
+			// boc) {
+			// var processedUserText = this.request.userText + System.lineSeparator() +
+			// System.lineSeparator()
 			// + "{format}";
 			// var chatResponse = doGetChatResponse(processedUserText, boc.getFormat());
 			// var stringResponse = chatResponse.getResult().getOutput().getContent();
@@ -399,15 +408,13 @@ public interface ChatClient {
 			// return doSingleWithBeanOutputConverter(boc);
 			// }
 
-			private Flux<ChatResponse> doGetChatResponse(String processedUserText) {
-				return this.doGetChatResponse(processedUserText, "");
-			}
+			// private Flux<ChatResponse> doGetFluxChatResponse(String processedUserText)
+			// {
+			// return this.doGetFluxChatResponse(processedUserText, "");
+			// }
 
-			private Flux<ChatResponse> doGetChatResponse(String processedUserText, String formatParam) {
+			private Flux<ChatResponse> doGetFluxChatResponse(String processedUserText) {
 				Map<String, Object> userParams = new HashMap<>(this.request.userParams);
-				if (StringUtils.hasText(formatParam)) {
-					userParams.put("format", formatParam);
-				}
 
 				var messages = new ArrayList<Message>();
 				var textsAreValid = (StringUtils.hasText(processedUserText)
@@ -450,21 +457,22 @@ public interface ChatClient {
 			}
 
 			public Flux<ChatResponse> chatResponse() {
-				return doGetChatResponse(this.request.userText);
+				return doGetFluxChatResponse(this.request.userText);
 			}
 
 			public Flux<String> content() {
-				return doGetChatResponse(this.request.userText)
-						.map(ChatResponse::getResult)
-						.map(Generation::getOutput)
-						.map(AssistantMessage::getContent);
-				// .map(r -> r.getResult().getOutput().getContent())
-				// .filter(v -> StringUtils.hasText(v));
-			}
-
-			public Flux<List<String>> contents() {
-				return doGetChatResponse(this.request.userText).map(r -> r.getResults().stream()
-						.map(rr -> rr.getOutput().getContent()).toList());
+				return doGetFluxChatResponse(this.request.userText)
+					// .map(ChatResponse::getResult)
+					// .map(Generation::getOutput)
+					// .map(AssistantMessage::getContent);
+					.map(r -> {
+						if (r.getResult() == null || r.getResult().getOutput() == null
+								|| r.getResult().getOutput().getContent() == null) {
+							return "";
+						}
+						return r.getResult().getOutput().getContent();
+					})
+					.filter(v -> StringUtils.hasText(v));
 			}
 
 			// @SuppressWarnings("unused")
@@ -479,12 +487,12 @@ public interface ChatClient {
 
 		}
 
-		public ChatResponseSpec chat() {
-			return new ChatResponseSpec(this.caller, this);
+		public CollectResponseSpec collect() {
+			return new CollectResponseSpec(this.caller, this);
 		}
 
-		public ChatStreamResponseSpec stream() {
-			return new ChatStreamResponseSpec((StreamingChatCaller) this.caller, this);
+		public StreamResponseSpec stream() {
+			return new StreamResponseSpec((StreamingChatCaller) this.caller, this);
 		}
 
 	}
@@ -505,7 +513,7 @@ public interface ChatClient {
 			return new DefaultChatClient(this.modelCaller, this.defaultRequest);
 		}
 
-		public ChatClientBuilder defaultChatOptions(ChatOptions chatOptions) {
+		public ChatClientBuilder defaultRuntimeOptions(ChatOptions chatOptions) {
 			this.defaultRequest.chatOptions(chatOptions);
 			return this;
 		}

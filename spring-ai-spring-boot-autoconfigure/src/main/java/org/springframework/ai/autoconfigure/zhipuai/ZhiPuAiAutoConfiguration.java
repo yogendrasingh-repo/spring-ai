@@ -18,7 +18,7 @@ package org.springframework.ai.autoconfigure.zhipuai;
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallbackContext;
-import org.springframework.ai.zhipuai.ZhiPuAiChatClient;
+import org.springframework.ai.zhipuai.ZhiPuAiChatCaller;
 import org.springframework.ai.zhipuai.ZhiPuAiEmbeddingClient;
 import org.springframework.ai.zhipuai.ZhiPuAiImageClient;
 import org.springframework.ai.zhipuai.api.ZhiPuAiApi;
@@ -53,7 +53,7 @@ public class ZhiPuAiAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = ZhiPuAiChatProperties.CONFIG_PREFIX, name = "enabled", havingValue = "true",
 			matchIfMissing = true)
-	public ZhiPuAiChatClient zhiPuAiChatClient(ZhiPuAiConnectionProperties commonProperties,
+	public ZhiPuAiChatCaller zhiPuAiChatClient(ZhiPuAiConnectionProperties commonProperties,
 			ZhiPuAiChatProperties chatProperties, RestClient.Builder restClientBuilder,
 			List<FunctionCallback> toolFunctionCallbacks, FunctionCallbackContext functionCallbackContext,
 			RetryTemplate retryTemplate, ResponseErrorHandler responseErrorHandler) {
@@ -65,7 +65,7 @@ public class ZhiPuAiAutoConfiguration {
 			chatProperties.getOptions().getFunctionCallbacks().addAll(toolFunctionCallbacks);
 		}
 
-		return new ZhiPuAiChatClient(zhiPuAiApi, chatProperties.getOptions(), functionCallbackContext, retryTemplate);
+		return new ZhiPuAiChatCaller(zhiPuAiApi, chatProperties.getOptions(), functionCallbackContext, retryTemplate);
 	}
 
 	@Bean

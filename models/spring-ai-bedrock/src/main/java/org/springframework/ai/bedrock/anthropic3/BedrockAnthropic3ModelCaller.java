@@ -15,6 +15,7 @@
  */
 package org.springframework.ai.bedrock.anthropic3;
 
+import org.springframework.ai.bedrock.anthropic.AnthropicChatOptions;
 import org.springframework.ai.bedrock.anthropic3.api.Anthropic3ChatBedrockApi;
 import org.springframework.ai.bedrock.anthropic3.api.Anthropic3ChatBedrockApi.AnthropicChatRequest;
 import org.springframework.ai.bedrock.anthropic3.api.Anthropic3ChatBedrockApi.AnthropicChatResponse;
@@ -185,6 +186,11 @@ public class BedrockAnthropic3ModelCaller implements ChatCaller, StreamingChatCa
 		else {
 			throw new IllegalArgumentException("Unsupported media data type: " + mediaData.getClass().getSimpleName());
 		}
+	}
+
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return Anthropic3ChatOptions.fromOptions(this.defaultOptions);
 	}
 
 }

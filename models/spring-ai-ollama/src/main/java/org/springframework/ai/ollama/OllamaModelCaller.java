@@ -205,4 +205,9 @@ public class OllamaModelCaller implements ChatCaller, StreamingChatCaller {
 		}
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return OllamaOptions.fromOptions(this.defaultOptions);
+	}
+
 }

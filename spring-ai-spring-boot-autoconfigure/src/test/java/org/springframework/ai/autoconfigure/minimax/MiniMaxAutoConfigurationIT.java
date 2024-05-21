@@ -24,7 +24,7 @@ import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.embedding.EmbeddingResponse;
-import org.springframework.ai.minimax.MiniMaxChatClient;
+import org.springframework.ai.minimax.MiniMaxChatCaller;
 import org.springframework.ai.minimax.MiniMaxEmbeddingClient;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
@@ -52,7 +52,7 @@ public class MiniMaxAutoConfigurationIT {
 	@Test
 	void generate() {
 		contextRunner.run(context -> {
-			MiniMaxChatClient client = context.getBean(MiniMaxChatClient.class);
+			MiniMaxChatCaller client = context.getBean(MiniMaxChatCaller.class);
 			String response = client.call("Hello");
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);
@@ -62,7 +62,7 @@ public class MiniMaxAutoConfigurationIT {
 	@Test
 	void generateStreaming() {
 		contextRunner.run(context -> {
-			MiniMaxChatClient client = context.getBean(MiniMaxChatClient.class);
+			MiniMaxChatCaller client = context.getBean(MiniMaxChatCaller.class);
 			Flux<ChatResponse> responseFlux = client.stream(new Prompt(new UserMessage("Hello")));
 			String response = responseFlux.collectList().block().stream().map(chatResponse -> {
 				return chatResponse.getResults().get(0).getOutput().getContent();

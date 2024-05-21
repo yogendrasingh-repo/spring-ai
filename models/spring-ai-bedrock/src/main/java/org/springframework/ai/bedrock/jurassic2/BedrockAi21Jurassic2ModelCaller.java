@@ -121,4 +121,9 @@ public class BedrockAi21Jurassic2ModelCaller implements ChatCaller {
 
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return BedrockAi21Jurassic2ChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

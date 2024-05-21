@@ -26,7 +26,7 @@ import org.springframework.ai.image.ImageMessage;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.retry.RetryUtils;
 import org.springframework.ai.retry.TransientAiException;
-import org.springframework.ai.zhipuai.ZhiPuAiChatClient;
+import org.springframework.ai.zhipuai.ZhiPuAiChatCaller;
 import org.springframework.ai.zhipuai.ZhiPuAiChatOptions;
 import org.springframework.ai.zhipuai.ZhiPuAiEmbeddingClient;
 import org.springframework.ai.zhipuai.ZhiPuAiEmbeddingOptions;
@@ -93,7 +93,7 @@ public class ZhiPuAiRetryTests {
 
 	private @Mock ZhiPuAiImageApi zhiPuAiImageApi;
 
-	private ZhiPuAiChatClient chatClient;
+	private ZhiPuAiChatCaller chatClient;
 
 	private ZhiPuAiEmbeddingClient embeddingClient;
 
@@ -105,7 +105,7 @@ public class ZhiPuAiRetryTests {
 		retryListener = new TestRetryListener();
 		retryTemplate.registerListener(retryListener);
 
-		chatClient = new ZhiPuAiChatClient(zhiPuAiApi, ZhiPuAiChatOptions.builder().build(), null, retryTemplate);
+		chatClient = new ZhiPuAiChatCaller(zhiPuAiApi, ZhiPuAiChatOptions.builder().build(), null, retryTemplate);
 		embeddingClient = new ZhiPuAiEmbeddingClient(zhiPuAiApi, MetadataMode.EMBED,
 				ZhiPuAiEmbeddingOptions.builder().build(), retryTemplate);
 		imageClient = new ZhiPuAiImageClient(zhiPuAiImageApi, ZhiPuAiImageOptions.builder().build(), retryTemplate);

@@ -457,4 +457,9 @@ public class AnthropicModelCaller extends
 				"Streaming (stream=true) is not yet supported. We plan to add streaming support in a future beta version.");
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return AnthropicChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

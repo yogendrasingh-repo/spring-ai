@@ -356,4 +356,22 @@ public class AzureOpenAiChatOptions implements FunctionCallingOptions, ChatOptio
 		this.functions = functions;
 	}
 
+	public static AzureOpenAiChatOptions fromOptions(AzureOpenAiChatOptions fromOptions) {
+		return builder().withDeploymentName(fromOptions.getDeploymentName())
+			.withFrequencyPenalty(
+					fromOptions.getFrequencyPenalty() != null ? fromOptions.getFrequencyPenalty().floatValue() : null)
+			.withLogitBias(fromOptions.getLogitBias())
+			.withMaxTokens(fromOptions.getMaxTokens())
+			.withN(fromOptions.getN())
+			.withPresencePenalty(
+					fromOptions.getPresencePenalty() != null ? fromOptions.getPresencePenalty().floatValue() : null)
+			.withStop(fromOptions.getStop())
+			.withTemperature(fromOptions.getTemperature())
+			.withTopP(fromOptions.getTopP())
+			.withUser(fromOptions.getUser())
+			.withFunctionCallbacks(fromOptions.getFunctionCallbacks())
+			.withFunctions(fromOptions.getFunctions())
+			.build();
+	}
+
 }

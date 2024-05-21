@@ -13,91 +13,87 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.ai.autoconfigure.minimax;
+package org.springframework.ai.autoconfigure.openai.tool;
+
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration;
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
-import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.minimax.MiniMaxChatCaller;
-import org.springframework.ai.minimax.MiniMaxChatOptions;
+import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallbackWrapper;
+import org.springframework.ai.openai.OpenAiModelCaller;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import reactor.core.publisher.Flux;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author Geng Rong
- */
-@EnabledIfEnvironmentVariable(named = "MINIMAX_API_KEY", matches = ".*")
-public class FunctionCallbackWrapperIT {
+@EnabledIfEnvironmentVariable(named = "OPENAI_API_KEY", matches = ".*")
+public class FunctionCallbackWrapper2IT {
 
 	private final Logger logger = LoggerFactory.getLogger(FunctionCallbackWrapperIT.class);
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withPropertyValues("spring.ai.minimax.apiKey=" + System.getenv("MINIMAX_API_KEY"))
+		.withPropertyValues("spring.ai.openai.apiKey=" + System.getenv("OPENAI_API_KEY"))
 		.withConfiguration(AutoConfigurations.of(SpringAiRetryAutoConfiguration.class,
-				RestClientAutoConfiguration.class, MiniMaxAutoConfiguration.class))
+				RestClientAutoConfiguration.class, OpenAiAutoConfiguration.class))
 		.withUserConfiguration(Config.class);
 
 	@Test
 	void functionCallTest() {
-		contextRunner.withPropertyValues("spring.ai.minimax.chat.options.model=abab6-chat").run(context -> {
+		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			MiniMaxChatCaller chatClient = context.getBean(MiniMaxChatCaller.class);
+			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
 
-			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
+			ChatClient chatClient = ChatClient.builder(caller)
+				.defaultFunctions("WeatherInfo")
+				.defaultUser(u -> u.text("What's the weather like in {cities}?"))
+				.build();
 
-			ChatResponse response = chatClient.call(
-					new Prompt(List.of(userMessage), MiniMaxChatOptions.builder().withFunction("WeatherInfo").build()));
+			String content = chatClient.call()
+				.user(u -> u.param("cities", "San Francisco, Tokyo, Paris"))
+				.collect()
+				.content();
 
-			logger.info("Response: {}", response);
+			logger.info("Response: {}", content);
 
-			assertThat(response.getResult().getOutput().getContent()).contains("30.0", "10.0", "15.0");
-
+			assertThat(content).containsAnyOf("30.0", "30");
+			assertThat(content).containsAnyOf("15.0", "15");
+			assertThat(content).containsAnyOf("10", "10");
 		});
 	}
 
 	@Test
 	void streamFunctionCallTest() {
-		contextRunner.withPropertyValues("spring.ai.minimax.chat.options.model=abab6-chat").run(context -> {
+		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			MiniMaxChatCaller chatClient = context.getBean(MiniMaxChatCaller.class);
+			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
 
-			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
-
-			Flux<ChatResponse> response = chatClient.stream(
-					new Prompt(List.of(userMessage), MiniMaxChatOptions.builder().withFunction("WeatherInfo").build()));
-
-			String content = response.collectList()
+			String content = ChatClient.builder(caller)
+				.build()
+				.call()
+				.functions("WeatherInfo")
+				.user(u -> u.text("What's the weather like in San Francisco, Tokyo, and Paris?"))
+				.stream()
+				.content()
+				.collectList()
 				.block()
 				.stream()
-				.map(ChatResponse::getResults)
-				.flatMap(List::stream)
-				.map(Generation::getOutput)
-				.map(AssistantMessage::getContent)
 				.collect(Collectors.joining());
+
 			logger.info("Response: {}", content);
 
 			assertThat(content).containsAnyOf("30.0", "30");
 			assertThat(content).containsAnyOf("10.0", "10");
 			assertThat(content).containsAnyOf("15.0", "15");
-
 		});
 	}
 

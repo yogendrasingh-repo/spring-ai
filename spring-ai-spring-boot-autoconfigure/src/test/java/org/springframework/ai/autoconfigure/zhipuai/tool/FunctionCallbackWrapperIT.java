@@ -28,7 +28,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallbackWrapper;
-import org.springframework.ai.zhipuai.ZhiPuAiChatClient;
+import org.springframework.ai.zhipuai.ZhiPuAiChatCaller;
 import org.springframework.ai.zhipuai.ZhiPuAiChatOptions;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
@@ -60,7 +60,7 @@ public class FunctionCallbackWrapperIT {
 	void functionCallTest() {
 		contextRunner.withPropertyValues("spring.ai.zhipuai.chat.options.model=glm-4").run(context -> {
 
-			ZhiPuAiChatClient chatClient = context.getBean(ZhiPuAiChatClient.class);
+			ZhiPuAiChatCaller chatClient = context.getBean(ZhiPuAiChatCaller.class);
 
 			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
 
@@ -78,7 +78,7 @@ public class FunctionCallbackWrapperIT {
 	void streamFunctionCallTest() {
 		contextRunner.withPropertyValues("spring.ai.zhipuai.chat.options.model=glm-4").run(context -> {
 
-			ZhiPuAiChatClient chatClient = context.getBean(ZhiPuAiChatClient.class);
+			ZhiPuAiChatCaller chatClient = context.getBean(ZhiPuAiChatCaller.class);
 
 			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
 

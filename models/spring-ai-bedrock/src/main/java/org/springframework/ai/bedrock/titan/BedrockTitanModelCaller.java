@@ -146,4 +146,9 @@ public class BedrockTitanModelCaller implements ChatCaller, StreamingChatCaller 
 		};
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return BedrockTitanChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

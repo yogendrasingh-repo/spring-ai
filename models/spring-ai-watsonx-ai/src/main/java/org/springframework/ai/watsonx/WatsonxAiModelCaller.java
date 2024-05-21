@@ -140,4 +140,9 @@ public class WatsonxAiModelCaller implements ChatCaller, StreamingChatCaller {
 		return WatsonxAiRequest.builder(convertedPrompt).withParameters(parameters).build();
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return WatsonxAiChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

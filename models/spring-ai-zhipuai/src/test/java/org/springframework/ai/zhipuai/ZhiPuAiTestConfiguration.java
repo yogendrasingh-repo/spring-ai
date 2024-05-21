@@ -48,8 +48,8 @@ public class ZhiPuAiTestConfiguration {
 	}
 
 	@Bean
-	public ZhiPuAiChatClient zhiPuAiChatClient(ZhiPuAiApi api) {
-		return new ZhiPuAiChatClient(api);
+	public ZhiPuAiChatCaller zhiPuAiChatClient(ZhiPuAiApi api) {
+		return new ZhiPuAiChatCaller(api);
 	}
 
 	@Bean

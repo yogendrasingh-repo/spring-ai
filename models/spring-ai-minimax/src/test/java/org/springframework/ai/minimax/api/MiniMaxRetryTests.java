@@ -22,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.MetadataMode;
-import org.springframework.ai.minimax.MiniMaxChatClient;
+import org.springframework.ai.minimax.MiniMaxChatCaller;
 import org.springframework.ai.minimax.MiniMaxChatOptions;
 import org.springframework.ai.minimax.MiniMaxEmbeddingClient;
 import org.springframework.ai.minimax.MiniMaxEmbeddingOptions;
@@ -83,7 +83,7 @@ public class MiniMaxRetryTests {
 
 	private @Mock MiniMaxApi miniMaxApi;
 
-	private MiniMaxChatClient chatClient;
+	private MiniMaxChatCaller chatClient;
 
 	private MiniMaxEmbeddingClient embeddingClient;
 
@@ -93,7 +93,7 @@ public class MiniMaxRetryTests {
 		retryListener = new TestRetryListener();
 		retryTemplate.registerListener(retryListener);
 
-		chatClient = new MiniMaxChatClient(miniMaxApi, MiniMaxChatOptions.builder().build(), null, retryTemplate);
+		chatClient = new MiniMaxChatCaller(miniMaxApi, MiniMaxChatOptions.builder().build(), null, retryTemplate);
 		embeddingClient = new MiniMaxEmbeddingClient(miniMaxApi, MetadataMode.EMBED,
 				MiniMaxEmbeddingOptions.builder().build(), retryTemplate);
 	}

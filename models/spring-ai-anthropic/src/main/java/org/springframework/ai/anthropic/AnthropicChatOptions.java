@@ -223,4 +223,17 @@ public class AnthropicChatOptions implements ChatOptions, FunctionCallingOptions
 		this.functions = functions;
 	}
 
+	public static AnthropicChatOptions fromOptions(AnthropicChatOptions fromOptions) {
+		return builder().withModel(fromOptions.getModel())
+			.withMaxTokens(fromOptions.getMaxTokens())
+			.withMetadata(fromOptions.getMetadata())
+			.withStopSequences(fromOptions.getStopSequences())
+			.withTemperature(fromOptions.getTemperature())
+			.withTopP(fromOptions.getTopP())
+			.withTopK(fromOptions.getTopK())
+			.withFunctionCallbacks(fromOptions.getFunctionCallbacks())
+			.withFunctions(fromOptions.getFunctions())
+			.build();
+	}
+
 }

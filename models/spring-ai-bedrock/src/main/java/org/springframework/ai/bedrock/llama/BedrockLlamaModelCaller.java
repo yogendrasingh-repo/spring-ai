@@ -130,4 +130,9 @@ public class BedrockLlamaModelCaller implements ChatCaller, StreamingChatCaller 
 		return request;
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return BedrockLlamaChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

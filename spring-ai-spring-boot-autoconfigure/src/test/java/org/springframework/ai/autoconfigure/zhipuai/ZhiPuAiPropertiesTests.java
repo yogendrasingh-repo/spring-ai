@@ -20,7 +20,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
 import org.springframework.ai.model.ModelOptionsUtils;
-import org.springframework.ai.zhipuai.ZhiPuAiChatClient;
+import org.springframework.ai.zhipuai.ZhiPuAiChatCaller;
 import org.springframework.ai.zhipuai.ZhiPuAiEmbeddingClient;
 import org.springframework.ai.zhipuai.ZhiPuAiImageClient;
 import org.springframework.ai.zhipuai.api.ZhiPuAiApi;
@@ -378,7 +378,7 @@ public class ZhiPuAiPropertiesTests {
 					RestClientAutoConfiguration.class, ZhiPuAiAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(ZhiPuAiChatProperties.class)).isNotEmpty();
-				assertThat(context.getBeansOfType(ZhiPuAiChatClient.class)).isEmpty();
+				assertThat(context.getBeansOfType(ZhiPuAiChatCaller.class)).isEmpty();
 			});
 
 		new ApplicationContextRunner()
@@ -387,7 +387,7 @@ public class ZhiPuAiPropertiesTests {
 					RestClientAutoConfiguration.class, ZhiPuAiAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(ZhiPuAiChatProperties.class)).isNotEmpty();
-				assertThat(context.getBeansOfType(ZhiPuAiChatClient.class)).isNotEmpty();
+				assertThat(context.getBeansOfType(ZhiPuAiChatCaller.class)).isNotEmpty();
 			});
 
 		new ApplicationContextRunner()
@@ -397,7 +397,7 @@ public class ZhiPuAiPropertiesTests {
 					RestClientAutoConfiguration.class, ZhiPuAiAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(ZhiPuAiChatProperties.class)).isNotEmpty();
-				assertThat(context.getBeansOfType(ZhiPuAiChatClient.class)).isNotEmpty();
+				assertThat(context.getBeansOfType(ZhiPuAiChatCaller.class)).isNotEmpty();
 			});
 
 	}

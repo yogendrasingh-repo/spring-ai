@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 - 2024 the original author or authors.
+ * Copyright 2023 - 2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.ai.zhipuai;
+package org.springframework.ai.minimax;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,18 +26,11 @@ import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.minimax.api.MiniMaxApi;
+import org.springframework.ai.minimax.api.common.MiniMaxApiException;
 import org.springframework.ai.model.ModelOptionsUtils;
 import org.springframework.ai.model.function.AbstractFunctionCallSupport;
 import org.springframework.ai.model.function.FunctionCallbackContext;
-import org.springframework.ai.zhipuai.api.ZhiPuAiApi;
-import org.springframework.ai.zhipuai.api.ZhiPuAiApi.ChatCompletion;
-import org.springframework.ai.zhipuai.api.ZhiPuAiApi.ChatCompletion.Choice;
-import org.springframework.ai.zhipuai.api.ZhiPuAiApi.ChatCompletionFinishReason;
-import org.springframework.ai.zhipuai.api.ZhiPuAiApi.ChatCompletionMessage;
-import org.springframework.ai.zhipuai.api.ZhiPuAiApi.ChatCompletionMessage.MediaContent;
-import org.springframework.ai.zhipuai.api.ZhiPuAiApi.ChatCompletionMessage.Role;
-import org.springframework.ai.zhipuai.api.ZhiPuAiApi.ChatCompletionMessage.ToolCall;
-import org.springframework.ai.zhipuai.api.ZhiPuAiApi.ChatCompletionRequest;
 import org.springframework.ai.retry.RetryUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.support.RetryTemplate;
@@ -46,7 +39,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
 import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,71 +50,71 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@link ChatClient} and {@link StreamingChatCaller} implementation for
- * {@literal ZhiPuAI} backed by {@link ZhiPuAiApi}.
+ * {@literal MiniMax} backed by {@link MiniMaxApi}.
  *
  * @author Geng Rong
  * @see ChatClient
  * @see StreamingChatCaller
- * @see ZhiPuAiApi
+ * @see MiniMaxApi
  * @since 1.0.0 M1
  */
-public class ZhiPuAiChatClient extends
-		AbstractFunctionCallSupport<ChatCompletionMessage, ZhiPuAiApi.ChatCompletionRequest, ResponseEntity<ChatCompletion>>
+public class MiniMaxChatCaller extends
+		AbstractFunctionCallSupport<MiniMaxApi.ChatCompletionMessage, MiniMaxApi.ChatCompletionRequest, ResponseEntity<MiniMaxApi.ChatCompletion>>
 		implements ChatCaller, StreamingChatCaller {
 
-	private static final Logger logger = LoggerFactory.getLogger(ZhiPuAiChatClient.class);
+	private static final Logger logger = LoggerFactory.getLogger(MiniMaxChatCaller.class);
 
 	/**
 	 * The default options used for the chat completion requests.
 	 */
-	private ZhiPuAiChatOptions defaultOptions;
+	private MiniMaxChatOptions defaultOptions;
 
 	/**
-	 * The retry template used to retry the ZhiPuAI API calls.
+	 * The retry template used to retry the MiniMax API calls.
 	 */
 	public final RetryTemplate retryTemplate;
 
 	/**
-	 * Low-level access to the ZhiPuAI API.
+	 * Low-level access to the MiniMax API.
 	 */
-	private final ZhiPuAiApi zhiPuAiApi;
+	private final MiniMaxApi miniMaxApi;
 
 	/**
-	 * Creates an instance of the ZhiPuAiChatClient.
-	 * @param zhiPuAiApi The ZhiPuAiApi instance to be used for interacting with the
-	 * ZhiPuAI Chat API.
-	 * @throws IllegalArgumentException if zhiPuAiApi is null
+	 * Creates an instance of the MiniMaxChatClient.
+	 * @param miniMaxApi The MiniMaxApi instance to be used for interacting with the
+	 * MiniMax Chat API.
+	 * @throws IllegalArgumentException if MiniMaxApi is null
 	 */
-	public ZhiPuAiChatClient(ZhiPuAiApi zhiPuAiApi) {
-		this(zhiPuAiApi,
-				ZhiPuAiChatOptions.builder().withModel(ZhiPuAiApi.DEFAULT_CHAT_MODEL).withTemperature(0.7f).build());
+	public MiniMaxChatCaller(MiniMaxApi miniMaxApi) {
+		this(miniMaxApi,
+				MiniMaxChatOptions.builder().withModel(MiniMaxApi.DEFAULT_CHAT_MODEL).withTemperature(0.7f).build());
 	}
 
 	/**
-	 * Initializes an instance of the ZhiPuAiChatClient.
-	 * @param zhiPuAiApi The ZhiPuAiApi instance to be used for interacting with the
-	 * ZhiPuAI Chat API.
-	 * @param options The ZhiPuAiChatOptions to configure the chat client.
+	 * Initializes an instance of the MiniMaxChatClient.
+	 * @param miniMaxApi The MiniMaxApi instance to be used for interacting with the
+	 * MiniMax Chat API.
+	 * @param options The MiniMaxChatOptions to configure the chat client.
 	 */
-	public ZhiPuAiChatClient(ZhiPuAiApi zhiPuAiApi, ZhiPuAiChatOptions options) {
-		this(zhiPuAiApi, options, null, RetryUtils.DEFAULT_RETRY_TEMPLATE);
+	public MiniMaxChatCaller(MiniMaxApi miniMaxApi, MiniMaxChatOptions options) {
+		this(miniMaxApi, options, null, RetryUtils.DEFAULT_RETRY_TEMPLATE);
 	}
 
 	/**
-	 * Initializes a new instance of the ZhiPuAiChatClient.
-	 * @param zhiPuAiApi The ZhiPuAiApi instance to be used for interacting with the
-	 * ZhiPuAI Chat API.
-	 * @param options The ZhiPuAiChatOptions to configure the chat client.
+	 * Initializes a new instance of the MiniMaxChatClient.
+	 * @param miniMaxApi The MiniMaxApi instance to be used for interacting with the
+	 * MiniMax Chat API.
+	 * @param options The MiniMaxChatOptions to configure the chat client.
 	 * @param functionCallbackContext The function callback context.
 	 * @param retryTemplate The retry template.
 	 */
-	public ZhiPuAiChatClient(ZhiPuAiApi zhiPuAiApi, ZhiPuAiChatOptions options,
+	public MiniMaxChatCaller(MiniMaxApi miniMaxApi, MiniMaxChatOptions options,
 			FunctionCallbackContext functionCallbackContext, RetryTemplate retryTemplate) {
 		super(functionCallbackContext);
-		Assert.notNull(zhiPuAiApi, "ZhiPuAiApi must not be null");
+		Assert.notNull(miniMaxApi, "MiniMaxApi must not be null");
 		Assert.notNull(options, "Options must not be null");
 		Assert.notNull(retryTemplate, "RetryTemplate must not be null");
-		this.zhiPuAiApi = zhiPuAiApi;
+		this.miniMaxApi = miniMaxApi;
 		this.defaultOptions = options;
 		this.retryTemplate = retryTemplate;
 	}
@@ -130,16 +122,20 @@ public class ZhiPuAiChatClient extends
 	@Override
 	public ChatResponse call(Prompt prompt) {
 
-		ChatCompletionRequest request = createRequest(prompt, false);
+		MiniMaxApi.ChatCompletionRequest request = createRequest(prompt, false);
 
 		return this.retryTemplate.execute(ctx -> {
 
-			ResponseEntity<ChatCompletion> completionEntity = this.callWithFunctionSupport(request);
+			ResponseEntity<MiniMaxApi.ChatCompletion> completionEntity = this.callWithFunctionSupport(request);
 
 			var chatCompletion = completionEntity.getBody();
 			if (chatCompletion == null) {
 				logger.warn("No chat completion returned for prompt: {}", prompt);
 				return new ChatResponse(List.of());
+			}
+
+			if (chatCompletion.baseResponse() != null && chatCompletion.baseResponse().statusCode() != 0) {
+				throw new MiniMaxApiException(chatCompletion.baseResponse().message());
 			}
 
 			List<Generation> generations = chatCompletion.choices().stream().map(choice -> {
@@ -151,7 +147,7 @@ public class ZhiPuAiChatClient extends
 		});
 	}
 
-	private Map<String, Object> toMap(String id, ChatCompletion.Choice choice) {
+	private Map<String, Object> toMap(String id, MiniMaxApi.ChatCompletion.Choice choice) {
 		Map<String, Object> map = new HashMap<>();
 
 		var message = choice.message();
@@ -168,11 +164,11 @@ public class ZhiPuAiChatClient extends
 	@Override
 	public Flux<ChatResponse> stream(Prompt prompt) {
 
-		ChatCompletionRequest request = createRequest(prompt, true);
+		MiniMaxApi.ChatCompletionRequest request = createRequest(prompt, true);
 
 		return this.retryTemplate.execute(ctx -> {
 
-			Flux<ZhiPuAiApi.ChatCompletionChunk> completionChunks = this.zhiPuAiApi.chatCompletionStream(request);
+			Flux<MiniMaxApi.ChatCompletionChunk> completionChunks = this.miniMaxApi.chatCompletionStream(request);
 
 			// For chunked responses, only the first chunk contains the choice role.
 			// The rest of the chunks with same ID share the same role.
@@ -218,50 +214,45 @@ public class ZhiPuAiChatClient extends
 	 * @param chunk the ChatCompletionChunk to convert
 	 * @return the ChatCompletion
 	 */
-	private ZhiPuAiApi.ChatCompletion chunkToChatCompletion(ZhiPuAiApi.ChatCompletionChunk chunk) {
-		List<Choice> choices = chunk.choices()
-			.stream()
-			.map(cc -> new Choice(cc.finishReason(), cc.index(), cc.delta(), cc.logprobs()))
-			.toList();
+	private MiniMaxApi.ChatCompletion chunkToChatCompletion(MiniMaxApi.ChatCompletionChunk chunk) {
+		List<MiniMaxApi.ChatCompletion.Choice> choices = chunk.choices().stream().map(cc -> {
+			MiniMaxApi.ChatCompletionMessage delta = cc.delta();
+			if (delta == null) {
+				delta = new MiniMaxApi.ChatCompletionMessage("", MiniMaxApi.ChatCompletionMessage.Role.ASSISTANT);
+			}
+			return new MiniMaxApi.ChatCompletion.Choice(cc.finishReason(), cc.index(), delta, cc.logprobs());
+		}).toList();
 
-		return new ZhiPuAiApi.ChatCompletion(chunk.id(), choices, chunk.created(), chunk.model(),
-				chunk.systemFingerprint(), "chat.completion", null);
+		return new MiniMaxApi.ChatCompletion(chunk.id(), choices, chunk.created(), chunk.model(),
+				chunk.systemFingerprint(), "chat.completion", null, null);
 	}
 
 	/**
 	 * Accessible for testing.
 	 */
-	ChatCompletionRequest createRequest(Prompt prompt, boolean stream) {
+	MiniMaxApi.ChatCompletionRequest createRequest(Prompt prompt, boolean stream) {
 
 		Set<String> functionsForThisRequest = new HashSet<>();
 
-		List<ChatCompletionMessage> chatCompletionMessages = prompt.getInstructions().stream().map(m -> {
-			// Add text content.
-			List<MediaContent> contents = new ArrayList<>(List.of(new MediaContent(m.getContent())));
-			if (!CollectionUtils.isEmpty(m.getMedia())) {
-				// Add media content.
-				contents.addAll(m.getMedia()
-					.stream()
-					.map(media -> new MediaContent(
-							new MediaContent.ImageUrl(this.fromMediaData(media.getMimeType(), media.getData()))))
-					.toList());
-			}
+		List<MiniMaxApi.ChatCompletionMessage> chatCompletionMessages = prompt.getInstructions()
+			.stream()
+			.map(m -> new MiniMaxApi.ChatCompletionMessage(m.getContent(),
+					MiniMaxApi.ChatCompletionMessage.Role.valueOf(m.getMessageType().name())))
+			.toList();
 
-			return new ChatCompletionMessage(contents, ChatCompletionMessage.Role.valueOf(m.getMessageType().name()));
-		}).toList();
-
-		ChatCompletionRequest request = new ChatCompletionRequest(chatCompletionMessages, stream);
+		MiniMaxApi.ChatCompletionRequest request = new MiniMaxApi.ChatCompletionRequest(chatCompletionMessages, stream);
 
 		if (prompt.getOptions() != null) {
 			if (prompt.getOptions() instanceof ChatOptions runtimeOptions) {
-				ZhiPuAiChatOptions updatedRuntimeOptions = ModelOptionsUtils.copyToTarget(runtimeOptions,
-						ChatOptions.class, ZhiPuAiChatOptions.class);
+				MiniMaxChatOptions updatedRuntimeOptions = ModelOptionsUtils.copyToTarget(runtimeOptions,
+						ChatOptions.class, MiniMaxChatOptions.class);
 
 				Set<String> promptEnabledFunctions = this.handleFunctionCallbackConfigurations(updatedRuntimeOptions,
 						IS_RUNTIME_CALL);
 				functionsForThisRequest.addAll(promptEnabledFunctions);
 
-				request = ModelOptionsUtils.merge(updatedRuntimeOptions, request, ChatCompletionRequest.class);
+				request = ModelOptionsUtils.merge(updatedRuntimeOptions, request,
+						MiniMaxApi.ChatCompletionRequest.class);
 			}
 			else {
 				throw new IllegalArgumentException("Prompt options are not of type ChatOptions: "
@@ -276,51 +267,36 @@ public class ZhiPuAiChatClient extends
 
 			functionsForThisRequest.addAll(defaultEnabledFunctions);
 
-			request = ModelOptionsUtils.merge(request, this.defaultOptions, ChatCompletionRequest.class);
+			request = ModelOptionsUtils.merge(request, this.defaultOptions, MiniMaxApi.ChatCompletionRequest.class);
 		}
 
 		// Add the enabled functions definitions to the request's tools parameter.
 		if (!CollectionUtils.isEmpty(functionsForThisRequest)) {
 
 			request = ModelOptionsUtils.merge(
-					ZhiPuAiChatOptions.builder().withTools(this.getFunctionTools(functionsForThisRequest)).build(),
-					request, ChatCompletionRequest.class);
+					MiniMaxChatOptions.builder().withTools(this.getFunctionTools(functionsForThisRequest)).build(),
+					request, MiniMaxApi.ChatCompletionRequest.class);
 		}
 
 		return request;
 	}
 
-	private String fromMediaData(MimeType mimeType, Object mediaContentData) {
-		if (mediaContentData instanceof byte[] bytes) {
-			// Assume the bytes are an image. So, convert the bytes to a base64 encoded
-			// following the prefix pattern.
-			return String.format("data:%s;base64,%s", mimeType.toString(), Base64.getEncoder().encodeToString(bytes));
-		}
-		else if (mediaContentData instanceof String text) {
-			// Assume the text is a URLs or a base64 encoded image prefixed by the user.
-			return text;
-		}
-		else {
-			throw new IllegalArgumentException(
-					"Unsupported media data type: " + mediaContentData.getClass().getSimpleName());
-		}
-	}
-
-	private List<ZhiPuAiApi.FunctionTool> getFunctionTools(Set<String> functionNames) {
+	private List<MiniMaxApi.FunctionTool> getFunctionTools(Set<String> functionNames) {
 		return this.resolveFunctionCallbacks(functionNames).stream().map(functionCallback -> {
-			var function = new ZhiPuAiApi.FunctionTool.Function(functionCallback.getDescription(),
+			var function = new MiniMaxApi.FunctionTool.Function(functionCallback.getDescription(),
 					functionCallback.getName(), functionCallback.getInputTypeSchema());
-			return new ZhiPuAiApi.FunctionTool(function);
+			return new MiniMaxApi.FunctionTool(function);
 		}).toList();
 	}
 
 	@Override
-	protected ChatCompletionRequest doCreateToolResponseRequest(ChatCompletionRequest previousRequest,
-			ChatCompletionMessage responseMessage, List<ChatCompletionMessage> conversationHistory) {
+	protected MiniMaxApi.ChatCompletionRequest doCreateToolResponseRequest(
+			MiniMaxApi.ChatCompletionRequest previousRequest, MiniMaxApi.ChatCompletionMessage responseMessage,
+			List<MiniMaxApi.ChatCompletionMessage> conversationHistory) {
 
 		// Every tool-call item requires a separate function call and a response (TOOL)
 		// message.
-		for (ToolCall toolCall : responseMessage.toolCalls()) {
+		for (MiniMaxApi.ChatCompletionMessage.ToolCall toolCall : responseMessage.toolCalls()) {
 
 			var functionName = toolCall.function().name();
 			String functionArguments = toolCall.function().arguments();
@@ -332,40 +308,42 @@ public class ZhiPuAiChatClient extends
 			String functionResponse = this.functionCallbackRegister.get(functionName).call(functionArguments);
 
 			// Add the function response to the conversation.
-			conversationHistory
-				.add(new ChatCompletionMessage(functionResponse, Role.TOOL, functionName, toolCall.id(), null));
+			conversationHistory.add(new MiniMaxApi.ChatCompletionMessage(functionResponse,
+					MiniMaxApi.ChatCompletionMessage.Role.TOOL, functionName, toolCall.id(), null));
 		}
 
 		// Recursively call chatCompletionWithTools until the model doesn't call a
 		// functions anymore.
-		ChatCompletionRequest newRequest = new ChatCompletionRequest(conversationHistory, false);
-		newRequest = ModelOptionsUtils.merge(newRequest, previousRequest, ChatCompletionRequest.class);
+		MiniMaxApi.ChatCompletionRequest newRequest = new MiniMaxApi.ChatCompletionRequest(conversationHistory, false);
+		newRequest = ModelOptionsUtils.merge(newRequest, previousRequest, MiniMaxApi.ChatCompletionRequest.class);
 
 		return newRequest;
 	}
 
 	@Override
-	protected List<ChatCompletionMessage> doGetUserMessages(ChatCompletionRequest request) {
+	protected List<MiniMaxApi.ChatCompletionMessage> doGetUserMessages(MiniMaxApi.ChatCompletionRequest request) {
 		return request.messages();
 	}
 
 	@Override
-	protected ChatCompletionMessage doGetToolResponseMessage(ResponseEntity<ChatCompletion> chatCompletion) {
+	protected MiniMaxApi.ChatCompletionMessage doGetToolResponseMessage(
+			ResponseEntity<MiniMaxApi.ChatCompletion> chatCompletion) {
 		return chatCompletion.getBody().choices().iterator().next().message();
 	}
 
 	@Override
-	protected ResponseEntity<ChatCompletion> doChatCompletion(ChatCompletionRequest request) {
-		return this.zhiPuAiApi.chatCompletionEntity(request);
+	protected ResponseEntity<MiniMaxApi.ChatCompletion> doChatCompletion(MiniMaxApi.ChatCompletionRequest request) {
+		return this.miniMaxApi.chatCompletionEntity(request);
 	}
 
 	@Override
-	protected Flux<ResponseEntity<ChatCompletion>> doChatCompletionStream(ChatCompletionRequest request) {
+	protected Flux<ResponseEntity<MiniMaxApi.ChatCompletion>> doChatCompletionStream(
+			MiniMaxApi.ChatCompletionRequest request) {
 		throw new RuntimeException("Streaming Function calling is not supported");
 	}
 
 	@Override
-	protected boolean isToolFunctionCall(ResponseEntity<ChatCompletion> chatCompletion) {
+	protected boolean isToolFunctionCall(ResponseEntity<MiniMaxApi.ChatCompletion> chatCompletion) {
 		var body = chatCompletion.getBody();
 		if (body == null) {
 			return false;
@@ -377,8 +355,14 @@ public class ZhiPuAiChatClient extends
 		}
 
 		var choice = choices.get(0);
-		return !CollectionUtils.isEmpty(choice.message().toolCalls())
-				&& choice.finishReason() == ChatCompletionFinishReason.TOOL_CALLS;
+		var message = choice.message();
+		return message != null && !CollectionUtils.isEmpty(choice.message().toolCalls())
+				&& choice.finishReason() == MiniMaxApi.ChatCompletionFinishReason.TOOL_CALLS;
+	}
+
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return MiniMaxChatOptions.fromOptions(this.defaultOptions);
 	}
 
 }

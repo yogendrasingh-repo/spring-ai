@@ -15,6 +15,7 @@
  */
 package org.springframework.ai.chat;
 
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 
 import java.util.Arrays;
@@ -23,7 +24,7 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.model.ModelClient;
 
-@FunctionalInterface
+// @FunctionalInterface
 public interface ChatCaller extends ModelClient<Prompt, ChatResponse> {
 
 	default String call(String message) {
@@ -40,5 +41,7 @@ public interface ChatCaller extends ModelClient<Prompt, ChatResponse> {
 
 	@Override
 	ChatResponse call(Prompt prompt);
+
+	ChatOptions getDefaultOptions();
 
 }

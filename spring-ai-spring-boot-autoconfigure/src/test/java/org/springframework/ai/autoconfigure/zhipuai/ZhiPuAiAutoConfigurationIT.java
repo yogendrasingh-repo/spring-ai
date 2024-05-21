@@ -26,7 +26,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.embedding.EmbeddingResponse;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
-import org.springframework.ai.zhipuai.ZhiPuAiChatClient;
+import org.springframework.ai.zhipuai.ZhiPuAiChatCaller;
 import org.springframework.ai.zhipuai.ZhiPuAiEmbeddingClient;
 import org.springframework.ai.zhipuai.ZhiPuAiImageClient;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -55,7 +55,7 @@ public class ZhiPuAiAutoConfigurationIT {
 	@Test
 	void generate() {
 		contextRunner.run(context -> {
-			ZhiPuAiChatClient client = context.getBean(ZhiPuAiChatClient.class);
+			ZhiPuAiChatCaller client = context.getBean(ZhiPuAiChatCaller.class);
 			String response = client.call("Hello");
 			assertThat(response).isNotEmpty();
 			logger.info("Response: " + response);
@@ -65,7 +65,7 @@ public class ZhiPuAiAutoConfigurationIT {
 	@Test
 	void generateStreaming() {
 		contextRunner.run(context -> {
-			ZhiPuAiChatClient client = context.getBean(ZhiPuAiChatClient.class);
+			ZhiPuAiChatCaller client = context.getBean(ZhiPuAiChatCaller.class);
 			Flux<ChatResponse> responseFlux = client.stream(new Prompt(new UserMessage("Hello")));
 			String response = responseFlux.collectList().block().stream().map(chatResponse -> {
 				return chatResponse.getResults().get(0).getOutput().getContent();

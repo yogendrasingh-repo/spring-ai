@@ -117,4 +117,9 @@ public class BedrockAnthropicModelCaller implements ChatCaller, StreamingChatCal
 		return request;
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return AnthropicChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

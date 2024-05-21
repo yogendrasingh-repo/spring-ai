@@ -16,7 +16,7 @@
 package org.springframework.ai.autoconfigure.minimax;
 
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
-import org.springframework.ai.minimax.MiniMaxChatClient;
+import org.springframework.ai.minimax.MiniMaxChatCaller;
 import org.springframework.ai.minimax.MiniMaxEmbeddingClient;
 import org.springframework.ai.minimax.api.MiniMaxApi;
 import org.springframework.ai.model.function.FunctionCallback;
@@ -51,7 +51,7 @@ public class MiniMaxAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = MiniMaxChatProperties.CONFIG_PREFIX, name = "enabled", havingValue = "true",
 			matchIfMissing = true)
-	public MiniMaxChatClient miniMaxChatClient(MiniMaxConnectionProperties commonProperties,
+	public MiniMaxChatCaller miniMaxChatClient(MiniMaxConnectionProperties commonProperties,
 			MiniMaxChatProperties chatProperties, RestClient.Builder restClientBuilder,
 			List<FunctionCallback> toolFunctionCallbacks, FunctionCallbackContext functionCallbackContext,
 			RetryTemplate retryTemplate, ResponseErrorHandler responseErrorHandler) {
@@ -63,7 +63,7 @@ public class MiniMaxAutoConfiguration {
 			chatProperties.getOptions().getFunctionCallbacks().addAll(toolFunctionCallbacks);
 		}
 
-		return new MiniMaxChatClient(miniMaxApi, chatProperties.getOptions(), functionCallbackContext, retryTemplate);
+		return new MiniMaxChatCaller(miniMaxApi, chatProperties.getOptions(), functionCallbackContext, retryTemplate);
 	}
 
 	@Bean

@@ -139,7 +139,7 @@ public class MistralAiChatOptions implements FunctionCallingOptions, ChatOptions
 			return this;
 		}
 
-		public Builder withMaxToken(Integer maxTokens) {
+		public Builder withMaxTokens(Integer maxTokens) {
 			this.options.setMaxTokens(maxTokens);
 			return this;
 		}
@@ -307,6 +307,21 @@ public class MistralAiChatOptions implements FunctionCallingOptions, ChatOptions
 	public void setFunctions(Set<String> functions) {
 		Assert.notNull(functions, "Function must not be null");
 		this.functions = functions;
+	}
+
+	public static MistralAiChatOptions fromOptions(MistralAiChatOptions fromOptions) {
+		return builder().withModel(fromOptions.getModel())
+			.withMaxTokens(fromOptions.getMaxTokens())
+			.withSafePrompt(fromOptions.getSafePrompt())
+			.withRandomSeed(fromOptions.getRandomSeed())
+			.withTemperature(fromOptions.getTemperature())
+			.withTopP(fromOptions.getTopP())
+			.withResponseFormat(fromOptions.getResponseFormat())
+			.withTools(fromOptions.getTools())
+			.withToolChoice(fromOptions.getToolChoice())
+			.withFunctionCallbacks(fromOptions.getFunctionCallbacks())
+			.withFunctions(fromOptions.getFunctions())
+			.build();
 	}
 
 }

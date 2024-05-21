@@ -127,7 +127,7 @@ public class AzureOpenAiModelCaller
 	}
 
 	public AzureOpenAiChatOptions getDefaultOptions() {
-		return this.defaultOptions;
+		return AzureOpenAiChatOptions.fromOptions(this.defaultOptions);
 	}
 
 	@Override

@@ -394,4 +394,9 @@ public class OpenAiModelCaller extends
 				&& choice.finishReason() == ChatCompletionFinishReason.TOOL_CALLS;
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return OpenAiChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

@@ -25,7 +25,7 @@ import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.minimax.MiniMaxChatClient;
+import org.springframework.ai.minimax.MiniMaxChatCaller;
 import org.springframework.ai.minimax.MiniMaxChatOptions;
 import org.springframework.ai.model.function.FunctionCallingOptions;
 import org.springframework.ai.model.function.FunctionCallingOptionsBuilder.PortableFunctionCallingOptions;
@@ -61,7 +61,7 @@ class FunctionCallbackWithPlainFunctionBeanIT {
 	void functionCallTest() {
 		contextRunner.withPropertyValues("spring.ai.minimax.chat.options.model=abab6-chat").run(context -> {
 
-			MiniMaxChatClient chatClient = context.getBean(MiniMaxChatClient.class);
+			MiniMaxChatCaller chatClient = context.getBean(MiniMaxChatCaller.class);
 
 			// Test weatherFunction
 			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
@@ -88,7 +88,7 @@ class FunctionCallbackWithPlainFunctionBeanIT {
 	void functionCallWithPortableFunctionCallingOptions() {
 		contextRunner.withPropertyValues("spring.ai.minimax.chat.options.model=abab6-chat").run(context -> {
 
-			MiniMaxChatClient chatClient = context.getBean(MiniMaxChatClient.class);
+			MiniMaxChatCaller chatClient = context.getBean(MiniMaxChatCaller.class);
 
 			// Test weatherFunction
 			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
@@ -107,7 +107,7 @@ class FunctionCallbackWithPlainFunctionBeanIT {
 	void streamFunctionCallTest() {
 		contextRunner.withPropertyValues("spring.ai.minimax.chat.options.model=abab6-chat").run(context -> {
 
-			MiniMaxChatClient chatClient = context.getBean(MiniMaxChatClient.class);
+			MiniMaxChatCaller chatClient = context.getBean(MiniMaxChatCaller.class);
 
 			// Test weatherFunction
 			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");

@@ -478,4 +478,9 @@ public class VertexAiGeminiModelCaller
 		return response.getCandidatesList().get(0).getContent().getPartsList().get(0).hasFunctionCall();
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return VertexAiGeminiChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

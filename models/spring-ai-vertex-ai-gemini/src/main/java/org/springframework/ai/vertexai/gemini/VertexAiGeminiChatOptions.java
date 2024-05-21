@@ -336,4 +336,18 @@ public class VertexAiGeminiChatOptions implements FunctionCallingOptions, ChatOp
 		return true;
 	}
 
+	public static VertexAiGeminiChatOptions fromOptions(VertexAiGeminiChatOptions fromOptions) {
+		VertexAiGeminiChatOptions options = new VertexAiGeminiChatOptions();
+		options.setStopSequences(fromOptions.getStopSequences());
+		options.setTemperature(fromOptions.getTemperature());
+		options.setTopP(fromOptions.getTopP());
+		options.setTopK(fromOptions.getTopK());
+		options.setCandidateCount(fromOptions.getCandidateCount());
+		options.setMaxOutputTokens(fromOptions.getMaxOutputTokens());
+		options.setModel(fromOptions.getModel());
+		options.setFunctionCallbacks(fromOptions.getFunctionCallbacks());
+		options.setFunctions(fromOptions.getFunctions());
+		return options;
+	}
+
 }

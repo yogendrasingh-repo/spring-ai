@@ -111,4 +111,9 @@ public class VertexAiPaLm2ModelCaller implements ChatCaller {
 		return request;
 	}
 
+	@Override
+	public ChatOptions getDefaultOptions() {
+		return VertexAiPaLm2ChatOptions.fromOptions(this.defaultOptions);
+	}
+
 }

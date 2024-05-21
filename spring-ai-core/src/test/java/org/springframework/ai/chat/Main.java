@@ -17,7 +17,6 @@
 package org.springframework.ai.chat;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 
 import org.junit.jupiter.api.Test;
@@ -25,8 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
 /**
@@ -51,7 +48,7 @@ public class Main {
 
 		String response = client.call()
 			.user(u -> u.text("User text {music}").param("music", "Rock").media(MimeTypeUtils.IMAGE_PNG, url))
-			.chat()
+			.collect()
 			.single(String.class);
 
 	}
