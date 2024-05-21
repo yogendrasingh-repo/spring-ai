@@ -17,10 +17,12 @@ package org.springframework.ai.minimax;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -47,18 +49,18 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * {@link ChatClient} and {@link StreamingChatClient} implementation for
+ * {@link ChatClient} and {@link StreamingChatCaller} implementation for
  * {@literal MiniMax} backed by {@link MiniMaxApi}.
  *
  * @author Geng Rong
  * @see ChatClient
- * @see StreamingChatClient
+ * @see StreamingChatCaller
  * @see MiniMaxApi
  * @since 1.0.0 M1
  */
 public class MiniMaxChatClient extends
 		AbstractFunctionCallSupport<MiniMaxApi.ChatCompletionMessage, MiniMaxApi.ChatCompletionRequest, ResponseEntity<MiniMaxApi.ChatCompletion>>
-		implements ChatClient, StreamingChatClient {
+		implements ChatCaller, StreamingChatCaller {
 
 	private static final Logger logger = LoggerFactory.getLogger(MiniMaxChatClient.class);
 

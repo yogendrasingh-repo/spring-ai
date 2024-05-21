@@ -17,10 +17,12 @@ package org.springframework.ai.zhipuai;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.ai.chat.ChatCaller;
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
-import org.springframework.ai.chat.StreamingChatClient;
+import org.springframework.ai.chat.StreamingChatCaller;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -55,18 +57,18 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * {@link ChatClient} and {@link StreamingChatClient} implementation for
+ * {@link ChatClient} and {@link StreamingChatCaller} implementation for
  * {@literal ZhiPuAI} backed by {@link ZhiPuAiApi}.
  *
  * @author Geng Rong
  * @see ChatClient
- * @see StreamingChatClient
+ * @see StreamingChatCaller
  * @see ZhiPuAiApi
  * @since 1.0.0 M1
  */
 public class ZhiPuAiChatClient extends
 		AbstractFunctionCallSupport<ChatCompletionMessage, ZhiPuAiApi.ChatCompletionRequest, ResponseEntity<ChatCompletion>>
-		implements ChatClient, StreamingChatClient {
+		implements ChatCaller, StreamingChatCaller {
 
 	private static final Logger logger = LoggerFactory.getLogger(ZhiPuAiChatClient.class);
 
