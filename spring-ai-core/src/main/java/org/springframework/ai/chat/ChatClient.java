@@ -64,7 +64,7 @@ public interface ChatClient {
 
 	ChatResponse call(Prompt prompt);
 
-	ChatClientRequest call();
+	ChatClientRequest prompt();
 
 	interface PromptSpec<T> {
 
@@ -268,18 +268,18 @@ public interface ChatClient {
 			return this;
 		}
 
-		public static class CollectResponseSpec {
+		public static class CallResponseSpec {
 
 			private final ChatClientRequest request;
 
 			private final ChatCaller modelCaller;
 
-			public CollectResponseSpec(ChatCaller modelCaller, ChatClientRequest request) {
+			public CallResponseSpec(ChatCaller modelCaller, ChatClientRequest request) {
 				this.modelCaller = modelCaller;
 				this.request = request;
 			}
 
-			public <T> T single(ParameterizedTypeReference<T> t) {
+			public <T> T single(ParameterizedTypeReference<T> type) {
 				return doSingleWithBeanOutputConverter(new BeanOutputConverter<T>(new ParameterizedTypeReference<>() {
 				}));
 			}
@@ -292,9 +292,9 @@ public interface ChatClient {
 				return boc.convert(stringResponse);
 			}
 
-			public <T> T single(Class<T> clzz) {
-				Assert.notNull(clzz, "the class must be non-null");
-				var boc = new BeanOutputConverter<T>(clzz);
+			public <T> T single(Class<T> type) {
+				Assert.notNull(type, "the class must be non-null");
+				var boc = new BeanOutputConverter<T>(type);
 				return doSingleWithBeanOutputConverter(boc);
 			}
 
@@ -462,9 +462,6 @@ public interface ChatClient {
 
 			public Flux<String> content() {
 				return doGetFluxChatResponse(this.request.userText)
-					// .map(ChatResponse::getResult)
-					// .map(Generation::getOutput)
-					// .map(AssistantMessage::getContent);
 					.map(r -> {
 						if (r.getResult() == null || r.getResult().getOutput() == null
 								|| r.getResult().getOutput().getContent() == null) {
@@ -487,8 +484,8 @@ public interface ChatClient {
 
 		}
 
-		public CollectResponseSpec collect() {
-			return new CollectResponseSpec(this.caller, this);
+		public CallResponseSpec call() {
+			return new CallResponseSpec(this.caller, this);
 		}
 
 		public StreamResponseSpec stream() {

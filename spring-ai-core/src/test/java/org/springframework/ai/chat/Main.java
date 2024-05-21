@@ -46,9 +46,9 @@ public class Main {
 			.defaultFunctions("function1")
 			.build();
 
-		String response = client.call()
+		String response = client.prompt()
 			.user(u -> u.text("User text {music}").param("music", "Rock").media(MimeTypeUtils.IMAGE_PNG, url))
-			.collect()
+			.call()
 			.single(String.class);
 
 	}

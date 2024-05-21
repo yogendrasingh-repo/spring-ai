@@ -62,13 +62,12 @@ class OpenAiChatClientIT extends AbstractIT {
 	@Test
 	void roleTest() {
 
-		ChatResponse response = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			.system(s -> s.text(systemTextResource).param("name", "Bob").param("voice", "pirate"))
-			.user(u -> u.text("Tell me about 3 famous pirates from the Golden Age of Piracy and what they did"))
-			.collect()
-			.chatResponse();
+		ChatResponse response = ChatClient.builder(modelCaller).build().prompt()
+				.system(s -> s.text(systemTextResource)
+						.param("name", "Bob")
+						.param("voice", "pirate"))
+				.user("Tell me about 3 famous pirates from the Golden Age of Piracy and what they did")
+				.call().chatResponse();
 
 		System.out.println(response);
 		// UserMessage userMessage = new UserMessage(
@@ -89,12 +88,10 @@ class OpenAiChatClientIT extends AbstractIT {
 	void listOutputConverter() {
 
 		// TODO: there is a problem here.
-		Collection<String> list = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			.user(u -> u.text("List five {subject}").param("subject", "ice cream flavors"))
-			.collect()
-			.list(String.class);
+		Collection<String> list = ChatClient.builder(modelCaller).build().prompt()
+				.user(u -> u.text("List five {subject}")
+						.param("subject", "ice cream flavors"))
+				.call().list(String.class);
 
 		// DefaultConversionService conversionService = new DefaultConversionService();
 		// ListOutputConverter outputConverter = new
@@ -119,14 +116,11 @@ class OpenAiChatClientIT extends AbstractIT {
 	@Test
 	void mapOutputConverter() {
 
-		Map<String, Object> result = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			.user(u -> u.text("Provide me a List of {subject}")
-				.param("subject", "an array of numbers from 1 to 9 under they key name 'numbers'"))
-			.collect()
-			.single(new ParameterizedTypeReference<Map<String, Object>>() {
-			});
+		Map<String, Object> result = ChatClient.builder(modelCaller).build().prompt()
+				.user(u -> u.text("Provide me a List of {subject}")
+						.param("subject", "an array of numbers from 1 to 9 under they key name 'numbers'"))
+				.call().single(new ParameterizedTypeReference<Map<String, Object>>() {
+				});
 
 		// MapOutputConverter outputConverter = new MapOutputConverter();
 
@@ -149,12 +143,10 @@ class OpenAiChatClientIT extends AbstractIT {
 	@Test
 	void beanOutputConverter() {
 
-		ActorsFilms actorsFilms = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			.user(u -> u.text("Generate the filmography for a random actor."))
-			.collect()
-			.single(ActorsFilms.class);
+		ActorsFilms actorsFilms = ChatClient.builder(modelCaller).build().prompt()
+				.user("Generate the filmography for a random actor.")
+				.call()
+				.single(ActorsFilms.class);
 
 		// BeanOutputConverter<ActorsFilms> outputConverter = new
 		// BeanOutputConverter<>(ActorsFilms.class);
@@ -181,12 +173,10 @@ class OpenAiChatClientIT extends AbstractIT {
 	@Test
 	void beanOutputConverterRecords() {
 
-		ActorsFilmsRecord actorsFilms = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			.user(u -> u.text("Generate the filmography of 5 movies for Tom Hanks."))
-			.collect()
-			.single(ActorsFilmsRecord.class);
+		ActorsFilmsRecord actorsFilms = ChatClient.builder(modelCaller).build().prompt()
+				.user("Generate the filmography of 5 movies for Tom Hanks.")
+				.call()
+				.single(ActorsFilmsRecord.class);
 
 		// BeanOutputConverter<ActorsFilmsRecord> outputConverter = new
 		// BeanOutputConverter<>(ActorsFilmsRecord.class);
@@ -213,22 +203,20 @@ class OpenAiChatClientIT extends AbstractIT {
 
 		BeanOutputConverter<ActorsFilmsRecord> outputConverter = new BeanOutputConverter<>(ActorsFilmsRecord.class);
 
-		Flux<ChatResponse> chatResponse = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			.user(u -> u
-				.text("Generate the filmography of 5 movies for Tom Hanks. " + System.lineSeparator() + "{format}")
-				.param("format", outputConverter.getFormat()))
-			.stream()
-			.chatResponse();
+		Flux<String> chatResponse = ChatClient.builder(modelCaller)
+				.build()
+				.prompt()
+				.user(u -> u
+						.text("Generate the filmography of 5 movies for Tom Hanks. " + System.lineSeparator()
+								+ "{format}")
+						.param("format", outputConverter.getFormat()))
+				.stream()
+				.content();
 
 		String generationTextFromStream = chatResponse.collectList()
-			.block()
-			.stream()
-			.map(ChatResponse::getResult)
-			.map(Generation::getOutput)
-			.map(AssistantMessage::getContent)
-			.collect(Collectors.joining());
+				.block()
+				.stream()
+				.collect(Collectors.joining());
 
 		// String generationTextFromStream = chatResponse.collectList()
 		// .block()
@@ -266,13 +254,11 @@ class OpenAiChatClientIT extends AbstractIT {
 	@Test
 	void functionCallTest() {
 
-		ChatResponse response = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			.user(u -> u.text("What's the weather like in San Francisco, Tokyo, and Paris?"))
-			.function("getCurrentWeather", "Get the weather in location", new MockWeatherService())
-			.collect()
-			.chatResponse();
+		String response = ChatClient.builder(modelCaller).build().prompt()
+				.user(u -> u.text("What's the weather like in San Francisco, Tokyo, and Paris?"))
+				.function("getCurrentWeather", "Get the weather in location", new MockWeatherService())
+				.call()
+				.content();
 
 		// UserMessage userMessage = new UserMessage("What's the weather like in San
 		// Francisco, Tokyo, and Paris?");
@@ -293,21 +279,19 @@ class OpenAiChatClientIT extends AbstractIT {
 
 		logger.info("Response: {}", response);
 
-		assertThat(response.getResult().getOutput().getContent()).containsAnyOf("30.0", "30");
-		assertThat(response.getResult().getOutput().getContent()).containsAnyOf("10.0", "10");
-		assertThat(response.getResult().getOutput().getContent()).containsAnyOf("15.0", "15");
+		assertThat(response).containsAnyOf("30.0", "30");
+		assertThat(response).containsAnyOf("10.0", "10");
+		assertThat(response).containsAnyOf("15.0", "15");
 	}
 
 	@Test
 	void streamFunctionCallTest() {
 
-		Flux<ChatResponse> response = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			.user(u -> u.text("What's the weather like in San Francisco, Tokyo, and Paris?"))
-			.function("getCurrentWeather", "Get the weather in location", new MockWeatherService())
-			.stream()
-			.chatResponse();
+		Flux<String> response = ChatClient.builder(modelCaller).build().prompt()
+				.user("What's the weather like in San Francisco, Tokyo, and Paris?")
+				.function("getCurrentWeather", "Get the weather in location", new MockWeatherService())
+				.stream()
+				.content();
 
 		// UserMessage userMessage = new UserMessage("What's the weather like in San
 		// Francisco, Tokyo, and Paris?");
@@ -328,13 +312,9 @@ class OpenAiChatClientIT extends AbstractIT {
 		// promptOptions));
 
 		String content = response.collectList()
-			.block()
-			.stream()
-			.map(ChatResponse::getResults)
-			.flatMap(List::stream)
-			.map(Generation::getOutput)
-			.map(AssistantMessage::getContent)
-			.collect(Collectors.joining());
+				.block()
+				.stream()
+				.collect(Collectors.joining());
 		logger.info("Response: {}", content);
 
 		assertThat(content).containsAnyOf("30.0", "30");
@@ -346,16 +326,14 @@ class OpenAiChatClientIT extends AbstractIT {
 	@ValueSource(strings = { "gpt-4-vision-preview", "gpt-4o" })
 	void multiModalityEmbeddedImage(String modelName) throws IOException {
 
-		ChatResponse response = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			// TODO consider adding model(...) method to ChatClient as a shortcut to
-			// OpenAiChatOptions.builder().withModel(modelName).build()
-			.options(OpenAiChatOptions.builder().withModel(modelName).build())
-			.user(u -> u.text("Explain what do you see on this picture?")
-				.media(MimeTypeUtils.IMAGE_PNG, new ClassPathResource("/test.png")))
-			.collect()
-			.chatResponse();
+		String response = ChatClient.builder(modelCaller).build().prompt()
+				// TODO consider adding model(...) method to ChatClient as a shortcut to
+				// OpenAiChatOptions.builder().withModel(modelName).build()
+				.options(OpenAiChatOptions.builder().withModel(modelName).build())
+				.user(u -> u.text("Explain what do you see on this picture?")
+						.media(MimeTypeUtils.IMAGE_PNG, new ClassPathResource("/test.png")))
+				.call()
+				.content();
 
 		// var imageData = new ClassPathResource("/test.png");
 
@@ -366,9 +344,9 @@ class OpenAiChatClientIT extends AbstractIT {
 		// .call(new Prompt(List.of(userMessage),
 		// OpenAiChatOptions.builder().withModel(modelName).build()));
 
-		logger.info(response.getResult().getOutput().getContent());
-		assertThat(response.getResult().getOutput().getContent()).contains("bananas", "apple");
-		assertThat(response.getResult().getOutput().getContent()).containsAnyOf("bowl", "basket");
+		logger.info(response);
+		assertThat(response).contains("bananas", "apple");
+		assertThat(response).containsAnyOf("bowl", "basket");
 	}
 
 	@ParameterizedTest(name = "{0} : {displayName} ")
@@ -378,15 +356,15 @@ class OpenAiChatClientIT extends AbstractIT {
 		// TODO: add url method that wrapps the checked exception.
 		URL url = new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png");
 
-		ChatResponse response = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			// TODO consider adding model(...) method to ChatClient as a shortcut to
-			// OpenAiChatOptions.builder().withModel(modelName).build()
-			.options(OpenAiChatOptions.builder().withModel(modelName).build())
-			.user(u -> u.text("Explain what do you see on this picture?").media(MimeTypeUtils.IMAGE_PNG, url))
-			.collect()
-			.chatResponse();
+		String response = ChatClient.builder(modelCaller)
+				.build()
+				.prompt()
+				// TODO consider adding model(...) method to ChatClient as a shortcut to
+				// OpenAiChatOptions.builder().withModel(modelName).build()
+				.options(OpenAiChatOptions.builder().withModel(modelName).build())
+				.user(u -> u.text("Explain what do you see on this picture?").media(MimeTypeUtils.IMAGE_PNG, url))
+				.call()
+				.content();
 
 		// var userMessage = new UserMessage("Explain what do you see on this picture?",
 		// List
@@ -398,9 +376,9 @@ class OpenAiChatClientIT extends AbstractIT {
 		// .call(new Prompt(List.of(userMessage),
 		// OpenAiChatOptions.builder().withModel(modelName).build()));
 
-		logger.info(response.getResult().getOutput().getContent());
-		assertThat(response.getResult().getOutput().getContent()).contains("bananas", "apple");
-		assertThat(response.getResult().getOutput().getContent()).containsAnyOf("bowl", "basket");
+		logger.info(response);
+		assertThat(response).contains("bananas", "apple");
+		assertThat(response).containsAnyOf("bowl", "basket");
 	}
 
 	@Test
@@ -409,19 +387,16 @@ class OpenAiChatClientIT extends AbstractIT {
 		// TODO: add url method that wrapps the checked exception.
 		URL url = new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png");
 
-		Flux<ChatResponse> response = ChatClient.builder(modelCaller)
-			.build()
-			.call()
-			// TODO consider adding model(...) method to ChatClient as a shortcut to
-			// OpenAiChatOptions.builder().withModel(modelName).build()
-			.options(OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue()).build())
-			.user(u -> u.text("Explain what do you see on this picture?").media(MimeTypeUtils.IMAGE_PNG, url))
-			.stream()
-			.chatResponse();
+		Flux<String> response = ChatClient.builder(modelCaller).build().prompt()
+				.options(OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue())
+						.build())
+				.user(u -> u.text("Explain what do you see on this picture?")
+						.media(MimeTypeUtils.IMAGE_PNG, url))
+				.stream()
+				.content();
 
 		// var userMessage = new UserMessage("Explain what do you see on this picture?",
-		// List
-		// .of(new Media(MimeTypeUtils.IMAGE_PNG,
+		// List.of(new Media(MimeTypeUtils.IMAGE_PNG,
 		// new
 		// URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png"))));
 
@@ -429,14 +404,8 @@ class OpenAiChatClientIT extends AbstractIT {
 		// Prompt(List.of(userMessage),
 		// OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue()).build()));
 
-		String content = response.collectList()
-			.block()
-			.stream()
-			.map(ChatResponse::getResults)
-			.flatMap(List::stream)
-			.map(Generation::getOutput)
-			.map(AssistantMessage::getContent)
-			.collect(Collectors.joining());
+		String content = response.collectList().block().stream().collect(Collectors.joining());
+
 		logger.info("Response: {}", content);
 		assertThat(content).contains("bananas", "apple");
 		assertThat(content).containsAnyOf("bowl", "basket");
