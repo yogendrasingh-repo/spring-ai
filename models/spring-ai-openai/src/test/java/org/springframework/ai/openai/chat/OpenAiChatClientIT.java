@@ -199,11 +199,22 @@ class OpenAiChatClientIT extends AbstractIT {
 
 		BeanOutputConverter<ActorsFilmsRecord> outputConverter = new BeanOutputConverter<>(ActorsFilmsRecord.class);
 
-		Flux<ChatResponse> chatResponse = ChatClient.builder(modelCaller)
-				.build().call()
-				.user(u -> u.text("Generate the filmography of 5 movies for Tom Hanks. {format}")
+		Flux<ChatResponse> chatResponse = ChatClient.builder(modelCaller).build()
+				.call().user(u -> u.text("Generate the filmography of 5 movies for Tom Hanks. " + System.lineSeparator() + "{format}")
 						.param("format", outputConverter.getFormat()))
 				.stream().chatResponse();
+
+		String generationTextFromStream = chatResponse.collectList().block()
+				.stream()
+				.map(ChatResponse::getResult)
+				.map(Generation::getOutput)
+				.map(AssistantMessage::getContent)
+				.collect(Collectors.joining());
+
+		// String generationTextFromStream = chatResponse.collectList()
+		// .block()
+		// .stream()
+		// .collect(Collectors.joining());
 
 		// BeanOutputConverter<ActorsFilmsRecord> outputConverter = new BeanOutputConverter<>(ActorsFilmsRecord.class);
 
@@ -223,19 +234,6 @@ class OpenAiChatClientIT extends AbstractIT {
 		// .flatMap(List::stream)
 		// .map(Generation::getOutput)
 		// .map(AssistantMessage::getContent)
-		// .collect(Collectors.joining());
-
-		String generationTextFromStream = chatResponse.collectList()
-				.block()
-				.stream()
-				.map(ChatResponse::getResult)
-				.map(Generation::getOutput)
-				.map(AssistantMessage::getContent)
-				.collect(Collectors.joining());
-
-		// String generationTextFromStream = chatResponse.collectList()
-		// .block()
-		// .stream()
 		// .collect(Collectors.joining());
 
 		ActorsFilmsRecord actorsFilms = outputConverter.convert(generationTextFromStream);
@@ -388,17 +386,18 @@ class OpenAiChatClientIT extends AbstractIT {
 		Flux<ChatResponse> response = ChatClient.builder(modelCaller).build().call()
 				// TODO consider adding model(...) method to ChatClient as a shortcut to
 				// OpenAiChatOptions.builder().withModel(modelName).build()
-				.options(OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue()).build())
+				.options(OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue())
+						.build())
 				.user(u -> u.text("Explain what do you see on this picture?")
 						.media(MimeTypeUtils.IMAGE_PNG, url))
 				.stream().chatResponse();
 
 		// var userMessage = new UserMessage("Explain what do you see on this picture?", List
-		// 		.of(new Media(MimeTypeUtils.IMAGE_PNG,
-		// 				new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png"))));
+		// .of(new Media(MimeTypeUtils.IMAGE_PNG,
+		// new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png"))));
 
 		// Flux<ChatResponse> response = streamingChatClient.stream(new Prompt(List.of(userMessage),
-		// 		OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue()).build()));
+		// OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue()).build()));
 
 		String content = response.collectList()
 				.block()

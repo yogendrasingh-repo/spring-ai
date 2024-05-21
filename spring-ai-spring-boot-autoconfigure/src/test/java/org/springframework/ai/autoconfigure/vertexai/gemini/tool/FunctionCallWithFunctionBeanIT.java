@@ -74,7 +74,7 @@ class FunctionCallWithFunctionBeanIT {
 
 				ChatResponse response = chatClient.call(new Prompt(List.of(systemMessage, userMessage),
 						VertexAiGeminiChatOptions.builder().withFunction("weatherFunction").build()));
-				// ChatResponse response = modelCall.call(new
+				// ChatResponse response = modelCaller.call(new
 				// Prompt(List.of(userMessage),
 				// VertexAiGeminiChatOptions.builder().withFunction("weatherFunction").build()));
 

@@ -71,7 +71,7 @@ public class OpenAiPromptTransformingChatServiceIT {
 	@Container
 	static QdrantContainer qdrantContainer = new QdrantContainer("qdrant/qdrant:v1.9.2");
 
-	private final ChatCaller modelCall;
+	private final ChatCaller modelCaller;
 
 	private final VectorStore vectorStore;
 
@@ -81,9 +81,9 @@ public class OpenAiPromptTransformingChatServiceIT {
 	private ChatService chatService;
 
 	@Autowired
-	public OpenAiPromptTransformingChatServiceIT(ChatCaller modelCall, ChatService chatService,
+	public OpenAiPromptTransformingChatServiceIT(ChatCaller modelCaller, ChatService chatService,
 			VectorStore vectorStore) {
-		this.modelCall = modelCall;
+		this.modelCaller = modelCaller;
 		this.chatService = chatService;
 		this.vectorStore = vectorStore;
 	}
@@ -102,7 +102,7 @@ public class OpenAiPromptTransformingChatServiceIT {
 		OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder()
 			.withModel(GPT_4_TURBO_PREVIEW.getValue())
 			.build();
-		var relevancyEvaluator = new RelevancyEvaluator(this.modelCall, openAiChatOptions);
+		var relevancyEvaluator = new RelevancyEvaluator(this.modelCaller, openAiChatOptions);
 
 		EvaluationResponse evaluationResponse = relevancyEvaluator.evaluate(chatServiceResponse.toEvaluationRequest());
 		assertTrue(evaluationResponse.isPass(), "Response is not relevant to the question");
@@ -163,8 +163,8 @@ public class OpenAiPromptTransformingChatServiceIT {
 		}
 
 		@Bean
-		public ChatService chatService(ChatCaller modelCall, VectorStore vectorStore) {
-			return PromptTransformingChatService.builder(modelCall)
+		public ChatService chatService(ChatCaller modelCaller, VectorStore vectorStore) {
+			return PromptTransformingChatService.builder(modelCaller)
 				.withRetrievers(List.of(new VectorStoreRetriever(vectorStore, SearchRequest.defaults())))
 				.withAugmentors(List.of(new QuestionContextAugmentor()))
 				.build();

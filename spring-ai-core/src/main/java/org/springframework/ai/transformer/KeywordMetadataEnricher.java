@@ -43,18 +43,18 @@ public class KeywordMetadataEnricher implements DocumentTransformer {
 	/**
 	 * Model predictor
 	 */
-	private final ChatCaller modelCall;
+	private final ChatCaller modelCaller;
 
 	/**
 	 * The number of keywords to extract.
 	 */
 	private final int keywordCount;
 
-	public KeywordMetadataEnricher(ChatCaller modelCall, int keywordCount) {
-		Assert.notNull(modelCall, "ModelCall must not be null");
+	public KeywordMetadataEnricher(ChatCaller modelCaller, int keywordCount) {
+		Assert.notNull(modelCaller, "ModelCall must not be null");
 		Assert.isTrue(keywordCount >= 1, "Document count must be >= 1");
 
-		this.modelCall = modelCall;
+		this.modelCaller = modelCaller;
 		this.keywordCount = keywordCount;
 	}
 
@@ -64,7 +64,7 @@ public class KeywordMetadataEnricher implements DocumentTransformer {
 
 			var template = new PromptTemplate(String.format(KEYWORDS_TEMPLATE, keywordCount));
 			Prompt prompt = template.create(Map.of(CONTEXT_STR_PLACEHOLDER, document.getContent()));
-			String keywords = this.modelCall.call(prompt).getResult().getOutput().getContent();
+			String keywords = this.modelCaller.call(prompt).getResult().getOutput().getContent();
 			document.getMetadata().putAll(Map.of(EXCERPT_KEYWORDS_METADATA_KEY, keywords));
 		}
 		return documents;

@@ -57,19 +57,19 @@ class FunctionCallWithFunctionBeanIT {
 		contextRunner.withPropertyValues("spring.ai.azure.openai.chat.options..deployment-name=gpt-4-0125-preview")
 			.run(context -> {
 
-				ChatCaller modelCall = context.getBean(AzureOpenAiModelCaller.class);
+				ChatCaller modelCaller = context.getBean(AzureOpenAiModelCaller.class);
 
 				UserMessage userMessage = new UserMessage(
 						"What's the weather like in San Francisco, Paris and in Tokyo? Use Multi-turn function calling.");
 
-				ChatResponse response = modelCall.call(new Prompt(List.of(userMessage),
+				ChatResponse response = modelCaller.call(new Prompt(List.of(userMessage),
 						AzureOpenAiChatOptions.builder().withFunction("weatherFunction").build()));
 
 				logger.info("Response: {}", response);
 
 				assertThat(response.getResult().getOutput().getContent()).contains("30", "10", "15");
 
-				response = modelCall.call(new Prompt(List.of(userMessage),
+				response = modelCaller.call(new Prompt(List.of(userMessage),
 						AzureOpenAiChatOptions.builder().withFunction("weatherFunction3").build()));
 
 				logger.info("Response: {}", response);

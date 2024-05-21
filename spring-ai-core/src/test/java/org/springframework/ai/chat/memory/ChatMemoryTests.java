@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 public class ChatMemoryTests {
 
 	@Mock
-	ChatCaller modelCall;
+	ChatCaller modelCaller;
 
 	@Mock
 	StreamingChatCaller streamingChatClient;
@@ -61,7 +61,7 @@ public class ChatMemoryTests {
 
 		ChatMemory chatHistory = new InMemoryChatMemory();
 
-		PromptTransformingChatService chatService = PromptTransformingChatService.builder(modelCall)
+		PromptTransformingChatService chatService = PromptTransformingChatService.builder(modelCaller)
 			.withRetrievers(List.of(ChatMemoryRetriever.builder().withChatHistory(chatHistory).build()))
 			.withContentPostProcessors(
 					List.of(new LastMaxTokenSizeContentTransformer(new JTokkitTokenCountEstimator(), 10)))
@@ -77,7 +77,7 @@ public class ChatMemoryTests {
 
 		ChatMemory chatHistory = new InMemoryChatMemory();
 
-		PromptTransformingChatService chatService = PromptTransformingChatService.builder(modelCall)
+		PromptTransformingChatService chatService = PromptTransformingChatService.builder(modelCaller)
 			.withRetrievers(List.of(new ChatMemoryRetriever(chatHistory)))
 			.withContentPostProcessors(
 					List.of(new LastMaxTokenSizeContentTransformer(new JTokkitTokenCountEstimator(), 10)))
@@ -90,7 +90,7 @@ public class ChatMemoryTests {
 
 	public void chatClientUserMessages(PromptTransformingChatService chatService, ChatMemory chatHistory) {
 
-		when(modelCall.call(promptCaptor.capture()))
+		when(modelCaller.call(promptCaptor.capture()))
 				.thenReturn(new ChatResponse(List.of(new Generation("assistant:1"))))
 				.thenReturn(new ChatResponse(List.of(new Generation("assistant:2"))))
 				.thenReturn(new ChatResponse(List.of(new Generation("assistant:3"))));

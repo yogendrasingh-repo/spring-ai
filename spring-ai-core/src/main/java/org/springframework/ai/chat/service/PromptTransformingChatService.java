@@ -35,7 +35,7 @@ import java.util.Objects;
  */
 public class PromptTransformingChatService implements ChatService {
 
-	private ChatCaller modelCall;
+	private ChatCaller modelCaller;
 
 	private List<PromptTransformer> retrievers;
 
@@ -45,11 +45,11 @@ public class PromptTransformingChatService implements ChatService {
 
 	private List<ChatServiceListener> chatServiceListeners;
 
-	public PromptTransformingChatService(ChatCaller modelCall, List<PromptTransformer> retrievers,
+	public PromptTransformingChatService(ChatCaller modelCaller, List<PromptTransformer> retrievers,
 			List<PromptTransformer> documentPostProcessors, List<PromptTransformer> augmentors,
 			List<ChatServiceListener> chatServiceListeners) {
-		Objects.requireNonNull(modelCall, "modelCall must not be null");
-		this.modelCall = modelCall;
+		Objects.requireNonNull(modelCaller, "modelCaller must not be null");
+		this.modelCaller = modelCaller;
 		this.retrievers = retrievers;
 		this.documentPostProcessors = documentPostProcessors;
 		this.augmentors = augmentors;
@@ -86,7 +86,7 @@ public class PromptTransformingChatService implements ChatService {
 		}
 
 		// Perform generation
-		ChatResponse chatResponse = this.modelCall.call(chatServiceContext.getPrompt());
+		ChatResponse chatResponse = this.modelCaller.call(chatServiceContext.getPrompt());
 
 		// Invoke Listeners onComplete
 		ChatServiceResponse chatServiceResponse = new ChatServiceResponse(chatServiceContext, chatResponse);
@@ -98,7 +98,7 @@ public class PromptTransformingChatService implements ChatService {
 
 	public static class Builder {
 
-		private ChatCaller modelCall;
+		private ChatCaller modelCaller;
 
 		private List<PromptTransformer> retrievers = new ArrayList<>();
 
@@ -108,8 +108,8 @@ public class PromptTransformingChatService implements ChatService {
 
 		private List<ChatServiceListener> chatServiceListeners = new ArrayList<>();
 
-		public Builder withChatClient(ChatCaller modelCall) {
-			this.modelCall = modelCall;
+		public Builder withChatClient(ChatCaller modelCaller) {
+			this.modelCaller = modelCaller;
 			return this;
 		}
 
@@ -134,7 +134,7 @@ public class PromptTransformingChatService implements ChatService {
 		}
 
 		public PromptTransformingChatService build() {
-			return new PromptTransformingChatService(modelCall, retrievers, documentPostProcessors, augmentors,
+			return new PromptTransformingChatService(modelCaller, retrievers, documentPostProcessors, augmentors,
 					chatServiceListeners);
 		}
 

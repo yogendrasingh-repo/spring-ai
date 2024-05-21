@@ -268,10 +268,10 @@ public interface ChatClient {
 
 			private final ChatClientRequest request;
 
-			private final ChatCaller modelCall;
+			private final ChatCaller modelCaller;
 
-			public ChatResponseSpec(ChatCaller modelCall, ChatClientRequest request) {
-				this.modelCall = modelCall;
+			public ChatResponseSpec(ChatCaller modelCaller, ChatClientRequest request) {
+				this.modelCaller = modelCaller;
 				this.request = request;
 			}
 
@@ -341,7 +341,7 @@ public interface ChatClient {
 					}
 				}
 				var prompt = new Prompt(messages, this.request.chatOptions);
-				return this.modelCall.call(prompt);
+				return this.modelCaller.call(prompt);
 			}
 
 			public ChatResponse chatResponse() {
@@ -373,10 +373,10 @@ public interface ChatClient {
 
 			private final ChatClientRequest request;
 
-			private final StreamingChatCaller modelCall;
+			private final StreamingChatCaller modelCaller;
 
-			public ChatStreamResponseSpec(StreamingChatCaller modelCall, ChatClientRequest request) {
-				this.modelCall = modelCall;
+			public ChatStreamResponseSpec(StreamingChatCaller modelCaller, ChatClientRequest request) {
+				this.modelCaller = modelCaller;
 				this.request = request;
 			}
 
@@ -446,7 +446,7 @@ public interface ChatClient {
 					}
 				}
 				var prompt = new Prompt(messages, this.request.chatOptions);
-				return this.modelCall.stream(prompt);
+				return this.modelCaller.stream(prompt);
 			}
 
 			public Flux<ChatResponse> chatResponse() {
@@ -493,16 +493,16 @@ public interface ChatClient {
 
 		private final ChatClientRequest defaultRequest;
 
-		private final ChatCaller modelCall;
+		private final ChatCaller modelCaller;
 
-		ChatClientBuilder(ChatCaller modelCall) {
-			Assert.notNull(modelCall, "the " + ChatCaller.class.getName() + " must be non-null");
-			this.modelCall = modelCall;
-			this.defaultRequest = new ChatClientRequest(modelCall, "", "", List.of(), List.of(), List.of(), null);
+		ChatClientBuilder(ChatCaller modelCaller) {
+			Assert.notNull(modelCaller, "the " + ChatCaller.class.getName() + " must be non-null");
+			this.modelCaller = modelCaller;
+			this.defaultRequest = new ChatClientRequest(modelCaller, "", "", List.of(), List.of(), List.of(), null);
 		}
 
 		public ChatClient build() {
-			return new DefaultChatClient(this.modelCall, this.defaultRequest);
+			return new DefaultChatClient(this.modelCaller, this.defaultRequest);
 		}
 
 		public ChatClientBuilder defaultChatOptions(ChatOptions chatOptions) {

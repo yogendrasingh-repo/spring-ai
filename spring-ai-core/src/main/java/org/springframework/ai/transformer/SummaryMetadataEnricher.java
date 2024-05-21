@@ -62,7 +62,7 @@ public class SummaryMetadataEnricher implements DocumentTransformer {
 	/**
 	 * AI client.
 	 */
-	private final ChatCaller modelCall;
+	private final ChatCaller modelCaller;
 
 	/**
 	 * Number of documents from front to use for title extraction.
@@ -76,16 +76,16 @@ public class SummaryMetadataEnricher implements DocumentTransformer {
 	 */
 	private final String summaryTemplate;
 
-	public SummaryMetadataEnricher(ChatCaller modelCall, List<SummaryType> summaryTypes) {
-		this(modelCall, summaryTypes, DEFAULT_SUMMARY_EXTRACT_TEMPLATE, MetadataMode.ALL);
+	public SummaryMetadataEnricher(ChatCaller modelCaller, List<SummaryType> summaryTypes) {
+		this(modelCaller, summaryTypes, DEFAULT_SUMMARY_EXTRACT_TEMPLATE, MetadataMode.ALL);
 	}
 
-	public SummaryMetadataEnricher(ChatCaller modelCall, List<SummaryType> summaryTypes, String summaryTemplate,
+	public SummaryMetadataEnricher(ChatCaller modelCaller, List<SummaryType> summaryTypes, String summaryTemplate,
 			MetadataMode metadataMode) {
-		Assert.notNull(modelCall, "ModelCall must not be null");
+		Assert.notNull(modelCaller, "ModelCall must not be null");
 		Assert.hasText(summaryTemplate, "Summary template must not be empty");
 
-		this.modelCall = modelCall;
+		this.modelCaller = modelCaller;
 		this.summaryTypes = CollectionUtils.isEmpty(summaryTypes) ? List.of(SummaryType.CURRENT) : summaryTypes;
 		this.metadataMode = metadataMode;
 		this.summaryTemplate = summaryTemplate;
@@ -101,7 +101,7 @@ public class SummaryMetadataEnricher implements DocumentTransformer {
 
 			Prompt prompt = new PromptTemplate(this.summaryTemplate)
 				.create(Map.of(CONTEXT_STR_PLACEHOLDER, documentContext));
-			documentSummaries.add(this.modelCall.call(prompt).getResult().getOutput().getContent());
+			documentSummaries.add(this.modelCaller.call(prompt).getResult().getOutput().getContent());
 		}
 
 		for (int i = 0; i < documentSummaries.size(); i++) {

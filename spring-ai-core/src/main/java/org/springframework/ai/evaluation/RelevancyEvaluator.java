@@ -31,14 +31,14 @@ public class RelevancyEvaluator implements Evaluator {
 
 	private final ChatOptions chatOptions;
 
-	private ChatCaller modelCall;
+	private ChatCaller modelCaller;
 
-	public RelevancyEvaluator(ChatCaller modelCall) {
-		this(modelCall, ChatOptionsBuilder.builder().build());
+	public RelevancyEvaluator(ChatCaller modelCaller) {
+		this(modelCaller, ChatOptionsBuilder.builder().build());
 	}
 
-	public RelevancyEvaluator(ChatCaller modelCall, ChatOptions chatOptions) {
-		this.modelCall = modelCall;
+	public RelevancyEvaluator(ChatCaller modelCaller, ChatOptions chatOptions) {
+		this.modelCaller = modelCaller;
 		this.chatOptions = chatOptions;
 	}
 
@@ -52,7 +52,7 @@ public class RelevancyEvaluator implements Evaluator {
 		Message message = promptTemplate
 			.createMessage(Map.of("query", query, "response", response, "context", context));
 
-		ChatResponse chatResponse = this.modelCall.call(new Prompt(message, this.chatOptions));
+		ChatResponse chatResponse = this.modelCaller.call(new Prompt(message, this.chatOptions));
 
 		var evaluationResponse = chatResponse.getResult().getOutput().getContent();
 		boolean passing = false;

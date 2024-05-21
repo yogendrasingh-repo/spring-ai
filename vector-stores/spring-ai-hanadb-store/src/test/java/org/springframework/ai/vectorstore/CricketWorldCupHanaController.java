@@ -51,11 +51,11 @@ public class CricketWorldCupHanaController {
 
 	private final VectorStore hanaCloudVectorStore;
 
-	private final ChatCaller modelCall;
+	private final ChatCaller modelCaller;
 
 	@Autowired
-	public CricketWorldCupHanaController(ChatCaller modelCall, VectorStore hanaCloudVectorStore) {
-		this.modelCall = modelCall;
+	public CricketWorldCupHanaController(ChatCaller modelCaller, VectorStore hanaCloudVectorStore) {
+		this.modelCaller = modelCaller;
 		this.hanaCloudVectorStore = hanaCloudVectorStore;
 	}
 
@@ -88,7 +88,7 @@ public class CricketWorldCupHanaController {
 
 		var userMessage = new UserMessage(message);
 		Prompt prompt = new Prompt(List.of(similarDocsMessage, userMessage));
-		String generation = modelCall.call(prompt).getResult().getOutput().getContent();
+		String generation = modelCaller.call(prompt).getResult().getOutput().getContent();
 		logger.info("Generation: {}", generation);
 		return Map.of("generation", generation);
 	}
