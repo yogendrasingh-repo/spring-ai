@@ -54,10 +54,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @EnabledIfEnvironmentVariable(named = "AWS_ACCESS_KEY_ID", matches = ".*")
 @EnabledIfEnvironmentVariable(named = "AWS_SECRET_ACCESS_KEY", matches = ".*")
-class BedrockLlamaModelCallerIT {
+class BedrockLlamaChatModelIT {
 
 	@Autowired
-	private BedrockLlamaModelCaller client;
+	private BedrockLlamaChatModel chatModel;
 
 	@Value("classpath:/prompts/system-message.st")
 	private Resource systemResource;
@@ -65,8 +65,8 @@ class BedrockLlamaModelCallerIT {
 	@Test
 	void multipleStreamAttempts() {
 
-		Flux<ChatResponse> joke2Stream = client.stream(new Prompt(new UserMessage("Tell me a Toy joke?")));
-		Flux<ChatResponse> joke1Stream = client.stream(new Prompt(new UserMessage("Tell me a joke?")));
+		Flux<ChatResponse> joke2Stream = chatModel.stream(new Prompt(new UserMessage("Tell me a Toy joke?")));
+		Flux<ChatResponse> joke1Stream = chatModel.stream(new Prompt(new UserMessage("Tell me a joke?")));
 
 		String joke1 = joke1Stream.collectList()
 			.block()
@@ -98,7 +98,7 @@ class BedrockLlamaModelCallerIT {
 
 		Prompt prompt = new Prompt(List.of(userMessage, systemMessage));
 
-		ChatResponse response = client.call(prompt);
+		ChatResponse response = chatModel.call(prompt);
 
 		assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 	}
@@ -116,7 +116,7 @@ class BedrockLlamaModelCallerIT {
 		PromptTemplate promptTemplate = new PromptTemplate(template,
 				Map.of("subject", "ice cream flavors.", "format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = this.client.call(prompt).getResult();
+		Generation generation = this.chatModel.call(prompt).getResult();
 
 		List<String> list = outputConverter.convert(generation.getOutput().getContent());
 		assertThat(list).hasSize(5);
@@ -134,7 +134,7 @@ class BedrockLlamaModelCallerIT {
 		PromptTemplate promptTemplate = new PromptTemplate(template,
 				Map.of("subject", "an array of numbers from 1 to 9 under they key name 'numbers'", "format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = client.call(prompt).getResult();
+		Generation generation = chatModel.call(prompt).getResult();
 
 		Map<String, Object> result = outputConverter.convert(generation.getOutput().getContent());
 		assertThat(result.get("numbers")).isEqualTo(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
@@ -158,7 +158,7 @@ class BedrockLlamaModelCallerIT {
 				""";
 		PromptTemplate promptTemplate = new PromptTemplate(template, Map.of("format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
-		Generation generation = client.call(prompt).getResult();
+		Generation generation = chatModel.call(prompt).getResult();
 
 		ActorsFilmsRecord actorsFilms = outputConverter.convert(generation.getOutput().getContent());
 		assertThat(actorsFilms.actor()).isEqualTo("Tom Hanks");
@@ -179,7 +179,7 @@ class BedrockLlamaModelCallerIT {
 		PromptTemplate promptTemplate = new PromptTemplate(template, Map.of("format", format));
 		Prompt prompt = new Prompt(promptTemplate.createMessage());
 
-		String generationTextFromStream = client.stream(prompt)
+		String generationTextFromStream = chatModel.stream(prompt)
 			.collectList()
 			.block()
 			.stream()
@@ -206,8 +206,8 @@ class BedrockLlamaModelCallerIT {
 		}
 
 		@Bean
-		public BedrockLlamaModelCaller llamaChatClient(LlamaChatBedrockApi llamaApi) {
-			return new BedrockLlamaModelCaller(llamaApi,
+		public BedrockLlamaChatModel llamaChatModel(LlamaChatBedrockApi llamaApi) {
+			return new BedrockLlamaChatModel(llamaApi,
 					BedrockLlamaChatOptions.builder().withTemperature(0.5f).withMaxGenLen(100).withTopP(0.9f).build());
 		}
 

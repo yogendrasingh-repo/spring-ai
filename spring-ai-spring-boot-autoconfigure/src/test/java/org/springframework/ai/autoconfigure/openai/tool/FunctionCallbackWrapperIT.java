@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.openai.OpenAiModelCaller;
+import org.springframework.ai.openai.OpenAiChatModel;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration;
@@ -58,11 +58,11 @@ public class FunctionCallbackWrapperIT {
 	void functionCallTest() {
 		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
+			OpenAiChatModel chatModel = context.getBean(OpenAiChatModel.class);
 
 			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
 
-			ChatResponse response = caller.call(
+			ChatResponse response = chatModel.call(
 					new Prompt(List.of(userMessage), OpenAiChatOptions.builder().withFunction("WeatherInfo").build()));
 
 			logger.info("Response: {}", response);
@@ -76,11 +76,11 @@ public class FunctionCallbackWrapperIT {
 	void streamFunctionCallTest() {
 		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
+			OpenAiChatModel chatModel = context.getBean(OpenAiChatModel.class);
 
 			UserMessage userMessage = new UserMessage("What's the weather like in San Francisco, Tokyo, and Paris?");
 
-			Flux<ChatResponse> response = caller.stream(
+			Flux<ChatResponse> response = chatModel.stream(
 					new Prompt(List.of(userMessage), OpenAiChatOptions.builder().withFunction("WeatherInfo").build()));
 
 			String content = response.collectList()

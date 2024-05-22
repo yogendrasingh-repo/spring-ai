@@ -27,7 +27,7 @@ import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallbackWrapper;
-import org.springframework.ai.openai.OpenAiModelCaller;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -51,10 +51,10 @@ public class FunctionCallbackWrapper2IT {
 	void functionCallTest() {
 		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
+			OpenAiChatModel chatModel = context.getBean(OpenAiChatModel.class);
 
 			// @formatter:off
-			ChatClient chatClient = ChatClient.builder(caller)
+			ChatClient chatClient = ChatClient.builder(chatModel)
 				.defaultFunctions("WeatherInfo")
 				.defaultUser(u -> u.text("What's the weather like in {cities}?"))
 				.build();
@@ -76,10 +76,10 @@ public class FunctionCallbackWrapper2IT {
 	void streamFunctionCallTest() {
 		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
+			OpenAiChatModel chatModel = context.getBean(OpenAiChatModel.class);
 
 			// @formatter:off
-			String content = ChatClient.builder(caller).build().prompt()
+			String content = ChatClient.builder(chatModel).build().prompt()
 				.functions("WeatherInfo")
 				.user("What's the weather like in San Francisco, Tokyo, and Paris?")
 				.stream().content()

@@ -58,8 +58,8 @@ import org.springframework.util.StringUtils;
  */
 public interface ChatClient {
 
-	static ChatClientBuilder builder(ChatCaller caller) {
-		return new ChatClientBuilder(caller);
+	static ChatClientBuilder builder(ChatModel chatModel) {
+		return new ChatClientBuilder(chatModel);
 	}
 
 	ChatResponse call(Prompt prompt);
@@ -174,7 +174,7 @@ public interface ChatClient {
 
 	class ChatClientRequest {
 
-		private final ChatCaller caller;
+		private final ChatModel chatModel;
 
 		private String userText = "";
 
@@ -196,16 +196,16 @@ public interface ChatClient {
 
 		/* copy constructor */
 		ChatClientRequest(ChatClientRequest ccr) {
-			this(ccr.caller, ccr.userText, ccr.systemText, ccr.functionCallbacks, ccr.functionNames, ccr.media,
+			this(ccr.chatModel, ccr.userText, ccr.systemText, ccr.functionCallbacks, ccr.functionNames, ccr.media,
 					ccr.chatOptions);
 		}
 
-		public ChatClientRequest(ChatCaller caller, String userText, String systemText,
+		public ChatClientRequest(ChatModel chatModel, String userText, String systemText,
 				List<FunctionCallback> functionCallbacks, List<String> functionNames, List<Media> media,
 				ChatOptions chatOptions) {
 
-			this.caller = caller;
-			this.chatOptions = chatOptions != null ? chatOptions : caller.getDefaultOptions();
+			this.chatModel = chatModel;
+			this.chatOptions = chatOptions != null ? chatOptions : chatModel.getDefaultOptions();
 
 			this.userText = userText;
 			this.systemText = systemText;
@@ -277,10 +277,10 @@ public interface ChatClient {
 
 			private final ChatClientRequest request;
 
-			private final ChatCaller modelCaller;
+			private final ChatModel chatModel;
 
-			public CallResponseSpec(ChatCaller modelCaller, ChatClientRequest request) {
-				this.modelCaller = modelCaller;
+			public CallResponseSpec(ChatModel chatModel, ChatClientRequest request) {
+				this.chatModel = chatModel;
 				this.request = request;
 			}
 
@@ -349,7 +349,7 @@ public interface ChatClient {
 					}
 				}
 				var prompt = new Prompt(messages, this.request.chatOptions);
-				return this.modelCaller.call(prompt);
+				return this.chatModel.call(prompt);
 			}
 
 			public ChatResponse chatResponse() {
@@ -383,10 +383,10 @@ public interface ChatClient {
 
 			private final ChatClientRequest request;
 
-			private final StreamingChatCaller modelCaller;
+			private final StreamingChatModel chatModel;
 
-			public StreamResponseSpec(StreamingChatCaller modelCaller, ChatClientRequest request) {
-				this.modelCaller = modelCaller;
+			public StreamResponseSpec(StreamingChatModel chatModel, ChatClientRequest request) {
+				this.chatModel = chatModel;
 				this.request = request;
 			}
 
@@ -430,7 +430,7 @@ public interface ChatClient {
 					}
 				}
 				var prompt = new Prompt(messages, this.request.chatOptions);
-				return this.modelCaller.stream(prompt);
+				return this.chatModel.stream(prompt);
 			}
 
 			public Flux<ChatResponse> chatResponse() {
@@ -450,11 +450,11 @@ public interface ChatClient {
 		}
 
 		public CallResponseSpec call() {
-			return new CallResponseSpec(this.caller, this);
+			return new CallResponseSpec(this.chatModel, this);
 		}
 
 		public StreamResponseSpec stream() {
-			return new StreamResponseSpec((StreamingChatCaller) this.caller, this);
+			return new StreamResponseSpec((StreamingChatModel) this.chatModel, this);
 		}
 
 	}
@@ -463,16 +463,16 @@ public interface ChatClient {
 
 		private final ChatClientRequest defaultRequest;
 
-		private final ChatCaller modelCaller;
+		private final ChatModel chatModel;
 
-		ChatClientBuilder(ChatCaller modelCaller) {
-			Assert.notNull(modelCaller, "the " + ChatCaller.class.getName() + " must be non-null");
-			this.modelCaller = modelCaller;
-			this.defaultRequest = new ChatClientRequest(modelCaller, "", "", List.of(), List.of(), List.of(), null);
+		ChatClientBuilder(ChatModel chatModel) {
+			Assert.notNull(chatModel, "the " + ChatModel.class.getName() + " must be non-null");
+			this.chatModel = chatModel;
+			this.defaultRequest = new ChatClientRequest(chatModel, "", "", List.of(), List.of(), List.of(), null);
 		}
 
 		public ChatClient build() {
-			return new DefaultChatClient(this.modelCaller, this.defaultRequest);
+			return new DefaultChatClient(this.chatModel, this.defaultRequest);
 		}
 
 		public ChatClientBuilder defaultRuntimeOptions(ChatOptions chatOptions) {

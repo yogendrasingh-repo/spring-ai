@@ -44,20 +44,20 @@ import static org.mockito.Mockito.when;
 public class ChatClientTest {
 
 	@Mock
-	ChatCaller modelCaller;
+	ChatModel chatModel;
 
 	@Captor
 	ArgumentCaptor<Prompt> promptCaptor;
 
 	@BeforeEach
 	public void beforeAll() {
-		when(modelCaller.call(promptCaptor.capture()))
+		when(chatModel.call(promptCaptor.capture()))
 				.thenReturn(new ChatResponse(List.of(new Generation("response"))));
 	}
 
 	@Test
 	public void simpleUserPrompt() throws MalformedURLException {
-		assertThat(ChatClient.builder(modelCaller).build().prompt().user("User prompt").call().content())
+		assertThat(ChatClient.builder(chatModel).build().prompt().user("User prompt").call().content())
 			.isEqualTo("response");
 
 		Message userMessage = promptCaptor.getValue().getInstructions().get(0);
@@ -67,7 +67,7 @@ public class ChatClientTest {
 
 	@Test
 	public void simpleSystemPrompt() throws MalformedURLException {
-		String response = ChatClient.builder(modelCaller).build().prompt().system("System prompt").call().content();
+		String response = ChatClient.builder(chatModel).build().prompt().system("System prompt").call().content();
 
 		assertThat(response).isEqualTo("response");
 
@@ -87,12 +87,12 @@ public class ChatClientTest {
 	public void complexCall() throws MalformedURLException {
 
 		var options = FunctionCallingOptions.builder().build();
-		when(modelCaller.getDefaultOptions()).thenReturn(options);
+		when(chatModel.getDefaultOptions()).thenReturn(options);
 
 		var url = new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png");
 
 		// @formatter:off
-		ChatClient client = ChatClient.builder(modelCaller)
+		ChatClient client = ChatClient.builder(chatModel)
 				.defaultSystem("System text")
 				.defaultFunctions("function1")
 				.build();

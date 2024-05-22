@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration;
 import org.springframework.ai.autoconfigure.retry.SpringAiRetryAutoConfiguration;
 import org.springframework.ai.chat.ChatClient;
-import org.springframework.ai.openai.OpenAiModelCaller;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -47,16 +47,16 @@ public class FunctionCallbackInPrompt2IT {
 	void functionCallTest() {
 		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
+			OpenAiChatModel chatModel = context.getBean(OpenAiChatModel.class);
 
-			ChatClient chatClient = ChatClient.builder(caller).build();
+			ChatClient chatClient = ChatClient.builder(chatModel).build();
 
 			// @formatter:off
 			chatClient.prompt()
 					.user("Tell me a joke?")
 					.call().content();
 
-			String content = ChatClient.builder(caller).build().prompt()
+			String content = ChatClient.builder(chatModel).build().prompt()
 					.user("What's the weather like in San Francisco, Tokyo, and Paris?")
 					.function("CurrentWeatherService", "Get the weather in location", new MockWeatherService())
 					.call().content();
@@ -74,10 +74,10 @@ public class FunctionCallbackInPrompt2IT {
 	void functionCallTest2() {
 		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
+			OpenAiChatModel chatModel = context.getBean(OpenAiChatModel.class);
 
 			// @formatter:off
-			String content = ChatClient.builder(caller).build().prompt()
+			String content = ChatClient.builder(chatModel).build().prompt()
 					.user("What's the weather like in Amsterdam?")
 					.function("CurrentWeatherService", "Get the weather in location",
 							new Function<MockWeatherService.Request, String>() {
@@ -99,10 +99,10 @@ public class FunctionCallbackInPrompt2IT {
 
 		contextRunner.withPropertyValues("spring.ai.openai.chat.options.model=gpt-4-turbo-preview").run(context -> {
 
-			OpenAiModelCaller caller = context.getBean(OpenAiModelCaller.class);
+			OpenAiChatModel chatModel = context.getBean(OpenAiChatModel.class);
 
 			// @formatter:off
-			String content = ChatClient.builder(caller).build().prompt()
+			String content = ChatClient.builder(chatModel).build().prompt()
 					.user("What's the weather like in San Francisco, Tokyo, and Paris?")
 					.function("CurrentWeatherService", "Get the weather in location", new MockWeatherService())
 					.stream().content()

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
-import org.springframework.ai.bedrock.cohere.BedrockCohereModelCaller;
+import org.springframework.ai.bedrock.cohere.BedrockCohereChatModel;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import reactor.core.publisher.Flux;
@@ -72,8 +72,8 @@ public class BedrockCohereChatAutoConfigurationIT {
 	@Test
 	public void chatCompletion() {
 		contextRunner.run(context -> {
-			BedrockCohereModelCaller cohereChatClient = context.getBean(BedrockCohereModelCaller.class);
-			ChatResponse response = cohereChatClient.call(new Prompt(List.of(userMessage, systemMessage)));
+			BedrockCohereChatModel cohereChatModel = context.getBean(BedrockCohereChatModel.class);
+			ChatResponse response = cohereChatModel.call(new Prompt(List.of(userMessage, systemMessage)));
 			assertThat(response.getResult().getOutput().getContent()).contains("Blackbeard");
 		});
 	}
@@ -82,9 +82,9 @@ public class BedrockCohereChatAutoConfigurationIT {
 	public void chatCompletionStreaming() {
 		contextRunner.run(context -> {
 
-			BedrockCohereModelCaller cohereChatClient = context.getBean(BedrockCohereModelCaller.class);
+			BedrockCohereChatModel cohereChatModel = context.getBean(BedrockCohereChatModel.class);
 
-			Flux<ChatResponse> response = cohereChatClient.stream(new Prompt(List.of(userMessage, systemMessage)));
+			Flux<ChatResponse> response = cohereChatModel.stream(new Prompt(List.of(userMessage, systemMessage)));
 
 			List<ChatResponse> responses = response.collectList().block();
 			assertThat(responses.size()).isGreaterThan(2);
@@ -146,7 +146,7 @@ public class BedrockCohereChatAutoConfigurationIT {
 			.withConfiguration(AutoConfigurations.of(BedrockCohereChatAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(BedrockCohereChatProperties.class)).isEmpty();
-				assertThat(context.getBeansOfType(BedrockCohereModelCaller.class)).isEmpty();
+				assertThat(context.getBeansOfType(BedrockCohereChatModel.class)).isEmpty();
 			});
 
 		// Explicitly enable the chat auto-configuration.
@@ -154,7 +154,7 @@ public class BedrockCohereChatAutoConfigurationIT {
 			.withConfiguration(AutoConfigurations.of(BedrockCohereChatAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(BedrockCohereChatProperties.class)).isNotEmpty();
-				assertThat(context.getBeansOfType(BedrockCohereModelCaller.class)).isNotEmpty();
+				assertThat(context.getBeansOfType(BedrockCohereChatModel.class)).isNotEmpty();
 			});
 
 		// Explicitly disable the chat auto-configuration.
@@ -162,7 +162,7 @@ public class BedrockCohereChatAutoConfigurationIT {
 			.withConfiguration(AutoConfigurations.of(BedrockCohereChatAutoConfiguration.class))
 			.run(context -> {
 				assertThat(context.getBeansOfType(BedrockCohereChatProperties.class)).isEmpty();
-				assertThat(context.getBeansOfType(BedrockCohereModelCaller.class)).isEmpty();
+				assertThat(context.getBeansOfType(BedrockCohereChatModel.class)).isEmpty();
 			});
 	}
 

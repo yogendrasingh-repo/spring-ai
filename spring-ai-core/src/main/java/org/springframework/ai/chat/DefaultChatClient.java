@@ -10,12 +10,12 @@ import org.springframework.ai.chat.prompt.Prompt;
  */
 class DefaultChatClient implements ChatClient {
 
-	private final ChatCaller modelCaller;
+	private final ChatModel chatModel;
 
 	private final ChatClientRequest defaultChatClientRequest;
 
-	public DefaultChatClient(ChatCaller modelCaller, ChatClientRequest defaultChatClientRequest) {
-		this.modelCaller = modelCaller;
+	public DefaultChatClient(ChatModel chatModel, ChatClientRequest defaultChatClientRequest) {
+		this.chatModel = chatModel;
 		this.defaultChatClientRequest = defaultChatClientRequest;
 	}
 
@@ -32,7 +32,7 @@ class DefaultChatClient implements ChatClient {
 	@Deprecated(forRemoval = true, since = "1.0.0 M1")
 	@Override
 	public ChatResponse call(Prompt prompt) {
-		return this.modelCaller.call(prompt);
+		return this.chatModel.call(prompt);
 	}
 
 }

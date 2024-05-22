@@ -15,7 +15,7 @@
  */
 package org.springframework.ai.chat.service;
 
-import org.springframework.ai.chat.ChatCaller;
+import org.springframework.ai.chat.ChatModel;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.transformer.ChatServiceContext;
 import org.springframework.ai.chat.prompt.transformer.PromptTransformer;
@@ -35,7 +35,7 @@ import java.util.Objects;
  */
 public class PromptTransformingChatService implements ChatService {
 
-	private ChatCaller modelCaller;
+	private ChatModel chatModel;
 
 	private List<PromptTransformer> retrievers;
 
@@ -45,19 +45,19 @@ public class PromptTransformingChatService implements ChatService {
 
 	private List<ChatServiceListener> chatServiceListeners;
 
-	public PromptTransformingChatService(ChatCaller modelCaller, List<PromptTransformer> retrievers,
+	public PromptTransformingChatService(ChatModel chatModel, List<PromptTransformer> retrievers,
 			List<PromptTransformer> documentPostProcessors, List<PromptTransformer> augmentors,
 			List<ChatServiceListener> chatServiceListeners) {
-		Objects.requireNonNull(modelCaller, "modelCaller must not be null");
-		this.modelCaller = modelCaller;
+		Objects.requireNonNull(chatModel, "chatModel must not be null");
+		this.chatModel = chatModel;
 		this.retrievers = retrievers;
 		this.documentPostProcessors = documentPostProcessors;
 		this.augmentors = augmentors;
 		this.chatServiceListeners = chatServiceListeners;
 	}
 
-	public static Builder builder(ChatCaller modelCall) {
-		return new Builder().withChatClient(modelCall);
+	public static Builder builder(ChatModel chatModel) {
+		return new Builder().withChatModel(chatModel);
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class PromptTransformingChatService implements ChatService {
 		}
 
 		// Perform generation
-		ChatResponse chatResponse = this.modelCaller.call(chatServiceContext.getPrompt());
+		ChatResponse chatResponse = this.chatModel.call(chatServiceContext.getPrompt());
 
 		// Invoke Listeners onComplete
 		ChatServiceResponse chatServiceResponse = new ChatServiceResponse(chatServiceContext, chatResponse);
@@ -98,7 +98,7 @@ public class PromptTransformingChatService implements ChatService {
 
 	public static class Builder {
 
-		private ChatCaller modelCaller;
+		private ChatModel chatModel;
 
 		private List<PromptTransformer> retrievers = new ArrayList<>();
 
@@ -108,8 +108,8 @@ public class PromptTransformingChatService implements ChatService {
 
 		private List<ChatServiceListener> chatServiceListeners = new ArrayList<>();
 
-		public Builder withChatClient(ChatCaller modelCaller) {
-			this.modelCaller = modelCaller;
+		public Builder withChatModel(ChatModel chatModel) {
+			this.chatModel = chatModel;
 			return this;
 		}
 
@@ -134,7 +134,7 @@ public class PromptTransformingChatService implements ChatService {
 		}
 
 		public PromptTransformingChatService build() {
-			return new PromptTransformingChatService(modelCaller, retrievers, documentPostProcessors, augmentors,
+			return new PromptTransformingChatService(chatModel, retrievers, documentPostProcessors, augmentors,
 					chatServiceListeners);
 		}
 

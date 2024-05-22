@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.ChatClient;
+import org.springframework.ai.chat.ChatModel;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.openai.OpenAiChatOptions;
@@ -52,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EnabledIfEnvironmentVariable(named = "OPENAI_API_KEY", matches = ".+")
 class OpenAiChatClientIT extends AbstractIT {
 
-	private static final Logger logger = LoggerFactory.getLogger(OpenAiModelCallerIT.class);
+	private static final Logger logger = LoggerFactory.getLogger(OpenAiChatClientIT.class);
 
 	@Value("classpath:/prompts/system-message.st")
 	private Resource systemTextResource;
@@ -61,7 +62,7 @@ class OpenAiChatClientIT extends AbstractIT {
 	void roleTest() {
 
 		// @formatter:off
-		ChatResponse response = ChatClient.builder(modelCaller).build().prompt()
+		ChatResponse response = ChatClient.builder(chatModel).build().prompt()
 				.system(s -> s.text(systemTextResource)
 						.param("name", "Bob")
 						.param("voice", "pirate"))
@@ -78,7 +79,7 @@ class OpenAiChatClientIT extends AbstractIT {
 	@Test
 	void listOutputConverter() {
 		// @formatter:off
-		Collection<String> collection = ChatClient.builder(modelCaller).build().prompt()
+		Collection<String> collection = ChatClient.builder(chatModel).build().prompt()
 				.user(u -> u.text("List five {subject}")
 						.param("subject", "ice cream flavors"))
 				.call()
@@ -92,7 +93,7 @@ class OpenAiChatClientIT extends AbstractIT {
 	void listOutputConverter2() {
 
 		// @formatter:off
-		List<ActorsFilmsRecord> actorsFilms = ChatClient.builder(modelCaller).build().prompt()
+		List<ActorsFilmsRecord> actorsFilms = ChatClient.builder(chatModel).build().prompt()
 				.user("Generate the filmography of 5 movies for Tom Hanks and Bill Murray.")
 				.call()
 				.single(new ParameterizedTypeReference<List<ActorsFilmsRecord>>() {
@@ -108,7 +109,7 @@ class OpenAiChatClientIT extends AbstractIT {
 	void listOutputConverter3() {
 
 		// @formatter:off
-		Collection<ActorsFilmsRecord> actorsFilms = ChatClient.builder(modelCaller).build().prompt()
+		Collection<ActorsFilmsRecord> actorsFilms = ChatClient.builder(chatModel).build().prompt()
 				.user("Generate the filmography of 5 movies for Tom Hanks and Bill Murray.")
 				.call()
 				.list(ActorsFilmsRecord.class);
@@ -122,7 +123,7 @@ class OpenAiChatClientIT extends AbstractIT {
 	@Test
 	void mapOutputConverter() {
 		// @formatter:off
-		Map<String, Object> result = ChatClient.builder(modelCaller).build().prompt()
+		Map<String, Object> result = ChatClient.builder(chatModel).build().prompt()
 				.user(u -> u.text("Provide me a List of {subject}")
 						.param("subject", "an array of numbers from 1 to 9 under they key name 'numbers'"))
 				.call()
@@ -137,7 +138,7 @@ class OpenAiChatClientIT extends AbstractIT {
 	void beanOutputConverter() {
 
 		// @formatter:off
-		ActorsFilms actorsFilms = ChatClient.builder(modelCaller).build().prompt()
+		ActorsFilms actorsFilms = ChatClient.builder(chatModel).build().prompt()
 				.user("Generate the filmography for a random actor.")
 				.call()
 				.single(ActorsFilms.class);
@@ -154,7 +155,7 @@ class OpenAiChatClientIT extends AbstractIT {
 	void beanOutputConverterRecords() {
 
 		// @formatter:off
-		ActorsFilmsRecord actorsFilms = ChatClient.builder(modelCaller).build().prompt()
+		ActorsFilmsRecord actorsFilms = ChatClient.builder(chatModel).build().prompt()
 				.user("Generate the filmography of 5 movies for Tom Hanks.")
 				.call()
 				.single(ActorsFilmsRecord.class);
@@ -171,7 +172,7 @@ class OpenAiChatClientIT extends AbstractIT {
 		BeanOutputConverter<ActorsFilmsRecord> outputConverter = new BeanOutputConverter<>(ActorsFilmsRecord.class);
 
 		// @formatter:off
-		Flux<String> chatResponse = ChatClient.builder(modelCaller)
+		Flux<String> chatResponse = ChatClient.builder(chatModel)
 				.build()
 				.prompt()
 				.user(u -> u
@@ -198,7 +199,7 @@ class OpenAiChatClientIT extends AbstractIT {
 	void functionCallTest() {
 
 		// @formatter:off
-		String response = ChatClient.builder(modelCaller).build().prompt()
+		String response = ChatClient.builder(chatModel).build().prompt()
 				.user(u -> u.text("What's the weather like in San Francisco, Tokyo, and Paris?"))
 				.function("getCurrentWeather", "Get the weather in location", new MockWeatherService())
 				.call()
@@ -216,7 +217,7 @@ class OpenAiChatClientIT extends AbstractIT {
 	void streamFunctionCallTest() {
 
 		// @formatter:off
-		Flux<String> response = ChatClient.builder(modelCaller).build().prompt()
+		Flux<String> response = ChatClient.builder(chatModel).build().prompt()
 				.user("What's the weather like in San Francisco, Tokyo, and Paris?")
 				.function("getCurrentWeather", "Get the weather in location", new MockWeatherService())
 				.stream()
@@ -236,7 +237,7 @@ class OpenAiChatClientIT extends AbstractIT {
 	void multiModalityEmbeddedImage(String modelName) throws IOException {
 
 		// @formatter:off
-		String response = ChatClient.builder(modelCaller).build().prompt()
+		String response = ChatClient.builder(chatModel).build().prompt()
 				// TODO consider adding model(...) method to ChatClient as a shortcut to
 				// OpenAiChatOptions.builder().withModel(modelName).build()
 				.options(OpenAiChatOptions.builder().withModel(modelName).build())
@@ -259,7 +260,7 @@ class OpenAiChatClientIT extends AbstractIT {
 		URL url = new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png");
 
 		// @formatter:off
-		String response = ChatClient.builder(modelCaller).build().prompt()
+		String response = ChatClient.builder(chatModel).build().prompt()
 				// TODO consider adding model(...) method to ChatClient as a shortcut to
 				// OpenAiChatOptions.builder().withModel(modelName).build()
 				.options(OpenAiChatOptions.builder().withModel(modelName).build())
@@ -280,7 +281,7 @@ class OpenAiChatClientIT extends AbstractIT {
 		URL url = new URL("https://docs.spring.io/spring-ai/reference/1.0-SNAPSHOT/_images/multimodal.test.png");
 
 		// @formatter:off
-		Flux<String> response = ChatClient.builder(modelCaller).build().prompt()
+		Flux<String> response = ChatClient.builder(chatModel).build().prompt()
 				.options(OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_VISION_PREVIEW.getValue())
 						.build())
 				.user(u -> u.text("Explain what do you see on this picture?")

@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallingOptions;
-import org.springframework.ai.vertexai.gemini.VertexAiGeminiModelCaller.ChatModel;
+import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel.ChatModel;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.Assert;
 
@@ -78,10 +78,10 @@ public class VertexAiGeminiChatOptions implements FunctionCallingOptions, ChatOp
 	private @JsonProperty("modelName") String model;
 
 	/**
-	 * Tool Function Callbacks to register with the ModelCall.
+	 * Tool Function Callbacks to register with the ChatModel.
 	 * For Prompt Options the functionCallbacks are automatically enabled for the duration of the prompt execution.
 	 * For Default Options the functionCallbacks are registered but disabled by default. Use the enableFunctions to set the functions
-	 * from the registry to be used by the ModelCall chat completion requests.
+	 * from the registry to be used by the ChatModel chat completion requests.
 	 */
 	@NestedConfigurationProperty
 	@JsonIgnore

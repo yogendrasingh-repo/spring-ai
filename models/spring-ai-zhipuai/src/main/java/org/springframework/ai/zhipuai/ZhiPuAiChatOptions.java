@@ -117,10 +117,10 @@ public class ZhiPuAiChatOptions implements FunctionCallingOptions, ChatOptions {
 	private @JsonProperty("user_id") String user;
 
 	/**
-	 * ZhiPuAI Tool Function Callbacks to register with the ChatClient.
+	 * ZhiPuAI Tool Function Callbacks to register with the ChatModel.
 	 * For Prompt Options the functionCallbacks are automatically enabled for the duration of the prompt execution.
 	 * For Default Options the functionCallbacks are registered but disabled by default. Use the enableFunctions to set the functions
-	 * from the registry to be used by the ChatClient chat completion requests.
+	 * from the registry to be used by the ChatModel chat completion requests.
 	 */
 	@NestedConfigurationProperty
 	@JsonIgnore
