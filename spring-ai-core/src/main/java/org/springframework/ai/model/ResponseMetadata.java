@@ -27,6 +27,6 @@ import java.util.Map;
  * @author Mark Pollack
  * @since 0.8.0
  */
-public interface ResponseMetadata extends Map<String, Object> {
+public interface ResponseMetadata {
 
 }

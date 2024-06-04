@@ -15,9 +15,13 @@
  */
 package org.springframework.ai.openai.metadata;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.util.Assert;
+
+import java.util.Objects;
 
 /**
  * {@link Usage} implementation for {@literal OpenAI}.
@@ -34,35 +38,62 @@ public class OpenAiUsage implements Usage {
 		return new OpenAiUsage(usage);
 	}
 
-	private final OpenAiApi.Usage usage;
+	private Long promptTokens;
 
-	protected OpenAiUsage(OpenAiApi.Usage usage) {
-		Assert.notNull(usage, "OpenAI Usage must not be null");
-		this.usage = usage;
+	private Long generationTokens;
+
+	private Long totalTokens;
+
+	public OpenAiUsage(OpenAiApi.Usage usage) {
+		Assert.notNull(usage, "OpenAiApi.Usage must not be null");
+		this.promptTokens = usage.promptTokens().longValue();
+		this.generationTokens = usage.completionTokens().longValue();
+		this.totalTokens = usage.totalTokens().longValue();
 	}
 
-	protected OpenAiApi.Usage getUsage() {
-		return this.usage;
+	@JsonCreator
+	public OpenAiUsage(@JsonProperty("promptTokens") Long promptTokens,
+			@JsonProperty("generationTokens") Long generationTokens, @JsonProperty("totalTokens") Long totalTokens) {
+		this.promptTokens = promptTokens;
+		this.generationTokens = generationTokens;
+		this.totalTokens = totalTokens;
 	}
 
 	@Override
 	public Long getPromptTokens() {
-		return getUsage().promptTokens().longValue();
+		return this.promptTokens;
 	}
 
 	@Override
 	public Long getGenerationTokens() {
-		return getUsage().completionTokens().longValue();
+		return this.generationTokens;
 	}
 
 	@Override
 	public Long getTotalTokens() {
-		return getUsage().totalTokens().longValue();
+		return this.totalTokens;
 	}
 
 	@Override
 	public String toString() {
-		return getUsage().toString();
+		return "OpenAiUsage{" + "promptTokens=" + promptTokens + ", generationTokens=" + generationTokens
+				+ ", totalTokens=" + totalTokens + '}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof OpenAiUsage that))
+			return false;
+		return Objects.equals(promptTokens, that.promptTokens)
+				&& Objects.equals(generationTokens, that.generationTokens)
+				&& Objects.equals(totalTokens, that.totalTokens);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(promptTokens, generationTokens, totalTokens);
 	}
 
 }

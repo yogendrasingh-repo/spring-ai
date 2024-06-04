@@ -15,16 +15,20 @@
  */
 package org.springframework.ai.openai.metadata;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.ai.chat.metadata.ChatResponseMetadata;
 import org.springframework.ai.chat.metadata.EmptyRateLimit;
 import org.springframework.ai.chat.metadata.EmptyUsage;
+import org.springframework.ai.chat.metadata.PromptMetadata;
 import org.springframework.ai.chat.metadata.RateLimit;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
-import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * {@link ChatResponseMetadata} implementation for {@literal OpenAI}.
@@ -35,7 +39,7 @@ import java.util.HashMap;
  * @see Usage
  * @since 0.7.0
  */
-public class OpenAiChatResponseMetadata extends HashMap<String, Object> implements ChatResponseMetadata {
+public class OpenAiChatResponseMetadata implements ChatResponseMetadata {
 
 	protected static final String AI_METADATA_STRING = "{ @type: %1$s, id: %2$s, usage: %3$s, rateLimit: %4$s }";
 
@@ -46,18 +50,26 @@ public class OpenAiChatResponseMetadata extends HashMap<String, Object> implemen
 		return chatResponseMetadata;
 	}
 
-	private final String id;
+	@JsonProperty("id")
+	private String id;
 
 	@Nullable
+	@JsonProperty("rateLimit")
 	private RateLimit rateLimit;
 
-	private final Usage usage;
+	@JsonProperty("usage")
+	private Usage usage;
 
-	protected OpenAiChatResponseMetadata(String id, OpenAiUsage usage) {
+	@JsonIgnore
+	private PromptMetadata promptMetadata;
+
+	public OpenAiChatResponseMetadata(String id, OpenAiUsage usage) {
 		this(id, usage, null);
 	}
 
-	protected OpenAiChatResponseMetadata(String id, OpenAiUsage usage, @Nullable OpenAiRateLimit rateLimit) {
+	@JsonCreator
+	public OpenAiChatResponseMetadata(@JsonProperty("id") String id, @JsonProperty("usage") OpenAiUsage usage,
+			@Nullable @JsonProperty("rateLimit") OpenAiRateLimit rateLimit) {
 		this.id = id;
 		this.usage = usage;
 		this.rateLimit = rateLimit;
@@ -86,8 +98,28 @@ public class OpenAiChatResponseMetadata extends HashMap<String, Object> implemen
 	}
 
 	@Override
+	public PromptMetadata getPromptMetadata() {
+		return PromptMetadata.empty();
+	}
+
+	@Override
 	public String toString() {
 		return AI_METADATA_STRING.formatted(getClass().getName(), getId(), getUsage(), getRateLimit());
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof OpenAiChatResponseMetadata that))
+			return false;
+		return Objects.equals(id, that.id) && Objects.equals(rateLimit, that.rateLimit)
+				&& Objects.equals(usage, that.usage) && Objects.equals(promptMetadata, that.promptMetadata);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, rateLimit, usage, promptMetadata);
 	}
 
 }

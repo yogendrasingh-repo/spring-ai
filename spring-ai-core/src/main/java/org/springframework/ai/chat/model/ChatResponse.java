@@ -15,7 +15,9 @@
  */
 package org.springframework.ai.chat.model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.ai.model.ModelResponse;
@@ -34,13 +36,19 @@ public class ChatResponse implements ModelResponse<Generation> {
 	 */
 	private final List<Generation> generations;
 
+	private Map<String, Object> advisorContext;
+
 	/**
 	 * Construct a new {@link ChatResponse} instance without metadata.
 	 * @param generations the {@link List} of {@link Generation} returned by the AI
 	 * provider.
 	 */
 	public ChatResponse(List<Generation> generations) {
-		this(generations, ChatResponseMetadata.NULL);
+		this(generations, ChatResponseMetadata.NULL, new HashMap<>());
+	}
+
+	public ChatResponse(List<Generation> generations, ChatResponseMetadata chatResponseMetadata) {
+		this(generations, chatResponseMetadata, new HashMap<>());
 	}
 
 	/**
@@ -50,9 +58,11 @@ public class ChatResponse implements ModelResponse<Generation> {
 	 * @param chatResponseMetadata {@link ChatResponseMetadata} containing information
 	 * about the use of the AI provider's API.
 	 */
-	public ChatResponse(List<Generation> generations, ChatResponseMetadata chatResponseMetadata) {
-		this.chatResponseMetadata = chatResponseMetadata;
+	public ChatResponse(List<Generation> generations, ChatResponseMetadata chatResponseMetadata,
+			Map<String, Object> advisorContext) {
 		this.generations = List.copyOf(generations);
+		this.chatResponseMetadata = chatResponseMetadata;
+		this.advisorContext = advisorContext;
 	}
 
 	/**
@@ -87,9 +97,14 @@ public class ChatResponse implements ModelResponse<Generation> {
 		return this.chatResponseMetadata;
 	}
 
+	public Map<String, Object> getAdvisorContext() {
+		return this.advisorContext;
+	}
+
 	@Override
 	public String toString() {
-		return "ChatResponse [metadata=" + chatResponseMetadata + ", generations=" + generations + "]";
+		return "ChatResponse{" + "chatResponseMetadata=" + chatResponseMetadata + ", generations=" + generations
+				+ ", advisorContext=" + advisorContext + '}';
 	}
 
 	@Override
@@ -99,12 +114,12 @@ public class ChatResponse implements ModelResponse<Generation> {
 		if (!(o instanceof ChatResponse that))
 			return false;
 		return Objects.equals(chatResponseMetadata, that.chatResponseMetadata)
-				&& Objects.equals(generations, that.generations);
+				&& Objects.equals(generations, that.generations) && Objects.equals(advisorContext, that.advisorContext);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(chatResponseMetadata, generations);
+		return Objects.hash(chatResponseMetadata, generations, advisorContext);
 	}
 
 }

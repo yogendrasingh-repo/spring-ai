@@ -17,17 +17,27 @@ package org.springframework.ai.openai.chat.client;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.metadata.ChatResponseMetadata;
+import org.springframework.ai.chat.metadata.PromptMetadata;
+import org.springframework.ai.openai.metadata.OpenAiChatResponseMetadata;
+import org.springframework.ai.openai.metadata.OpenAiRateLimit;
+import org.springframework.ai.openai.metadata.OpenAiUsage;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.client.ChatClient;
@@ -62,7 +72,23 @@ class OpenAiChatClientIT extends AbstractIT {
 	}
 
 	@Test
-	void call() {
+	void serDeserChatResponseMetadata() throws JsonProcessingException {
+		OpenAiUsage openAiUsage = new OpenAiUsage(new OpenAiApi.Usage(1, 2, 3));
+		OpenAiRateLimit openAiRateLimit = new OpenAiRateLimit(1L, 2L, Duration.ZERO, 4L, 5L, Duration.ZERO);
+		OpenAiChatResponseMetadata chatResponseMetadata = new OpenAiChatResponseMetadata("myid", openAiUsage,
+				openAiRateLimit);
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		objectMapper.registerModule(new JavaTimeModule());
+		String json = objectMapper.writeValueAsString(chatResponseMetadata);
+		System.out.println("ChatResponseMetadata Ser: " + json);
+
+		OpenAiChatResponseMetadata deserialized = objectMapper.readValue(json, OpenAiChatResponseMetadata.class);
+		assertThat(chatResponseMetadata).usingRecursiveComparison().isEqualTo(deserialized);
+	}
+
+	@Test
+	void call() throws JsonProcessingException {
 
 		// @formatter:off
 		ChatResponse response = ChatClient.builder(chatModel).build().prompt()

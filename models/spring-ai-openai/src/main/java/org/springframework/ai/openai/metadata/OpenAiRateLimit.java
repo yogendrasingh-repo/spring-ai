@@ -16,7 +16,10 @@
 package org.springframework.ai.openai.metadata;
 
 import java.time.Duration;
+import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.ai.chat.metadata.RateLimit;
 
 /**
@@ -44,8 +47,11 @@ public class OpenAiRateLimit implements RateLimit {
 
 	private final Duration tokensReset;
 
-	public OpenAiRateLimit(Long requestsLimit, Long requestsRemaining, Duration requestsReset, Long tokensLimit,
-			Long tokensRemaining, Duration tokensReset) {
+	@JsonCreator
+	public OpenAiRateLimit(@JsonProperty("requestsLimit") Long requestsLimit,
+			@JsonProperty("requestsRemaining") Long requestsRemaining,
+			@JsonProperty("requestsReset") Duration requestsReset, @JsonProperty("tokensLimit") Long tokensLimit,
+			@JsonProperty("tokensRemaining") Long tokensRemaining, @JsonProperty("tokensReset") Duration tokensReset) {
 
 		this.requestsLimit = requestsLimit;
 		this.requestsRemaining = requestsRemaining;
@@ -89,6 +95,24 @@ public class OpenAiRateLimit implements RateLimit {
 	public String toString() {
 		return RATE_LIMIT_STRING.formatted(getClass().getName(), getRequestsLimit(), getRequestsRemaining(),
 				getRequestsReset(), getTokensLimit(), getTokensRemaining(), getTokensReset());
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof OpenAiRateLimit that))
+			return false;
+		return Objects.equals(requestsLimit, that.requestsLimit)
+				&& Objects.equals(requestsRemaining, that.requestsRemaining)
+				&& Objects.equals(tokensLimit, that.tokensLimit)
+				&& Objects.equals(tokensRemaining, that.tokensRemaining)
+				&& Objects.equals(requestsReset, that.requestsReset) && Objects.equals(tokensReset, that.tokensReset);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(requestsLimit, requestsRemaining, tokensLimit, tokensRemaining, requestsReset, tokensReset);
 	}
 
 }
