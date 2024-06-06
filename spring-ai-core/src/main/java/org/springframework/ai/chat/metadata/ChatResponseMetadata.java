@@ -15,6 +15,7 @@
  */
 package org.springframework.ai.chat.metadata;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.ai.model.ResponseMetadata;
 
 import java.util.HashMap;
@@ -26,6 +27,8 @@ import java.util.HashMap;
  * @author John Blum
  * @since 0.7.0
  */
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 public interface ChatResponseMetadata extends ResponseMetadata {
 
 	static class DefaultChatResponseMetadata extends HashMap<String, Object> implements ChatResponseMetadata {

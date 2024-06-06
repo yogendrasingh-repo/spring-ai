@@ -15,6 +15,8 @@
  */
 package org.springframework.ai.chat.messages;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.core.io.Resource;
 
 /**
@@ -26,7 +28,8 @@ import org.springframework.core.io.Resource;
  */
 public class SystemMessage extends AbstractMessage {
 
-	public SystemMessage(String content) {
+	@JsonCreator
+	public SystemMessage(@JsonProperty("content") String content) {
 		super(MessageType.SYSTEM, content);
 	}
 

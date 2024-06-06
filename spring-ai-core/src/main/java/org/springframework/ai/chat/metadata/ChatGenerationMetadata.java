@@ -15,6 +15,8 @@
  */
 package org.springframework.ai.chat.metadata;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.ai.model.ResultMetadata;
 import org.springframework.lang.Nullable;
 
@@ -25,6 +27,8 @@ import org.springframework.lang.Nullable;
  * @author John Blum
  * @since 0.7.0
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @JsonSubTypes.Type(value = DefaultChatGenerationMetadata.class, name = "default") })
 public interface ChatGenerationMetadata extends ResultMetadata {
 
 	ChatGenerationMetadata NULL = ChatGenerationMetadata.from(null, null);
@@ -39,19 +43,7 @@ public interface ChatGenerationMetadata extends ResultMetadata {
 	 * reason} and content filter metadata.
 	 */
 	static ChatGenerationMetadata from(String finishReason, Object contentFilterMetadata) {
-		return new ChatGenerationMetadata() {
-
-			@Override
-			@SuppressWarnings("unchecked")
-			public <T> T getContentFilterMetadata() {
-				return (T) contentFilterMetadata;
-			}
-
-			@Override
-			public String getFinishReason() {
-				return finishReason;
-			}
-		};
+		return new DefaultChatGenerationMetadata(finishReason, contentFilterMetadata);
 	}
 
 	/**

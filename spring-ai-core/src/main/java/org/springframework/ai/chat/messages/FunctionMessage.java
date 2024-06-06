@@ -15,6 +15,9 @@
  */
 package org.springframework.ai.chat.messages;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Map;
 
 /**
@@ -27,7 +30,9 @@ public class FunctionMessage extends AbstractMessage {
 		super(MessageType.FUNCTION, content);
 	}
 
-	public FunctionMessage(String content, Map<String, Object> properties) {
+	@JsonCreator
+	public FunctionMessage(@JsonProperty("content") String content,
+			@JsonProperty("metadata") Map<String, Object> properties) {
 		super(MessageType.FUNCTION, content, properties);
 	}
 

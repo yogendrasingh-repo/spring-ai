@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
@@ -69,8 +71,10 @@ public abstract class AbstractMessage implements Message {
 		this(messageType, textContent, media, Map.of(MESSAGE_TYPE, messageType));
 	}
 
-	protected AbstractMessage(MessageType messageType, String textContent, Collection<Media> media,
-			Map<String, Object> metadata) {
+	@JsonCreator
+	protected AbstractMessage(@JsonProperty("messageType") MessageType messageType,
+			@JsonProperty("content") String textContent, @JsonProperty("media") Collection<Media> media,
+			@JsonProperty("metadata") Map<String, Object> metadata) {
 
 		Assert.notNull(messageType, "Message type must not be null");
 		Assert.notNull(textContent, "Content must not be null");

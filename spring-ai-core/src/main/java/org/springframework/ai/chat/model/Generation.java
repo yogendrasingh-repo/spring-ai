@@ -18,6 +18,8 @@ package org.springframework.ai.chat.model;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.ai.model.ModelResult;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -32,6 +34,13 @@ public class Generation implements ModelResult<AssistantMessage> {
 
 	private ChatGenerationMetadata chatGenerationMetadata;
 
+	@JsonCreator
+	public Generation(@JsonProperty("assistantMessage") AssistantMessage assistantMessage,
+			@JsonProperty("chatGenerationMetadata") ChatGenerationMetadata chatGenerationMetadata) {
+		this.assistantMessage = assistantMessage;
+		this.chatGenerationMetadata = chatGenerationMetadata;
+	}
+
 	public Generation(String text) {
 		this.assistantMessage = new AssistantMessage(text);
 	}
@@ -41,11 +50,13 @@ public class Generation implements ModelResult<AssistantMessage> {
 	}
 
 	@Override
+	@JsonProperty("assistantMessage")
 	public AssistantMessage getOutput() {
 		return this.assistantMessage;
 	}
 
 	@Override
+	@JsonProperty("chatGenerationMetadata")
 	public ChatGenerationMetadata getMetadata() {
 		ChatGenerationMetadata chatGenerationMetadata = this.chatGenerationMetadata;
 		return chatGenerationMetadata != null ? chatGenerationMetadata : ChatGenerationMetadata.NULL;

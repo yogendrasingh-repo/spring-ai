@@ -15,6 +15,8 @@
  */
 package org.springframework.ai.chat.messages;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.ai.model.Content;
 
 /**
@@ -25,6 +27,11 @@ import org.springframework.ai.model.Content;
  * @see Media
  * @see MessageType
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "messageType")
+@JsonSubTypes({ @JsonSubTypes.Type(value = UserMessage.class, name = "USER"),
+		@JsonSubTypes.Type(value = SystemMessage.class, name = "SYSTEM"),
+		@JsonSubTypes.Type(value = AssistantMessage.class, name = "ASSISTANT"),
+		@JsonSubTypes.Type(value = FunctionMessage.class, name = "FUNCTION") })
 public interface Message extends Content {
 
 	MessageType getMessageType();

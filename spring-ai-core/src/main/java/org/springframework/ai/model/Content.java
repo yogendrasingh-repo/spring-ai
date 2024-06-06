@@ -1,5 +1,6 @@
 package org.springframework.ai.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.ai.chat.messages.Media;
 
 import java.util.Collection;
@@ -15,6 +16,7 @@ import java.util.Map;
  * @author Christian Tzolov
  * @since 1.0.0
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 public interface Content {
 
 	/**

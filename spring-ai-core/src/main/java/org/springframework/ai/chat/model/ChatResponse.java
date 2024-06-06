@@ -15,11 +15,15 @@
  */
 package org.springframework.ai.chat.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.ai.model.ModelResponse;
 import org.springframework.util.CollectionUtils;
 import org.springframework.ai.chat.metadata.ChatResponseMetadata;
@@ -34,9 +38,9 @@ public class ChatResponse implements ModelResponse<Generation> {
 	/**
 	 * List of generated messages returned by the AI provider.
 	 */
-	private final List<Generation> generations;
+	private List<Generation> generations = new ArrayList<>();
 
-	private Map<String, Object> advisorContext;
+	private Map<String, Object> advisorContext = new HashMap<>();
 
 	/**
 	 * Construct a new {@link ChatResponse} instance without metadata.
@@ -58,9 +62,11 @@ public class ChatResponse implements ModelResponse<Generation> {
 	 * @param chatResponseMetadata {@link ChatResponseMetadata} containing information
 	 * about the use of the AI provider's API.
 	 */
-	public ChatResponse(List<Generation> generations, ChatResponseMetadata chatResponseMetadata,
-			Map<String, Object> advisorContext) {
-		this.generations = List.copyOf(generations);
+	@JsonCreator
+	public ChatResponse(@JsonProperty("results") List<Generation> generations,
+			@JsonProperty("chatResponseMetadata") ChatResponseMetadata chatResponseMetadata,
+			@JsonProperty("advisorContext") Map<String, Object> advisorContext) {
+		this.generations = generations;
 		this.chatResponseMetadata = chatResponseMetadata;
 		this.advisorContext = advisorContext;
 	}
@@ -81,6 +87,7 @@ public class ChatResponse implements ModelResponse<Generation> {
 	/**
 	 * @return Returns the first {@link Generation} in the generations list.
 	 */
+	@JsonIgnore
 	public Generation getResult() {
 		if (CollectionUtils.isEmpty(this.generations)) {
 			return null;

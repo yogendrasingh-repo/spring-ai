@@ -20,6 +20,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.FunctionMessage;
 import org.springframework.ai.chat.messages.Message;
@@ -54,11 +57,14 @@ public class Prompt implements ModelRequest<List<Message>> {
 		this(Collections.singletonList(message), modelOptions);
 	}
 
-	public Prompt(List<Message> messages, ChatOptions modelOptions) {
+	@JsonCreator
+	public Prompt(@JsonProperty("instructions") List<Message> messages,
+			@JsonProperty("options") ChatOptions modelOptions) {
 		this.messages = messages;
 		this.modelOptions = modelOptions;
 	}
 
+	@JsonIgnore
 	public String getContents() {
 		StringBuilder sb = new StringBuilder();
 		for (Message message : getInstructions()) {

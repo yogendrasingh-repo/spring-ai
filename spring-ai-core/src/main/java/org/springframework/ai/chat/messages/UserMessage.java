@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.core.io.Resource;
 
 /**
@@ -45,8 +47,10 @@ public class UserMessage extends AbstractMessage {
 		this(textContent, Arrays.asList(media));
 	}
 
-	public UserMessage(String textContent, Collection<Media> mediaList, Map<String, Object> metadata) {
-		super(MessageType.USER, textContent, mediaList, metadata);
+	@JsonCreator
+	public UserMessage(@JsonProperty("content") String content, @JsonProperty("media") Collection<Media> mediaList,
+			@JsonProperty("metadata") Map<String, Object> metadata) {
+		super(MessageType.USER, content, mediaList, metadata);
 	}
 
 	@Override

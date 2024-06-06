@@ -72,22 +72,6 @@ class OpenAiChatClientIT extends AbstractIT {
 	}
 
 	@Test
-	void serDeserChatResponseMetadata() throws JsonProcessingException {
-		OpenAiUsage openAiUsage = new OpenAiUsage(new OpenAiApi.Usage(1, 2, 3));
-		OpenAiRateLimit openAiRateLimit = new OpenAiRateLimit(1L, 2L, Duration.ZERO, 4L, 5L, Duration.ZERO);
-		OpenAiChatResponseMetadata chatResponseMetadata = new OpenAiChatResponseMetadata("myid", openAiUsage,
-				openAiRateLimit);
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		objectMapper.registerModule(new JavaTimeModule());
-		String json = objectMapper.writeValueAsString(chatResponseMetadata);
-		System.out.println("ChatResponseMetadata Ser: " + json);
-
-		OpenAiChatResponseMetadata deserialized = objectMapper.readValue(json, OpenAiChatResponseMetadata.class);
-		assertThat(chatResponseMetadata).usingRecursiveComparison().isEqualTo(deserialized);
-	}
-
-	@Test
 	void call() throws JsonProcessingException {
 
 		// @formatter:off

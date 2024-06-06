@@ -15,6 +15,9 @@
  */
 package org.springframework.ai.chat.messages;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Map;
 
 /**
@@ -25,11 +28,13 @@ import java.util.Map;
  */
 public class AssistantMessage extends AbstractMessage {
 
-	public AssistantMessage(String content) {
-		super(MessageType.ASSISTANT, content);
+	public AssistantMessage(String textContent) {
+		super(MessageType.ASSISTANT, textContent);
 	}
 
-	public AssistantMessage(String content, Map<String, Object> properties) {
+	@JsonCreator
+	public AssistantMessage(@JsonProperty("content") String content,
+			@JsonProperty("metadata") Map<String, Object> properties) {
 		super(MessageType.ASSISTANT, content, properties);
 	}
 
