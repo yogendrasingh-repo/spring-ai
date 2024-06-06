@@ -15,6 +15,7 @@
  */
 package org.springframework.ai.anthropic.metadata;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.ai.anthropic.api.AnthropicApi;
 import org.springframework.ai.chat.metadata.ChatResponseMetadata;
 import org.springframework.ai.chat.metadata.EmptyRateLimit;
@@ -87,6 +88,15 @@ public class AnthropicChatResponseMetadata extends HashMap<String, Object> imple
 	@Override
 	public String toString() {
 		return AI_METADATA_STRING.formatted(getClass().getName(), getId(), getUsage(), getRateLimit());
+	}
+
+	public static class Module extends SimpleModule {
+
+		public Module() {
+			super("AnthropicChatResponseMetadata Module");
+			this.registerSubtypes(AnthropicChatResponseMetadata.class);
+		}
+
 	}
 
 }

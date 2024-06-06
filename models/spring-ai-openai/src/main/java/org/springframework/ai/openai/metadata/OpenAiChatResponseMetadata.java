@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.ai.chat.metadata.ChatResponseMetadata;
 import org.springframework.ai.chat.metadata.EmptyRateLimit;
 import org.springframework.ai.chat.metadata.EmptyUsage;
@@ -122,6 +123,15 @@ public class OpenAiChatResponseMetadata implements ChatResponseMetadata {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, rateLimit, usage, promptMetadata);
+	}
+
+	public static class Module extends SimpleModule {
+
+		public Module() {
+			super("OpenAiChatResponseMetadata Module");
+			this.registerSubtypes(OpenAiChatResponseMetadata.class);
+		}
+
 	}
 
 }

@@ -50,7 +50,7 @@ public class BedrockAnthropicChatAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean({ AwsCredentialsProvider.class, AwsRegionProvider.class })
-	public AnthropicChatBedrockApi anthropicApi(AwsCredentialsProvider credentialsProvider,
+	public AnthropicChatBedrockApi anthropicChatBedrockApi(AwsCredentialsProvider credentialsProvider,
 			AwsRegionProvider regionProvider, BedrockAnthropicChatProperties properties,
 			BedrockAwsConnectionProperties awsProperties) {
 		return new AnthropicChatBedrockApi(properties.getModel(), credentialsProvider, regionProvider.getRegion(),
@@ -59,7 +59,7 @@ public class BedrockAnthropicChatAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(AnthropicChatBedrockApi.class)
-	public BedrockAnthropicChatModel anthropicChatModel(AnthropicChatBedrockApi anthropicApi,
+	public BedrockAnthropicChatModel bedrockAnthropicChatModel(AnthropicChatBedrockApi anthropicApi,
 			BedrockAnthropicChatProperties properties) {
 		return new BedrockAnthropicChatModel(anthropicApi, properties.getOptions());
 	}

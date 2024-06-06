@@ -64,7 +64,7 @@ public class ChatResponse implements ModelResponse<Generation> {
 	 */
 	@JsonCreator
 	public ChatResponse(@JsonProperty("results") List<Generation> generations,
-			@JsonProperty("chatResponseMetadata") ChatResponseMetadata chatResponseMetadata,
+			@JsonProperty("metadata") ChatResponseMetadata chatResponseMetadata,
 			@JsonProperty("advisorContext") Map<String, Object> advisorContext) {
 		this.generations = generations;
 		this.chatResponseMetadata = chatResponseMetadata;
