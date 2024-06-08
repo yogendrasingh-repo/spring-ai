@@ -44,8 +44,6 @@ import java.util.Objects;
 @JsonTypeName("openai")
 public class OpenAiChatResponseMetadata implements ChatResponseMetadata {
 
-	protected static final String AI_METADATA_STRING = "{ @type: %1$s, id: %2$s, usage: %3$s, rateLimit: %4$s }";
-
 	public static OpenAiChatResponseMetadata from(OpenAiApi.ChatCompletion result) {
 		Assert.notNull(result, "OpenAI ChatCompletionResult must not be null");
 		OpenAiUsage usage = OpenAiUsage.from(result.usage());
@@ -107,7 +105,8 @@ public class OpenAiChatResponseMetadata implements ChatResponseMetadata {
 
 	@Override
 	public String toString() {
-		return AI_METADATA_STRING.formatted(getClass().getName(), getId(), getUsage(), getRateLimit());
+		return "OpenAiChatResponseMetadata{" + "id='" + id + '\'' + ", rateLimit=" + rateLimit + ", usage=" + usage
+				+ ", promptMetadata=" + promptMetadata + '}';
 	}
 
 	@Override

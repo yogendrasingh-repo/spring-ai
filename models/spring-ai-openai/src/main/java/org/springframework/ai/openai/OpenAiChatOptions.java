@@ -15,17 +15,11 @@
  */
 package org.springframework.ai.openai;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallingOptions;
@@ -35,11 +29,18 @@ import org.springframework.ai.openai.api.OpenAiApi.FunctionTool;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Christian Tzolov
  * @since 0.8.0
  */
 @JsonInclude(Include.NON_NULL)
+@JsonTypeName("OpenAiChatOptions")
 public class OpenAiChatOptions implements FunctionCallingOptions, ChatOptions {
 
 	// @formatter:off
@@ -157,6 +158,9 @@ public class OpenAiChatOptions implements FunctionCallingOptions, ChatOptions {
 	@JsonIgnore
 	private Set<String> functions = new HashSet<>();
 	// @formatter:on
+
+	public OpenAiChatOptions() {
+	}
 
 	public static Builder builder() {
 		return new Builder();

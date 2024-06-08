@@ -22,6 +22,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.metadata.OpenAiChatResponseMetadata;
 import org.springframework.ai.openai.metadata.OpenAiRateLimit;
@@ -31,7 +32,7 @@ import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OpenAiChatResponseTests {
+public class OpenAiChatResponseMetadataTests {
 
 	@Test
 	void serDeserChatResponseMetadata() throws JsonProcessingException {
@@ -49,6 +50,21 @@ public class OpenAiChatResponseTests {
 
 		OpenAiChatResponseMetadata deserialized = objectMapper.readValue(json, OpenAiChatResponseMetadata.class);
 		assertThat(chatResponseMetadata).usingRecursiveComparison().isEqualTo(deserialized);
+	}
+
+	@Test
+	void serDeserChatOptions() throws JsonProcessingException {
+		OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder().withModel("mymodel").build();
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		objectMapper.registerModule(new JavaTimeModule());
+
+		String json = objectMapper.writeValueAsString(openAiChatOptions);
+		System.out.println("OpenAiChatOptions Ser: " + json);
+
+		OpenAiChatOptions deserialized = objectMapper.readValue(json, OpenAiChatOptions.class);
+		assertThat(openAiChatOptions).usingRecursiveComparison().isEqualTo(deserialized);
 	}
 
 	@Test
