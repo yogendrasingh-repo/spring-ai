@@ -28,30 +28,23 @@ import java.util.HashMap;
  * @see ChatResponseMetadata
  * @author Fu Cheng
  */
-public class OllamaChatResponseMetadata extends HashMap<String, Object> implements ChatResponseMetadata {
+public abstract class OllamaChatResponseMetadataUtils {
 
-	protected static final String AI_METADATA_STRING = "{ @type: %1$s, usage: %2$s, rateLimit: %3$s }";
-
-	public static OllamaChatResponseMetadata from(OllamaApi.ChatResponse response) {
+	public static ChatResponseMetadata from(OllamaApi.ChatResponse response) {
 		Assert.notNull(response, "OllamaApi.ChatResponse must not be null");
-		Usage usage = OllamaUsage.from(response);
-		return new OllamaChatResponseMetadata(usage);
-	}
+		return ChatResponseMetadata.builder()
+			.withUsage(OllamaUsage.from(response))
+			.withModel(response.model())
+			.withKeyValue("created-at", response.createdAt())
+			.withKeyValue("eval-duration", response.evalDuration())
+			.withKeyValue("eval-count", response.evalCount())
+			.withKeyValue("load-duration", response.loadDuration())
+			.withKeyValue("eval-duration", response.promptEvalDuration())
+			.withKeyValue("eval-count", response.promptEvalCount())
+			.withKeyValue("total-duration", response.totalDuration())
+			.withKeyValue("done", response.done())
+			.build();
 
-	private final Usage usage;
-
-	protected OllamaChatResponseMetadata(Usage usage) {
-		this.usage = usage;
-	}
-
-	@Override
-	public Usage getUsage() {
-		return this.usage;
-	}
-
-	@Override
-	public String toString() {
-		return AI_METADATA_STRING.formatted(getClass().getTypeName(), getUsage(), getRateLimit());
 	}
 
 }

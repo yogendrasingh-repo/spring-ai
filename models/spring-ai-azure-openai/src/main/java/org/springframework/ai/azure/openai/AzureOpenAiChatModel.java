@@ -43,7 +43,7 @@ import com.azure.core.util.BinaryData;
 import com.azure.core.util.IterableStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.azure.openai.metadata.AzureOpenAiChatResponseMetadata;
+import org.springframework.ai.azure.openai.metadata.AzureOpenAiChatResponseMetadataUtils;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.metadata.ChatGenerationMetadata;
 import org.springframework.ai.chat.metadata.PromptMetadata;
@@ -155,7 +155,7 @@ public class AzureOpenAiChatModel extends
 		PromptMetadata promptFilterMetadata = generatePromptMetadata(chatCompletions);
 
 		return new ChatResponse(generations,
-				AzureOpenAiChatResponseMetadata.from(chatCompletions, promptFilterMetadata));
+				AzureOpenAiChatResponseMetadataUtils.from(chatCompletions, promptFilterMetadata));
 	}
 
 	@Override

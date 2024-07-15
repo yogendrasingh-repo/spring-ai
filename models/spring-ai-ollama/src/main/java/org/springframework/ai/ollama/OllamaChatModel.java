@@ -19,7 +19,7 @@ import java.util.Base64;
 import java.util.List;
 
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.ollama.metadata.OllamaChatResponseMetadata;
+import org.springframework.ai.ollama.metadata.OllamaChatResponseMetadataUtils;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.model.ChatResponse;
@@ -102,7 +102,7 @@ public class OllamaChatModel implements ChatModel {
 		if (response.promptEvalCount() != null && response.evalCount() != null) {
 			generator = generator.withGenerationMetadata(ChatGenerationMetadata.from("unknown", null));
 		}
-		return new ChatResponse(List.of(generator), OllamaChatResponseMetadata.from(response));
+		return new ChatResponse(List.of(generator), OllamaChatResponseMetadataUtils.from(response));
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class OllamaChatModel implements ChatModel {
 			if (Boolean.TRUE.equals(chunk.done())) {
 				generation = generation.withGenerationMetadata(ChatGenerationMetadata.from("unknown", null));
 			}
-			return new ChatResponse(List.of(generation), OllamaChatResponseMetadata.from(chunk));
+			return new ChatResponse(List.of(generation), OllamaChatResponseMetadataUtils.from(chunk));
 		});
 	}
 

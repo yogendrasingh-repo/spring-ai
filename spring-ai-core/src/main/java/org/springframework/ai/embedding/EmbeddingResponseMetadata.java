@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.springframework.ai.chat.metadata.EmptyUsage;
 import org.springframework.ai.chat.metadata.Usage;
+import org.springframework.ai.model.MutableResponseMetadata;
 import org.springframework.ai.model.ResponseMetadata;
 
 /**
@@ -29,10 +30,7 @@ import org.springframework.ai.model.ResponseMetadata;
  * @author Christian Tzolov
  * @author Thomas Vitale
  */
-public class EmbeddingResponseMetadata extends HashMap<String, Object> implements ResponseMetadata {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
+public class EmbeddingResponseMetadata extends MutableResponseMetadata {
 
 	private String model;
 
@@ -42,12 +40,15 @@ public class EmbeddingResponseMetadata extends HashMap<String, Object> implement
 	}
 
 	public EmbeddingResponseMetadata(String model, Usage usage) {
-		this.model = model;
-		this.usage = usage;
+		this(model, usage, Map.of());
 	}
 
-	public EmbeddingResponseMetadata(Map<String, ?> metadata) {
-		super(metadata);
+	public EmbeddingResponseMetadata(String model, Usage usage, Map<String, Object> metadata) {
+		this.model = model;
+		this.usage = usage;
+		for (Map.Entry<String, Object> entry : metadata.entrySet()) {
+			this.put(entry.getKey(), entry.getValue());
+		}
 	}
 
 	/**

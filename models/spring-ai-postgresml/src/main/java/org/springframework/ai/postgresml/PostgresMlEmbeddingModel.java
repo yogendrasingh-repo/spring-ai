@@ -200,9 +200,13 @@ public class PostgresMlEmbeddingModel extends AbstractEmbeddingModel implements 
 			}
 		}
 
-		var metadata = new EmbeddingResponseMetadata(
-				Map.of("transformer", optionsToUse.getTransformer(), "vector-type", optionsToUse.getVectorType().name(),
-						"kwargs", ModelOptionsUtils.toJsonString(optionsToUse.getKwargs())));
+		var metadata = new EmbeddingResponseMetadata();
+		Map<String, Object> embeddingMetadata = Map.of("transformer", optionsToUse.getTransformer(), "vector-type",
+				optionsToUse.getVectorType().name(), "kwargs",
+				ModelOptionsUtils.toJsonString(optionsToUse.getKwargs()));
+		for (Map.Entry<String, Object> entry : embeddingMetadata.entrySet()) {
+			metadata.put(entry.getKey(), entry.getValue());
+		}
 
 		return new EmbeddingResponse(data, metadata);
 	}

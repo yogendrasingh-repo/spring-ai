@@ -68,8 +68,13 @@ class VertexAiMultimodelEmbeddingModelIT {
 			.isEqualTo(embeddingRequest.getInstructions().get(1).getId());
 		assertThat(embeddingResponse.getResults().get(1).getOutput()).hasSize(1408);
 
-		assertThat(embeddingResponse.getMetadata()).containsEntry("model", "multimodalembedding@001");
-		assertThat(embeddingResponse.getMetadata()).containsEntry("total-tokens", 0);
+		assertThat(embeddingResponse.getMetadata().getModel())
+			.as("Model in metadata should be 'multimodalembedding@001'")
+			.isEqualTo("multimodalembedding@001");
+
+		assertThat(embeddingResponse.getMetadata().getUsage().getTotalTokens())
+			.as("Total tokens in metadata should be 0")
+			.isEqualTo("0");
 
 		assertThat(multiModelEmbeddingModel.dimensions()).isEqualTo(1408);
 	}
@@ -90,8 +95,8 @@ class VertexAiMultimodelEmbeddingModelIT {
 			.isEqualTo(MimeTypeUtils.TEXT_PLAIN);
 		assertThat(embeddingResponse.getResults().get(0).getOutput()).hasSize(1408);
 
-		assertThat(embeddingResponse.getMetadata()).containsEntry("model", "multimodalembedding@001");
-		assertThat(embeddingResponse.getMetadata()).containsEntry("total-tokens", 0);
+		assertThat(embeddingResponse.getMetadata().getModel()).isEqualTo("multimodalembedding@001");
+		assertThat(embeddingResponse.getMetadata().getUsage()).isEqualTo(0);
 
 		assertThat(multiModelEmbeddingModel.dimensions()).isEqualTo(1408);
 	}
@@ -113,8 +118,8 @@ class VertexAiMultimodelEmbeddingModelIT {
 			.isEqualTo(MimeTypeUtils.TEXT_PLAIN);
 		assertThat(embeddingResponse.getResults().get(0).getOutput()).hasSize(1408);
 
-		assertThat(embeddingResponse.getMetadata()).containsEntry("model", "multimodalembedding@001");
-		assertThat(embeddingResponse.getMetadata()).containsEntry("total-tokens", 0);
+		assertThat(embeddingResponse.getMetadata().getModel()).isEqualTo("multimodalembedding@001");
+		assertThat(embeddingResponse.getMetadata().getUsage().getTotalTokens()).isEqualTo(0);
 
 		assertThat(multiModelEmbeddingModel.dimensions()).isEqualTo(1408);
 	}
@@ -139,8 +144,8 @@ class VertexAiMultimodelEmbeddingModelIT {
 
 		assertThat(embeddingResponse.getResults().get(0).getOutput()).hasSize(1408);
 
-		assertThat(embeddingResponse.getMetadata()).containsEntry("model", "multimodalembedding@001");
-		assertThat(embeddingResponse.getMetadata()).containsEntry("total-tokens", 0);
+		assertThat(embeddingResponse.getMetadata().getModel()).isEqualTo("multimodalembedding@001");
+		assertThat(embeddingResponse.getMetadata().getUsage().getTotalTokens()).isEqualTo(0);
 
 		assertThat(multiModelEmbeddingModel.dimensions()).isEqualTo(1408);
 	}
@@ -164,8 +169,8 @@ class VertexAiMultimodelEmbeddingModelIT {
 			.isEqualTo(new MimeType("video", "mp4"));
 		assertThat(embeddingResponse.getResults().get(0).getOutput()).hasSize(1408);
 
-		assertThat(embeddingResponse.getMetadata()).containsEntry("model", "multimodalembedding@001");
-		assertThat(embeddingResponse.getMetadata()).containsEntry("total-tokens", 0);
+		assertThat(embeddingResponse.getMetadata().getModel()).isEqualTo("multimodalembedding@001");
+		assertThat(embeddingResponse.getMetadata().getUsage().getTotalTokens()).isEqualTo(0);
 
 		assertThat(multiModelEmbeddingModel.dimensions()).isEqualTo(1408);
 	}
@@ -198,8 +203,8 @@ class VertexAiMultimodelEmbeddingModelIT {
 			.isEqualTo(EmbeddingResultMetadata.ModalityType.VIDEO);
 		assertThat(embeddingResponse.getResults().get(2).getOutput()).hasSize(1408);
 
-		assertThat(embeddingResponse.getMetadata()).containsEntry("model", "multimodalembedding@001");
-		assertThat(embeddingResponse.getMetadata()).containsEntry("total-tokens", 0);
+		assertThat(embeddingResponse.getMetadata().getModel()).isEqualTo("multimodalembedding@001");
+		assertThat(embeddingResponse.getMetadata().getUsage()).isEqualTo(0);
 
 		assertThat(multiModelEmbeddingModel.dimensions()).isEqualTo(1408);
 	}

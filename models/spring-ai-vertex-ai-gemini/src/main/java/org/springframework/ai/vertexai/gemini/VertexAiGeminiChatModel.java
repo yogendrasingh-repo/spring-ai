@@ -29,6 +29,7 @@ import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.ToolResponseMessage;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.metadata.ChatResponseMetadata;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
@@ -38,7 +39,7 @@ import org.springframework.ai.model.ChatModelDescription;
 import org.springframework.ai.model.ModelOptionsUtils;
 import org.springframework.ai.model.function.AbstractToolCallSupport;
 import org.springframework.ai.model.function.FunctionCallbackContext;
-import org.springframework.ai.vertexai.gemini.metadata.VertexAiChatResponseMetadata;
+import org.springframework.ai.vertexai.gemini.metadata.VertexAiChatResponseMetadataUtils;
 import org.springframework.ai.vertexai.gemini.metadata.VertexAiUsage;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.lang.NonNull;
@@ -244,8 +245,8 @@ public class VertexAiGeminiChatModel extends AbstractToolCallSupport<GenerateCon
 		}
 	}
 
-	private VertexAiChatResponseMetadata toChatResponseMetadata(GenerateContentResponse response) {
-		return new VertexAiChatResponseMetadata(new VertexAiUsage(response.getUsageMetadata()));
+	private ChatResponseMetadata toChatResponseMetadata(GenerateContentResponse response) {
+		return VertexAiChatResponseMetadataUtils.from(response.getUsageMetadata());
 	}
 
 	@JsonInclude(Include.NON_NULL)

@@ -30,6 +30,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.ai.embedding.EmbeddingOptions;
 import org.springframework.ai.embedding.EmbeddingRequest;
 import org.springframework.ai.embedding.EmbeddingResponse;
+import org.springframework.ai.embedding.EmbeddingResponseMetadata;
 import org.springframework.ai.postgresml.PostgresMlEmbeddingModel.VectorType;
 
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -144,7 +145,21 @@ class PostgresMlEmbeddingModelIT {
 
 		assertThat(embeddingResponse).isNotNull();
 		assertThat(embeddingResponse.getResults()).hasSize(3);
-		assertThat(embeddingResponse.getMetadata()).containsExactlyInAnyOrderEntriesOf(
+		EmbeddingResponseMetadata metadata = embeddingResponse.getMetadata();
+
+		assertThat(metadata.get("transformer").toString())
+			.as("Transformer in metadata should be 'distilbert-base-uncased'")
+			.isEqualTo("distilbert-base-uncased");
+
+		assertThat(metadata.get("vector-type").toString())
+			.as("Vector type in metadata should match expected vector type")
+			.isEqualTo(vectorType);
+
+		assertThat(metadata.get("kwargs").toString()).as("kwargs in metadata should be '{}'").isEqualTo("{}");
+
+		assertThat(metadata.getRawMap().keySet()).as("Metadata should contain exactly the expected keys")
+			.containsExactlyInAnyOrder("transformer", "vector-type", "kwargs");
+		assertThat(embeddingResponse.getMetadata().getRawMap()).containsExactlyInAnyOrderEntriesOf(
 				Map.of("transformer", "distilbert-base-uncased", "vector-type", vectorType, "kwargs", "{}"));
 		assertThat(embeddingResponse.getResults().get(0).getIndex()).isEqualTo(0);
 		assertThat(embeddingResponse.getResults().get(0).getOutput()).hasSize(768);
@@ -170,7 +185,7 @@ class PostgresMlEmbeddingModelIT {
 
 		assertThat(embeddingResponse).isNotNull();
 		assertThat(embeddingResponse.getResults()).hasSize(3);
-		assertThat(embeddingResponse.getMetadata()).containsExactlyInAnyOrderEntriesOf(Map.of("transformer",
+		assertThat(embeddingResponse.getMetadata().getRawMap()).containsExactlyInAnyOrderEntriesOf(Map.of("transformer",
 				"distilbert-base-uncased", "vector-type", VectorType.PG_VECTOR.name(), "kwargs", "{}"));
 		assertThat(embeddingResponse.getResults().get(0).getIndex()).isEqualTo(0);
 		assertThat(embeddingResponse.getResults().get(0).getOutput()).hasSize(768);
@@ -192,7 +207,7 @@ class PostgresMlEmbeddingModelIT {
 
 		assertThat(embeddingResponse).isNotNull();
 		assertThat(embeddingResponse.getResults()).hasSize(3);
-		assertThat(embeddingResponse.getMetadata()).containsExactlyInAnyOrderEntriesOf(Map.of("transformer",
+		assertThat(embeddingResponse.getMetadata().getRawMap()).containsExactlyInAnyOrderEntriesOf(Map.of("transformer",
 				"intfloat/e5-small", "vector-type", VectorType.PG_ARRAY.name(), "kwargs", "{\"device\":\"cpu\"}"));
 
 		assertThat(embeddingResponse.getResults().get(0).getIndex()).isEqualTo(0);

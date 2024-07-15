@@ -15,14 +15,6 @@
  */
 package org.springframework.ai.openai;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -49,7 +41,7 @@ import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage.ChatCom
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage.MediaContent;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage.ToolCall;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest;
-import org.springframework.ai.openai.metadata.OpenAiChatResponseMetadata;
+import org.springframework.ai.openai.metadata.OpenAiChatResponseMetadataUtils;
 import org.springframework.ai.openai.metadata.support.OpenAiResponseHeaderExtractor;
 import org.springframework.ai.retry.RetryUtils;
 import org.springframework.http.ResponseEntity;
@@ -57,9 +49,16 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@link ChatModel} and {@link StreamingChatModel} implementation for {@literal OpenAI}
@@ -165,7 +164,7 @@ public class OpenAiChatModel extends AbstractToolCallSupport<ChatCompletion> imp
 			}
 
 			// Non function calling.
-			RateLimit rateLimits = OpenAiResponseHeaderExtractor.extractAiResponseHeaders(completionEntity);
+			RateLimit rateLimit = OpenAiResponseHeaderExtractor.extractAiResponseHeaders(completionEntity);
 
 			List<Choice> choices = chatCompletion.choices();
 			if (choices == null) {
@@ -187,7 +186,7 @@ public class OpenAiChatModel extends AbstractToolCallSupport<ChatCompletion> imp
 			}).toList();
 
 			return new ChatResponse(generations,
-					OpenAiChatResponseMetadata.from(completionEntity.getBody()).withRateLimit(rateLimits));
+					OpenAiChatResponseMetadataUtils.from(completionEntity.getBody(), rateLimit));
 		});
 	}
 
@@ -237,7 +236,7 @@ public class OpenAiChatModel extends AbstractToolCallSupport<ChatCompletion> imp
 						}).toList();
 
 						if (chatCompletion2.usage() != null) {
-							return new ChatResponse(generations, OpenAiChatResponseMetadata.from(chatCompletion2));
+							return new ChatResponse(generations, OpenAiChatResponseMetadataUtils.from(chatCompletion2));
 						}
 						else {
 							return new ChatResponse(generations);

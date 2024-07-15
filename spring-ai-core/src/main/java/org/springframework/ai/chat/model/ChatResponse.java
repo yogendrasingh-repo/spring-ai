@@ -40,7 +40,7 @@ public class ChatResponse implements ModelResponse<Generation> {
 	 * provider.
 	 */
 	public ChatResponse(List<Generation> generations) {
-		this(generations, ChatResponseMetadata.NULL);
+		this(generations, new ChatResponseMetadata());
 	}
 
 	/**

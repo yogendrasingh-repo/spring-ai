@@ -22,8 +22,6 @@ import org.springframework.ai.chat.metadata.PromptMetadata;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.util.Assert;
 
-import java.util.HashMap;
-
 /**
  * {@link ChatResponseMetadata} implementation for
  * {@literal Microsoft Azure OpenAI Service}.
@@ -33,51 +31,22 @@ import java.util.HashMap;
  * @see ChatResponseMetadata
  * @since 0.7.1
  */
-public class AzureOpenAiChatResponseMetadata extends HashMap<String, Object> implements ChatResponseMetadata {
-
-	protected static final String AI_METADATA_STRING = "{ @type: %1$s, id: %2$s, usage: %3$s, rateLimit: %4$s }";
+public abstract class AzureOpenAiChatResponseMetadataUtils {
 
 	@SuppressWarnings("all")
-	public static AzureOpenAiChatResponseMetadata from(ChatCompletions chatCompletions,
-			PromptMetadata promptFilterMetadata) {
+	public static ChatResponseMetadata from(ChatCompletions chatCompletions, PromptMetadata promptFilterMetadata) {
 		Assert.notNull(chatCompletions, "Azure OpenAI ChatCompletions must not be null");
 		String id = chatCompletions.getId();
 		AzureOpenAiUsage usage = AzureOpenAiUsage.from(chatCompletions);
-		AzureOpenAiChatResponseMetadata chatResponseMetadata = new AzureOpenAiChatResponseMetadata(id, usage,
-				promptFilterMetadata);
+		ChatResponseMetadata chatResponseMetadata = ChatResponseMetadata.builder()
+			.withId(id)
+			.withUsage(usage)
+			.withModel(chatCompletions.getModel())
+			.withPromptMetadata(promptFilterMetadata)
+			.withKeyValue("system-fingerprint", chatCompletions.getSystemFingerprint())
+			.build();
+
 		return chatResponseMetadata;
-	}
-
-	private final String id;
-
-	private final Usage usage;
-
-	private final PromptMetadata promptMetadata;
-
-	protected AzureOpenAiChatResponseMetadata(String id, AzureOpenAiUsage usage, PromptMetadata promptMetadata) {
-		this.id = id;
-		this.usage = usage;
-		this.promptMetadata = promptMetadata;
-	}
-
-	@Override
-	public String getId() {
-		return this.id;
-	}
-
-	@Override
-	public Usage getUsage() {
-		return this.usage;
-	}
-
-	@Override
-	public PromptMetadata getPromptMetadata() {
-		return this.promptMetadata;
-	}
-
-	@Override
-	public String toString() {
-		return AI_METADATA_STRING.formatted(getClass().getTypeName(), getId(), getUsage(), getRateLimit());
 	}
 
 }

@@ -32,7 +32,7 @@ import org.springframework.ai.anthropic.api.AnthropicApi.ChatCompletionResponse;
 import org.springframework.ai.anthropic.api.AnthropicApi.ContentBlock;
 import org.springframework.ai.anthropic.api.AnthropicApi.ContentBlock.ContentBlockType;
 import org.springframework.ai.anthropic.api.AnthropicApi.Role;
-import org.springframework.ai.anthropic.metadata.AnthropicChatResponseMetadata;
+import org.springframework.ai.anthropic.metadata.AnthropicChatResponseMetadataUtils;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
@@ -228,7 +228,7 @@ public class AnthropicChatModel extends AbstractToolCallSupport<ChatCompletionRe
 				.withGenerationMetadata(ChatGenerationMetadata.from(chatCompletion.stopReason(), null));
 		}).toList();
 
-		return new ChatResponse(generations, AnthropicChatResponseMetadata.from(chatCompletion));
+		return new ChatResponse(generations, AnthropicChatResponseMetadataUtils.from(chatCompletion));
 	}
 
 	private String fromMediaData(Object mediaData) {

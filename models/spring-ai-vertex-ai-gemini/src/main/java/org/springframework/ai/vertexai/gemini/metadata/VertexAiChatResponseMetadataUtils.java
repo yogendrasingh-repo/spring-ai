@@ -15,8 +15,10 @@
  */
 package org.springframework.ai.vertexai.gemini.metadata;
 
+import com.google.cloud.vertexai.api.GenerateContentResponse;
 import org.springframework.ai.chat.metadata.ChatResponseMetadata;
 import org.springframework.ai.chat.metadata.Usage;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 
@@ -24,17 +26,11 @@ import java.util.HashMap;
  * @author Christian Tzolov
  * @since 0.8.1
  */
-public class VertexAiChatResponseMetadata extends HashMap<String, Object> implements ChatResponseMetadata {
+public abstract class VertexAiChatResponseMetadataUtils {
 
-	private final VertexAiUsage usage;
-
-	public VertexAiChatResponseMetadata(VertexAiUsage usage) {
-		this.usage = usage;
-	}
-
-	@Override
-	public Usage getUsage() {
-		return this.usage;
+	public static ChatResponseMetadata from(GenerateContentResponse.UsageMetadata usageMetadata) {
+		Assert.notNull(usageMetadata, "GenerateContentResponse.UsageMetadata must not be null");
+		return ChatResponseMetadata.builder().withUsage(new VertexAiUsage(usageMetadata)).build();
 	}
 
 }
